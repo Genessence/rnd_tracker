@@ -363,6 +363,10 @@ export const useStore = create<Store>()(
               get().decideDecision(entity, action === 'DECIDE' ? 'DECIDED' : 'PUSHED_BACK', note);
               const d = s.decisions.find((x) => x.id === entity)!;
               const verb = action === 'DECIDE' ? 'Decided' : 'Pushed back';
+              // ponytail: seed has no decision→task link; match same-team tasks waiting on the head by title prefix.
+              if (action === 'DECIDE') for (const t of s.tasks) {
+                if (t.teamId === d.teamId && t.waitingOn?.kind === 'HEAD' && d.title.startsWith(t.title.split(':')[0])) get().setWaitingOn(t.id, null);
+              }
               get().notify(d.raisedById, 'ESCALATION', `${verb}: ${d.title}`, d.id, `/team/${d.teamId}`);
               get().sendEmail({
                 kind: 'ESCALATION', toIds: [d.raisedById], ccIds: [leaderOf(s, d.teamId)], relatedId: d.id,

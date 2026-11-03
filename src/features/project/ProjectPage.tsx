@@ -95,7 +95,10 @@ function ScheduleButton({ projectId, stage }: { projectId: string; stage: StageC
   const navigate = useNavigate();
   return (
     <button
+      type="button"
       className={btn}
+      title={`Schedule a meeting for the ${stage} stage`}
+      data-stage={stage}
       onClick={(e) => { e.stopPropagation(); navigate(`/meetings?project=${projectId}&stage=${stage}`); }}
     >
       <CalendarPlus size={14} /> Schedule meeting

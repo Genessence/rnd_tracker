@@ -186,6 +186,27 @@ function ExceptionRow({ ex, team, raisedBy, person }: { ex: Exception; team: str
   const needsNote = mode === 'PUSH_BACK';
   const dateRule = ex.ruleId === 'R1' || ex.ruleId === 'R2';
   const submit = () => { if (mode && (!needsNote || note.trim())) decide(ex, mode, note.trim()); };
+  const href = useStore((s) => {
+    const id = ex.entityId;
+    if (id.includes(':')) return `/projects/${id.split(':')[0]}`;
+    if (s.requests.some((r) => r.id === id)) return `/requests?id=${id}`;
+    const t = s.tasks.find((x) => x.id === id);
+    if (t) return t.projectId ? `/projects/${t.projectId}` : `/team/${t.teamId}`;
+    return `/team/${ex.teamId}`;
+  });
+  const allChanges = useStore((s) => s.dateChanges);
+  const trail = useMemo(() => allChanges.filter((c) => c.entityId === ex.entityId).slice(-3), [allChanges, ex.entityId]);
+  const projectId = useStore((s) => s.tasks.find((t) => t.id === ex.entityId)?.projectId);
+  const meetings = useStore((s) => s.meetings);
+  const moms = useStore((s) => s.moms);
+  const mom = useMemo(() => {
+    const m = [...moms].reverse().find((x) => x.status === 'PUBLISHED' && meetings.find((mt) => mt.id === x.meetingId)?.scope.projectId === projectId);
+    return m && projectId ? { mom: m, meeting: meetings.find((mt) => mt.id === m.meetingId)! } : null;
+  }, [moms, meetings, projectId]);
+  const reasons = useStore((s) => s.reasonCodes);
+  const teams = useStore((s) => s.teams);
+  const reasonLabel = (code: string) => reasons.find((r) => r.code === code)?.label ?? code;
+  const teamLabel = (id?: string) => (id ? shortTeam(teams.find((t) => t.id === id)?.name ?? id) : '');
   const primary: { action: ExceptionAction; label: string; icon: JSX.Element } = dateRule
     ? { action: 'ACCEPT_DATE', label: 'Accept date', icon: <CalendarCheck size={13} aria-hidden /> }
     : { action: 'DECIDE', label: 'Decide', icon: <Check size={13} aria-hidden /> };
@@ -197,8 +218,22 @@ function ExceptionRow({ ex, team, raisedBy, person }: { ex: Exception; team: str
           {ex.ruleId}
         </span>
         <div className="min-w-0 flex-1">
-          <div className="font-medium">{ex.title}</div>
+          <Link to={href} className="font-medium hover:text-accent hover:underline">{ex.title}</Link>
           <div className="text-table text-ink-2">{ex.detail}</div>
+          {(trail.length > 0 || (mom && dateRule)) && (
+            <ul className="mt-1.5 flex flex-col gap-0.5 border-l-2 border-line pl-2 text-[11px] text-ink-2" aria-label="Trail">
+              {trail.map((c) => (
+                <li key={c.id}>
+                  <span className="font-mono">{fmtShort(c.at)}</span> · {person(c.byId)} moved {c.field} <span className="font-mono text-ink">{fmtShort(c.from)} → {fmtShort(c.to)}</span> · {reasonLabel(c.reasonCode)}{c.attributedTo ? ` · booked to ${teamLabel(c.attributedTo)}` : ''}
+                </li>
+              ))}
+              {mom && dateRule && mom.mom.decisions.map((d, i) => (
+                <li key={i}>
+                  <span className="font-mono">{fmtShort(mom.meeting.start.slice(0, 10))}</span> · <Link to={`/meetings/${mom.meeting.id}`} className="text-accent hover:underline">{mom.meeting.title}</Link> decided: “{d.text}”
+                </li>
+              ))}
+            </ul>
+          )}
           <div className="mt-1 flex items-center gap-2 text-[11px] text-ink-2">
             <span className="rounded border border-line px-1">{team}</span>
             {raisedBy && <span>raised by {person(raisedBy)}</span>}

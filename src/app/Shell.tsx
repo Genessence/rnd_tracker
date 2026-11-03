@@ -2,23 +2,26 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import * as Popover from '@radix-ui/react-popover';
 import {
-  Bell, CalendarDays, Check, ChevronDown, ClipboardList, FolderKanban, Inbox, LayoutDashboard, Mail, RotateCcw, Scale,
+  Bell, BookOpen, CalendarDays, Check, ChevronDown, ClipboardList, FolderKanban, Inbox, LayoutDashboard, Mail, RotateCcw, Scale,
   Sun, Users,
 } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { cx, SimulatedTag } from '../design';
 import { fmtLong } from '../lib/dates';
 import { advanceDays, run0830, setDate } from '../sim/clock';
 import { useStore } from '../store/store';
+import { DemoScriptPanel } from './DemoScript';
 import { initials, PERSONAS } from './personas';
 
 const btn = 'inline-flex h-8 items-center gap-1.5 rounded-input border border-line bg-surface px-2.5 text-[12px] font-medium text-ink hover:border-accent hover:text-accent';
 
 export function Shell() {
+  const [script, setScript] = useState(false);
   return (
     <div className="flex min-h-screen flex-col">
-      <TopBar />
+      <TopBar script={script} onScript={() => setScript((v) => !v)} />
+      {script && <DemoScriptPanel onClose={() => setScript(false)} />}
       <div className="flex flex-1">
         <Rail />
         <main className="min-w-0 flex-1">
@@ -31,7 +34,7 @@ export function Shell() {
   );
 }
 
-function TopBar() {
+function TopBar({ script, onScript }: { script: boolean; onScript: () => void }) {
   const navigate = useNavigate();
   const resetDemo = useStore((s) => s.resetDemo);
   const unreadMail = useStore((s) => s.emails.length);
@@ -48,6 +51,9 @@ function TopBar() {
       </NavLink>
       <Clock />
       <div className="ml-auto flex items-center gap-2">
+        <button type="button" className={cx(btn, script && 'border-accent bg-accent-soft text-accent')} aria-pressed={script} onClick={onScript}>
+          <BookOpen size={14} aria-hidden /> Demo script
+        </button>
         <PersonaSwitcher />
         <Bell_ />
         <NavLink to="/outbox" className={({ isActive }) => cx(btn, isActive && 'border-accent text-accent')} title="Simulated Outbox">
