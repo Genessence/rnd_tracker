@@ -2,6 +2,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '../../app/Shell';
+import { NewProjectButton, useLeadTeam } from './LeadActions';
 import { cx, RagDot, RAG_LABEL, StageRail } from '../../design';
 import { isOpen } from '../../domain/metrics';
 import type { Rag, StageCode } from '../../domain/types';
@@ -20,6 +21,7 @@ export function ProjectsPage() {
   const projects = useStore((s) => s.projects);
   const teams = useStore((s) => s.teams);
   const people = useStore((s) => s.people);
+  const leadTeam = useLeadTeam();
   const tasks = useStore((s) => s.tasks);
   const requests = useStore((s) => s.requests);
   const [team, setTeam] = useState('');
@@ -54,7 +56,7 @@ export function ProjectsPage() {
 
   return (
     <>
-      <PageHeader title="Projects" subtitle={<><span className="num text-ink">{rows.length}</span> of <span className="num">{projects.length}</span> projects across the model teams</>} />
+      <PageHeader title="Projects" subtitle={<><span className="num text-ink">{rows.length}</span> of <span className="num">{projects.length}</span> projects across the model teams</>} actions={leadTeam ? <NewProjectButton teamId={leadTeam} /> : undefined} />
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <select aria-label="Team" className={field} value={team} onChange={(e) => setTeam(e.target.value)}>
           <option value="">All teams</option>

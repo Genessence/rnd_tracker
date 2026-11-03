@@ -41,6 +41,8 @@ export const DEMO_STEPS: Step[] = [
     ] },
   { title: 'Delay ledger', say: 'The lost days are booked to Electronics, not DQA. “Nobody made a phone call in this story.”',
     jumps: [{ label: 'Ledger · since 13 Oct', personId: HEAD, to: '/ledger?period=demo' }] },
+  { title: 'Start of the workflow: Satbir starts a project', say: '“New project” starts the stage-gate workflow: 137 activities CE → MP, assigned to the engineers he picks. Reassign an activity, “Add task” for Jatin, and “Raise request” to Sourcing with Jatin following it up. Each one emails the person.',
+    jumps: [{ label: 'Satbir · RAC team', personId: SATBIR, to: '/team/rac' }, { label: 'Satbir · Projects', personId: SATBIR, to: '/projects' }] },
 ];
 
 export function DemoScriptPanel({ onClose }: { onClose: () => void }) {

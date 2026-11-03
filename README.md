@@ -52,6 +52,13 @@ Click **Demo script** in the top bar. The panel lists these steps, and each butt
 9. **Clock to Tue 20 Oct.** The Electronics action is still open. As Jatin, use ↷ Move on DV closure: 2 Nov, "Waiting on another department" → Electronics. R2 puts it in Mahender's inbox with the trail: who moved which dates, and which meeting decided what.
 10. **Delay ledger** ("Since 13 Oct"). The lost days are booked to Electronics, not DQA. "Nobody made a phone call in this story."
 
+## Team leader workflow (start of a project)
+
+As **Satbir Singh (RAC team leader)**, the Team page and the Projects list show team-leader actions:
+- **New project** starts the stage-gate workflow: the R&D cycle template (CE → Proto → DV → PP → MP, 137 activities) is scheduled from the start date and assigned to the leader and the engineers picked. Engineers are emailed.
+- **Add task** gives an engineer a task (project, stage, due date, size). It appears on their My Day with an assignment email.
+- **Raise request** sends a request to another department or R&D team and assigns the engineer who follows it up; the engineer gets a linked task showing ⟶ that department. On the project Plan, each activity has **+ Task** and **Request**, and its owner can be reassigned.
+
 ## What is simulated
 
 Everything. This is a demo of the workflow, not a working system.

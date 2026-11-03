@@ -11,6 +11,7 @@ import { fmtDay, fmtShort, workingDaysBetween } from '../../lib/dates';
 import { isRequestLive, shortTeam } from '../../store/selectors';
 import { useStore } from '../../store/store';
 import { StatusPill } from '../requests/RequestsPage';
+import { AddTaskButton, RaiseRequestButton, useLeadTeam } from './LeadActions';
 
 const btn = 'inline-flex h-8 items-center gap-1.5 rounded-input border border-line bg-surface px-3 text-[12px] font-medium text-ink hover:border-accent hover:text-accent';
 
@@ -31,6 +32,7 @@ export function ProjectPage() {
     );
   }
   const tab = params.get('tab') ?? 'plan';
+  const started = params.get('started') === '1';
   const owner = people.find((p) => p.id === project.ownerId);
   const teamName = shortTeam(teams.find((t) => t.id === project.teamId)?.name ?? project.teamId);
   const reqCount = requests.filter((r) => r.projectId === id && isRequestLive(r)).length;
@@ -41,8 +43,16 @@ export function ProjectPage() {
       <Link to="/projects" className="mb-2 inline-flex items-center gap-1 text-[12px] text-ink-2 hover:text-accent"><ArrowLeft size={13} /> Projects</Link>
       <PageHeader
         title={project.name}
-        subtitle={<span className="flex items-center gap-2">{teamName} <span className="num text-ink-2">· {project.id}</span> <RagDot rag={project.rag} showLabel /></span>}
+        subtitle={<span className="flex items-center gap-2">{teamName} <RagDot rag={project.rag} showLabel /></span>}
+        actions={<LeadHeaderActions project={project} />}
       />
+      {started && project.plan && (
+        <div className="card mb-4 border-accent bg-accent-soft px-5 py-3 text-table">
+          <b>Workflow started.</b> {project.plan.length} activities scheduled from the R&amp;D cycle template: CE is in progress until{' '}
+          <span className="num">{fmtShort(project.nextMilestoneDate ?? '')}</span>, then Proto, DV, PP and MP.
+          Assign engineers in the Plan below, add tasks, or raise a request when an activity needs another department.
+        </div>
+      )}
       <section className="card mb-5 grid grid-cols-[auto_1fr_1fr_1fr] items-center gap-6 px-5 py-4">
         <StageRail stage={project.stage} onHold={project.onHold} />
         <Meta label="Customer">{project.customer ?? '–'}</Meta>
@@ -108,8 +118,35 @@ function ScheduleButton({ projectId, stage }: { projectId: string; stage: StageC
 
 // ---- Plan: stages > sub-stages > activities ---------------------------------------------------------------------
 
+function LeadHeaderActions({ project }: { project: Project }) {
+  const lead = useLeadTeam(project.teamId);
+  if (!lead) return null;
+  return (
+    <>
+      <AddTaskButton teamId={lead} projectId={project.id} stage={project.stage} />
+      <RaiseRequestButton teamId={lead} projectId={project.id} stage={project.stage} />
+    </>
+  );
+}
+
+/** Lead reassigns an activity to one of the team's engineers (or themselves). */
+function OwnerSelect({ project, a, name }: { project: Project; a: PlanActivity; name: (id?: string) => string }) {
+  const people = useStore((s) => s.people);
+  const assign = useStore((s) => s.assignActivity);
+  const team = useMemo(() => people.filter((p) => p.teamId === project.teamId && (p.role === 'ENGINEER' || p.role === 'TEAM_LEADER')), [people, project.teamId]);
+  const outside = a.ownerId && !team.some((p) => p.id === a.ownerId);
+  return (
+    <select aria-label={`Owner of ${a.sNo}`} value={a.ownerId ?? ''} onChange={(e) => assign(project.id, a.activityId, e.target.value)}
+      className="h-7 max-w-[160px] rounded-input border border-transparent bg-transparent px-1 text-table hover:border-line focus:border-accent">
+      {outside && <option value={a.ownerId}>{name(a.ownerId)}</option>}
+      {team.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+    </select>
+  );
+}
+
 function Plan({ project, plan }: { project: Project; plan: PlanActivity[] }) {
   const navigate = useNavigate();
+  const lead = useLeadTeam(project.teamId);
   const people = useStore((s) => s.people);
   const teams = useStore((s) => s.teams);
   const requests = useStore((s) => s.requests);
@@ -183,14 +220,15 @@ function Plan({ project, plan }: { project: Project; plan: PlanActivity[] }) {
                     <th className="px-2 py-1.5 font-medium">Depends on</th>
                     <th className="px-2 py-1.5 text-right font-medium">TAT plan / actual</th>
                     <th className="px-2 py-1.5 font-medium">Committed → forecast</th>
-                    <th className="px-4 py-1.5 font-medium">Status</th>
+                    <th className="px-2 py-1.5 font-medium">Status</th>
+                    {lead && <th className="px-4 py-1.5 font-medium">Lead</th>}
                   </tr>
                 </thead>
                 <tbody>
                   {subs.map((sub) => (
                     <Fragment key={sub.name}>
                       <tr className="border-t border-line bg-surface">
-                        <td colSpan={7} className="px-4 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wide text-ink">
+                        <td colSpan={lead ? 8 : 7} className="px-4 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wide text-ink">
                           {sub.name} <span className="num font-normal text-ink-2">· {sub.acts.filter((a) => a.status === 'DONE').length}/{sub.acts.length}</span>
                         </td>
                       </tr>
@@ -212,7 +250,7 @@ function Plan({ project, plan }: { project: Project; plan: PlanActivity[] }) {
                                 </div>
                               )}
                             </td>
-                            <td className="whitespace-nowrap px-2 py-1.5">{name(a.ownerId)}</td>
+                            <td className="whitespace-nowrap px-2 py-1.5">{lead && a.status !== 'DONE' ? <OwnerSelect project={project} a={a} name={name} /> : name(a.ownerId)}</td>
                             <td className="px-2 py-1.5">
                               {live ? <WaitingChip to={team(req!.toId)} onClick={() => navigate(`/requests?id=${req!.id}`)} />
                                 : <span className="text-ink-2">{team(a.dependencyTeam)}</span>}
@@ -225,7 +263,17 @@ function Plan({ project, plan }: { project: Project; plan: PlanActivity[] }) {
                                 ? <DatePair committed={a.baselineEnd} forecast={a.actualEnd} />
                                 : <DatePair committed={a.committedEnd} forecast={a.forecastEnd} className={cx(overdue && 'font-semibold')} />}
                             </td>
-                            <td className="px-4 py-1.5"><StatusTag s={a.status} /></td>
+                            <td className="px-2 py-1.5"><StatusTag s={a.status} /></td>
+                            {lead && (
+                              <td className="whitespace-nowrap px-4 py-1.5">
+                                {a.status !== 'DONE' && (
+                                  <span className="flex gap-3">
+                                    <AddTaskButton small teamId={lead} projectId={project.id} stage={a.stage} title={`${a.sNo} ${a.name}`} />
+                                    {!live && <RaiseRequestButton small teamId={lead} projectId={project.id} stage={a.stage} activityId={a.activityId} title={a.name} />}
+                                  </span>
+                                )}
+                              </td>
+                            )}
                           </tr>
                         );
                       })}

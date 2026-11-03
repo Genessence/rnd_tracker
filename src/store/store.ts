@@ -3,8 +3,8 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { buildInitialState, template, type SeedState } from '../domain/seed';
 import { cascadePlan, headId, leaderOf, propagateRequestDate } from '../domain/rules';
-import { instantiatePlan } from '../domain/scheduler';
-import { fmtShort } from '../lib/dates';
+import { applyProgress, instantiatePlan, scheduleTemplate } from '../domain/scheduler';
+import { addWorkingDays, fmtShort, nextWorkingDay } from '../lib/dates';
 import type {
   ActionLogEntry,
   DateChange,
@@ -16,6 +16,7 @@ import type {
   Meeting,
   Mom,
   Notification,
+  Project,
   Request,
   Settings,
   Size,
@@ -105,6 +106,18 @@ export interface Actions {
   decideException: (ex: Exception, action: ExceptionAction, note: string, opts?: { ownerId?: string }) => boolean;
 
   instantiateProjectPlan: (projectId: string) => void;
+  /** Starts the workflow: a new project at CE with the full template plan scheduled from startDate. Returns its id. */
+  createProject: (input: NewProject) => string;
+  /** Lead raises a request to another team/department and assigns the engineer who follows it up (gets a linked task). */
+  raiseRequest: (input: RaiseRequestInput) => string;
+  /** Lead (re)assigns a plan activity to an engineer; the engineer is notified and emailed. */
+  assignActivity: (projectId: string, activityId: string, ownerId: string) => void;
+}
+
+export interface NewProject { name: string; teamId: string; customer?: string; startDate: string; engineerIds: string[] }
+export interface RaiseRequestInput {
+  toId: string; toKind: 'TEAM' | 'DEPT'; title: string; teamId: string; ownerId: string; neededBy: string;
+  projectId?: string | null; stage?: StageCode; activityId?: string | null;
 }
 
 export type Store = AppData & Actions;
@@ -411,6 +424,54 @@ export const useStore = create<Store>()(
           const plan = instantiatePlan(template, p, { leaderId: p.ownerId, inchargeId, memberIds: team, sourcingId: 'p-sourcing-lead' }, s.demoToday);
           set((st) => ({ projects: st.projects.map((x) => (x.id === projectId ? { ...x, plan, templateId: template.templateId } : x)) }));
           log('PLAN_INSTANTIATE', projectId);
+        },
+
+        createProject: (input) => {
+          const s = get();
+          const leaderId = s.teams.find((t) => t.id === input.teamId)?.leaderId ?? s.currentPersonId;
+          const start = nextWorkingDay(input.startDate);
+          const ceEnd = addWorkingDays(start, template.stages[0].plannedDays - 1);
+          const owners = { leaderId, inchargeId: input.engineerIds[0] ?? leaderId, memberIds: input.engineerIds, sourcingId: 'p-sourcing-lead' };
+          const plan = applyProgress(scheduleTemplate(template, { stage: 'CE', endDate: ceEnd }, owners), 'CE', s.demoToday);
+          const id = nextId('prj');
+          const project: Project = {
+            id, name: input.name, teamId: input.teamId, customer: input.customer || null, stage: 'CE', onHold: false,
+            nextMilestone: 'CE closure', nextMilestoneDate: ceEnd, rag: 'green', ownerId: leaderId, templateId: template.templateId, plan,
+          };
+          set((st) => ({ projects: [project, ...st.projects] }));
+          for (const e of input.engineerIds) {
+            const mine = plan.filter((a) => a.ownerId === e);
+            get().notify(e, 'ASSIGNMENT', `You are on ${input.name}: ${mine.length} activities`, id, `/projects/${id}`);
+          }
+          if (input.engineerIds.length) get().sendEmail({
+            kind: 'ASSIGNMENT', toIds: input.engineerIds, ccIds: [s.currentPersonId], relatedId: id,
+            subject: `New project: ${input.name} (CE closure ${fmtShort(ceEnd)})`,
+            html: `<p>You have been assigned to <b>${input.name}</b>${input.customer ? ` for ${input.customer}` : ''}.</p><p>The stage-gate plan (CE → Proto → DV → PP → MP, ${plan.length} activities) starts ${fmtShort(start)}. CE closes ${fmtShort(ceEnd)}.</p>`,
+          });
+          log('PROJECT_CREATE', id, input.name);
+          return id;
+        },
+
+        raiseRequest: (input) => {
+          const taskId = get().createTask({ title: input.title, ownerIds: [input.ownerId], teamId: input.teamId, projectId: input.projectId ?? null, stage: input.stage, forecastDate: input.neededBy });
+          const rid = get().createRequest({
+            toId: input.toId, toKind: input.toKind, title: input.title, blocks: input.title, fromTeamId: input.teamId,
+            projectId: input.projectId ?? null, taskId, activityId: input.activityId ?? null, requestedDate: input.neededBy,
+          });
+          patchTask(taskId, (x) => ({ ...x, waitingOn: { kind: input.toKind, id: input.toId, requestId: rid }, status: 'BLOCKED' }));
+          log('REQUEST_RAISE', rid, input.title);
+          return rid;
+        },
+
+        assignActivity: (projectId, activityId, ownerId) => {
+          const p = get().projects.find((x) => x.id === projectId);
+          const a = p?.plan?.find((x) => x.activityId === activityId);
+          if (!p || !a || a.ownerId === ownerId) return;
+          set((st) => ({ projects: st.projects.map((x) => x.id !== projectId || !x.plan ? x : { ...x, plan: x.plan.map((y) => (y.activityId === activityId ? { ...y, ownerId } : y)) }) }));
+          get().notify(ownerId, 'ASSIGNMENT', `Assigned: ${a.sNo} ${a.name}`, projectId, `/projects/${projectId}`);
+          get().sendEmail({ kind: 'ASSIGNMENT', toIds: [ownerId], ccIds: [get().currentPersonId], relatedId: projectId,
+            subject: `Assigned: ${a.sNo} ${a.name} · ${p.name}`, html: `<p>You now own <b>${a.sNo} ${a.name}</b> on <b>${p.name}</b>, due ${fmtShort(a.forecastEnd)}.</p>` });
+          log('ACTIVITY_ASSIGN', `${projectId}:${activityId}`, ownerId);
         },
       };
     },
