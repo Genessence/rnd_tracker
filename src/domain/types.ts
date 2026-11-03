@@ -199,7 +199,7 @@ export interface Email {
   ccIds?: string[];
   subject: string;
   html: string;
-  kind: 'DIGEST' | 'ASSIGNMENT' | 'REMINDER' | 'ESCALATION' | 'MOM' | 'INVITE' | 'WEEKLY';
+  kind: 'DIGEST' | 'ASSIGNMENT' | 'REQUEST' | 'COMMITMENT' | 'REMINDER' | 'ESCALATION' | 'MOM' | 'INVITE' | 'WEEKLY';
   relatedId?: string;
   replied?: 'DONE' | 'NEW_DATE';
 }
@@ -222,8 +222,10 @@ export interface Notification {
   at: string;
   toId: string;
   text: string;
-  kind: 'ASSIGNMENT' | 'REQUEST' | 'COMMITMENT' | 'ESCALATION' | 'MOM';
+  kind: 'ASSIGNMENT' | 'REQUEST' | 'COMMITMENT' | 'ESCALATION' | 'MOM' | 'INFO';
   relatedId?: string;
+  /** Hash route to open on click, e.g. '/requests?id=req-001'. */
+  link?: string;
   read?: boolean;
 }
 

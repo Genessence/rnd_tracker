@@ -73,7 +73,10 @@ export interface Actions {
   setPersona: (personId: string) => void;
   updateSettings: (patch: Partial<Settings>) => void;
   logAction: (action: string, entityId: string, note?: string) => void;
-  notify: (toId: string, kind: Notification['kind'], text: string, relatedId?: string) => void;
+  notify: (toId: string, kind: Notification['kind'], text: string, relatedId?: string, link?: string) => void;
+  markNotificationsRead: (personId: string) => void;
+  /** Stores a simulated email in the Outbox. Returns its id. Use src/sim/mailer.ts sendEmail from UI code. */
+  sendEmail: (email: Omit<Email, 'id' | 'at'> & { at?: string }) => string;
 
   createTask: (input: NewTask) => string;
   /** Non-date fields only; dates move through moveForecast so the ledger sees every change. */
@@ -156,9 +159,16 @@ export const useStore = create<Store>()(
         setPersona: (personId) => set({ currentPersonId: personId }),
         updateSettings: (patch) => set((s) => ({ settings: { ...s.settings, ...patch } })),
         logAction: log,
-        notify: (toId, kind, text, relatedId) => {
+        notify: (toId, kind, text, relatedId, link) => {
           const id = nextId('ntf');
-          set((s) => ({ notifications: [...s.notifications, { id, at: s.demoToday, toId, kind, text, relatedId }] }));
+          set((s) => ({ notifications: [...s.notifications, { id, at: s.demoToday, toId, kind, text, relatedId, link }] }));
+        },
+        markNotificationsRead: (personId) =>
+          set((s) => ({ notifications: s.notifications.map((n) => (n.toId === personId && !n.read ? { ...n, read: true } : n)) })),
+        sendEmail: (email) => {
+          const id = nextId('eml');
+          set((s) => ({ emails: [...s.emails, { ...email, id, at: email.at ?? s.demoToday }] }));
+          return id;
         },
 
         createTask: (input) => {
@@ -173,7 +183,13 @@ export const useStore = create<Store>()(
             forecastDate: date, lastUpdatedAt: s.demoToday, source: input.source ?? 'user', momId: input.momId,
           };
           set((st) => ({ tasks: [...st.tasks, task] }));
-          for (const o of ownerIds) if (o !== s.currentPersonId) get().notify(o, 'ASSIGNMENT', `New task: ${task.title}`, id);
+          const others = ownerIds.filter((o) => o !== s.currentPersonId);
+          for (const o of others) get().notify(o, 'ASSIGNMENT', `New task: ${task.title}`, id, '/my-day');
+          if (others.length) get().sendEmail({
+            kind: 'ASSIGNMENT', toIds: others, ccIds: [s.currentPersonId], relatedId: id,
+            subject: `New task: ${task.title} (due ${date})`,
+            html: `<p>You have a new task.</p><p><b>${task.title}</b><br/>Forecast: ${date}</p>`,
+          });
           log('TASK_CREATE', id);
           if (input.waitingOn) get().setWaitingOn(id, input.waitingOn);
           return id;
@@ -235,7 +251,7 @@ export const useStore = create<Store>()(
             });
             w = { ...w, requestId };
           }
-          if (w?.kind === 'HEAD') get().notify(headId(s), 'ESCALATION', `Waiting on you: ${t.title}`, taskId);
+          if (w?.kind === 'HEAD') get().notify(headId(s), 'ESCALATION', `Waiting on you: ${t.title}`, taskId, '/tower');
           patchTask(taskId, (x) => ({
             ...x, waitingOn: w, lastUpdatedAt: s.demoToday,
             status: w && w.kind !== 'NOTE' ? 'BLOCKED' : x.status === 'BLOCKED' ? 'OPEN' : x.status,
@@ -267,7 +283,13 @@ export const useStore = create<Store>()(
               })
               : st.projects,
           }));
-          get().notify(leaderOf(s, input.toId), 'REQUEST', `New request: ${req.title}`, id);
+          const lead = leaderOf(s, input.toId);
+          get().notify(lead, 'REQUEST', `New request: ${req.title}`, id, `/requests?id=${id}`);
+          get().sendEmail({
+            kind: 'REQUEST', toIds: [lead], ccIds: [s.currentPersonId], relatedId: id,
+            subject: `Request ${id}: ${req.title}`,
+            html: `<p>A new request has been raised to your team.</p><p><b>${req.title}</b><br/>Blocks: ${req.blocks}<br/>Requested by: ${req.requestedDate ?? 'not set'}${tat ? `<br/>Planned TAT: ${tat} days` : ''}</p><p>Please acknowledge and commit a date.</p>`,
+          });
           log('REQUEST_RAISE', id);
           return id;
         },
@@ -290,7 +312,12 @@ export const useStore = create<Store>()(
             ...x, status: 'COMMITTED', committedDate: date,
             history: [...x.history, { at: today(), byId: me(), type: 'COMMITTED', detail: recommit ? `${r.committedDate} -> ${date} (${reasonCode})` : date }],
           }));
-          get().notify(r.raisedById, 'COMMITMENT', `${r.title}: committed ${date}`, id);
+          get().notify(r.raisedById, 'COMMITMENT', `${r.title}: committed ${date}`, id, `/requests?id=${id}`);
+          get().sendEmail({
+            kind: 'COMMITMENT', toIds: [r.raisedById], ccIds: [me()], relatedId: id,
+            subject: `${recommit ? 'Re-committed' : 'Committed'}: ${r.title} by ${date}`,
+            html: `<p><b>${r.title}</b> is committed for <b>${date}</b>.</p>${recommit ? `<p>Moved from ${r.committedDate} (${reasonCode})${note ? `: ${note}` : ''}</p>` : ''}`,
+          });
           log('REQUEST_COMMIT', id, date);
           runPropagation(id);
           return true;
@@ -332,8 +359,17 @@ export const useStore = create<Store>()(
           const entity = ex.entityId;
           const task = s.tasks.find((t) => t.id === entity);
           if (s.decisions.some((d) => d.id === entity)) {
-            if (action === 'DECIDE' || action === 'PUSH_BACK')
+            if (action === 'DECIDE' || action === 'PUSH_BACK') {
               get().decideDecision(entity, action === 'DECIDE' ? 'DECIDED' : 'PUSHED_BACK', note);
+              const d = s.decisions.find((x) => x.id === entity)!;
+              const verb = action === 'DECIDE' ? 'Decided' : 'Pushed back';
+              get().notify(d.raisedById, 'ESCALATION', `${verb}: ${d.title}`, d.id, `/team/${d.teamId}`);
+              get().sendEmail({
+                kind: 'ESCALATION', toIds: [d.raisedById], ccIds: [leaderOf(s, d.teamId)], relatedId: d.id,
+                subject: `${verb} by R&D head: ${d.title}`,
+                html: `<p><b>${d.title}</b></p><p>${verb}${note ? `: ${note}` : '.'}</p>`,
+              });
+            }
           } else if (task) {
             if (ex.ruleId === 'R3' && (action === 'DECIDE' || action === 'PUSH_BACK')) get().setWaitingOn(task.id, null);
             if (action === 'REASSIGN') get().updateTask(task.id, { ownerIds: [opts!.ownerId!] });
