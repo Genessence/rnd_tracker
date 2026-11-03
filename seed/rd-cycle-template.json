@@ -1,0 +1,1823 @@
+{
+ "templateId": "RD-CYCLE-AC-v1",
+ "name": "R&D cycle — air conditioning (from RD_Cycle_Team_Project_Workflow_activity_1.xlsx)",
+ "stageOrder": [
+  "CE",
+  "PROTO",
+  "DV",
+  "PP",
+  "MP"
+ ],
+ "note": "plannedDays null = TAT not yet defined in the source sheet. kind is inferred from the activity name for demo grouping.",
+ "activityCount": 137,
+ "stages": [
+  {
+   "code": "CE",
+   "sNo": "1",
+   "name": "CE Stage",
+   "plannedDays": 75,
+   "owner": "Project Incharge",
+   "subStages": [
+    {
+     "sNo": "1.1",
+     "name": "Benchmarking",
+     "plannedDays": 24,
+     "activities": [
+      {
+       "id": "A1_1_1",
+       "sNo": "1.1.1",
+       "name": "Model Selection / Sample Shortlisting\n( Online / Physical store )",
+       "plannedDays": 7,
+       "dependencyTeam": "Purchase/Sourcing Team",
+       "parallelWith": null,
+       "responsibility": "Team leader",
+       "ownership": null,
+       "kind": "task",
+       "order": 1
+      },
+      {
+       "id": "A1_1_2",
+       "sNo": "1.1.2",
+       "name": "Samples ordering & PO",
+       "plannedDays": 2,
+       "dependencyTeam": "Purchase/Sourcing Team",
+       "parallelWith": null,
+       "responsibility": "Team leader",
+       "ownership": null,
+       "kind": "material",
+       "order": 2
+      },
+      {
+       "id": "A1_1_3",
+       "sNo": "1.1.3",
+       "name": "Samples Arrival",
+       "plannedDays": 5,
+       "dependencyTeam": "Purchase/Sourcing Team",
+       "parallelWith": null,
+       "responsibility": "Purchase",
+       "ownership": null,
+       "kind": "material",
+       "order": 3
+      },
+      {
+       "id": "A1_1_4",
+       "sNo": "1.1.4",
+       "name": "Performance Testing",
+       "plannedDays": 1,
+       "dependencyTeam": "Lab team",
+       "parallelWith": null,
+       "responsibility": "Project Incharge",
+       "ownership": null,
+       "kind": "testing",
+       "order": 4
+      },
+      {
+       "id": "A1_1_5",
+       "sNo": "1.1.5",
+       "name": "Noise Testing",
+       "plannedDays": 1,
+       "dependencyTeam": "Lab team",
+       "parallelWith": null,
+       "responsibility": "Project Incharge",
+       "ownership": null,
+       "kind": "testing",
+       "order": 5
+      },
+      {
+       "id": "A1_1_7",
+       "sNo": "1.1.7",
+       "name": "Physical Benchmarking / Teardown",
+       "plannedDays": 3,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project Incharge / Team leader",
+       "ownership": null,
+       "kind": "task",
+       "order": 6
+      },
+      {
+       "id": "A1_1_6",
+       "sNo": "1.1.6",
+       "name": "Report Generation",
+       "plannedDays": 2,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project Incharge",
+       "ownership": null,
+       "kind": "documentation",
+       "order": 7
+      },
+      {
+       "id": "A1_1_8",
+       "sNo": "1.1.8",
+       "name": "BOM Costing",
+       "plannedDays": 3,
+       "dependencyTeam": "Costing team",
+       "parallelWith": null,
+       "responsibility": "Team leader",
+       "ownership": null,
+       "kind": "documentation",
+       "order": 8
+      }
+     ]
+    },
+    {
+     "sNo": "1.2",
+     "name": "Project Finalization",
+     "plannedDays": 13,
+     "activities": [
+      {
+       "id": "A1_2_1",
+       "sNo": "1.2.1",
+       "name": "Development schedule",
+       "plannedDays": 1,
+       "dependencyTeam": "Management",
+       "parallelWith": null,
+       "responsibility": "Team leader",
+       "ownership": null,
+       "kind": "task",
+       "order": 9
+      },
+      {
+       "id": "A1_2_2",
+       "sNo": "1.2.2",
+       "name": "Development Cost Finalization",
+       "plannedDays": 2,
+       "dependencyTeam": "Costing team",
+       "parallelWith": null,
+       "responsibility": "Team leader",
+       "ownership": null,
+       "kind": "task",
+       "order": 10
+      },
+      {
+       "id": "A1_2_3",
+       "sNo": "1.2.3",
+       "name": "Industrial Design",
+       "plannedDays": 1,
+       "dependencyTeam": "Structure team",
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "design",
+       "order": 11
+      },
+      {
+       "id": "A1_2_4",
+       "sNo": "1.2.4",
+       "name": "Technical specification prepared",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team leader",
+       "ownership": null,
+       "kind": "task",
+       "order": 12
+      },
+      {
+       "id": "A1_2_5",
+       "sNo": "1.2.5",
+       "name": "Technical specification reviewed",
+       "plannedDays": 1,
+       "dependencyTeam": "Management",
+       "parallelWith": null,
+       "responsibility": null,
+       "ownership": null,
+       "kind": "review",
+       "order": 13
+      },
+      {
+       "id": "A1_2_6",
+       "sNo": "1.2.6",
+       "name": "Customer Approval",
+       "plannedDays": 7,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team leader",
+       "ownership": null,
+       "kind": "approval",
+       "order": 14
+      }
+     ]
+    },
+    {
+     "sNo": "1.3",
+     "name": "CE Stage Signoff",
+     "plannedDays": null,
+     "activities": [
+      {
+       "id": "A1_3",
+       "sNo": "1.3",
+       "name": "CE Stage Signoff",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project Incharge / Team leader",
+       "ownership": null,
+       "kind": "approval",
+       "order": 15
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "code": "PROTO",
+   "sNo": "2",
+   "name": "Proto Stage",
+   "plannedDays": 105,
+   "owner": "Project Incharge",
+   "subStages": [
+    {
+     "sNo": "2.1",
+     "name": "Material Arrangement for critical parts",
+     "plannedDays": null,
+     "activities": [
+      {
+       "id": "A2_1_1",
+       "sNo": "2.1.1",
+       "name": "Critical parts (Compressors) arrangement",
+       "plannedDays": 1,
+       "dependencyTeam": "Purchase/Sourcing Team",
+       "parallelWith": null,
+       "responsibility": "Project Incharge",
+       "ownership": null,
+       "kind": "material",
+       "order": 16
+      },
+      {
+       "id": "A2_1_2",
+       "sNo": "2.1.2",
+       "name": "Electronic components arrangement",
+       "plannedDays": 1,
+       "dependencyTeam": "Purchase/Sourcing Team",
+       "parallelWith": null,
+       "responsibility": "Project Incharge",
+       "ownership": null,
+       "kind": "material",
+       "order": 17
+      },
+      {
+       "id": "A2_1_3",
+       "sNo": "2.1.3",
+       "name": "P.O. required for critical part arrangement",
+       "plannedDays": 1,
+       "dependencyTeam": "Purchase",
+       "parallelWith": null,
+       "responsibility": "Project Incharge",
+       "ownership": null,
+       "kind": "material",
+       "order": 18
+      },
+      {
+       "id": "A2_1_4",
+       "sNo": "2.1.4",
+       "name": "Price approval from sourcing",
+       "plannedDays": 3,
+       "dependencyTeam": "Purchase/Sourcing Team",
+       "parallelWith": null,
+       "responsibility": "Project Incharge",
+       "ownership": null,
+       "kind": "approval",
+       "order": 19
+      },
+      {
+       "id": "A2_1_5",
+       "sNo": "2.1.5",
+       "name": "Critical part dispatch status",
+       "plannedDays": 20,
+       "dependencyTeam": "Purchase/Supplier",
+       "parallelWith": null,
+       "responsibility": "Project Incharge",
+       "ownership": null,
+       "kind": "material",
+       "order": 20
+      },
+      {
+       "id": "A2_1_6",
+       "sNo": "2.1.6",
+       "name": "Design (3d) (Tube design, sheetmetal etc.)",
+       "plannedDays": 4,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "design",
+       "order": 21
+      },
+      {
+       "id": "A2_1_7",
+       "sNo": "2.1.7",
+       "name": "Design review",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project Incharge",
+       "ownership": null,
+       "kind": "review",
+       "order": 22
+      },
+      {
+       "id": "A2_1_8",
+       "sNo": "2.1.8",
+       "name": "NPD part design if any",
+       "plannedDays": 4,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "design",
+       "order": 23
+      },
+      {
+       "id": "A2_1_9",
+       "sNo": "2.1.9",
+       "name": "Design review (DFMEA)",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project Incharge",
+       "ownership": null,
+       "kind": "review",
+       "order": 24
+      },
+      {
+       "id": "A2_1_10",
+       "sNo": "2.1.10",
+       "name": "Material arrangement for NPD part",
+       "plannedDays": 4,
+       "dependencyTeam": "Purchase/Sourcing Team",
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "material",
+       "order": 25
+      },
+      {
+       "id": "A2_1_11",
+       "sNo": "2.1.11",
+       "name": "P.O. required for critical part arrangement",
+       "plannedDays": 1,
+       "dependencyTeam": "Purchase/Sourcing Team",
+       "parallelWith": null,
+       "responsibility": "Team leader",
+       "ownership": null,
+       "kind": "material",
+       "order": 26
+      },
+      {
+       "id": "A2_1_12",
+       "sNo": "2.1.12",
+       "name": "Price approval from sourcing",
+       "plannedDays": 3,
+       "dependencyTeam": "Purchase/Sourcing Team",
+       "parallelWith": null,
+       "responsibility": "Team leader",
+       "ownership": null,
+       "kind": "approval",
+       "order": 27
+      },
+      {
+       "id": "A2_1_13",
+       "sNo": "2.1.13",
+       "name": "Material Arrival",
+       "plannedDays": 1,
+       "dependencyTeam": "Supplier",
+       "parallelWith": null,
+       "responsibility": "Project Incharge",
+       "ownership": null,
+       "kind": "material",
+       "order": 28
+      },
+      {
+       "id": "A2_1_14",
+       "sNo": "2.1.14",
+       "name": "Software Parameter sheet prepartion",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "documentation",
+       "order": 29
+      },
+      {
+       "id": "A2_1_15",
+       "sNo": "2.1.15",
+       "name": "software Parameter sheet review",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project Incharge",
+       "ownership": null,
+       "kind": "review",
+       "order": 30
+      },
+      {
+       "id": "A2_1_16",
+       "sNo": "2.1.16",
+       "name": "Software request to electronics team",
+       "plannedDays": 1,
+       "dependencyTeam": "Electronics Team/Supplier",
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "task",
+       "order": 31
+      },
+      {
+       "id": "A2_1_17",
+       "sNo": "2.1.17",
+       "name": "Software arrangment",
+       "plannedDays": 4,
+       "dependencyTeam": "Electronics Team",
+       "parallelWith": null,
+       "responsibility": "Project Incharge",
+       "ownership": null,
+       "kind": "material",
+       "order": 32
+      }
+     ]
+    },
+    {
+     "sNo": "2.2",
+     "name": "Proto Machine assy.",
+     "plannedDays": null,
+     "activities": [
+      {
+       "id": "A2_2_1",
+       "sNo": "2.2.1",
+       "name": "Proto Machine Assembly 1",
+       "plannedDays": 1,
+       "dependencyTeam": "Lab Proto Team",
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "task",
+       "order": 33
+      },
+      {
+       "id": "A2_2_2",
+       "sNo": "2.2.2",
+       "name": "Proto Machine Assembly 2",
+       "plannedDays": 1,
+       "dependencyTeam": "Lab Proto Team",
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "task",
+       "order": 34
+      },
+      {
+       "id": "A2_2_3",
+       "sNo": "2.2.3",
+       "name": "Proto machine fitment validation & Structure check",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project Incharge / Team Leader",
+       "ownership": null,
+       "kind": "testing",
+       "order": 35
+      }
+     ]
+    },
+    {
+     "sNo": "2.3",
+     "name": "Proto Testing",
+     "plannedDays": null,
+     "activities": [
+      {
+       "id": "A2_3_1",
+       "sNo": "2.3.1",
+       "name": "Machine handover to psy. Lab team",
+       "plannedDays": 1,
+       "dependencyTeam": "Store team",
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "handover",
+       "order": 36
+      },
+      {
+       "id": "A2_3_2",
+       "sNo": "2.3.2",
+       "name": "Proto machine installation validation (Psy lab)",
+       "plannedDays": null,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project Incharge",
+       "ownership": null,
+       "kind": "testing",
+       "order": 37
+      },
+      {
+       "id": "A2_3_3",
+       "sNo": "2.3.3",
+       "name": "Proto testing Balancing Psy lab",
+       "plannedDays": 3,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project incharge / Team leader",
+       "ownership": null,
+       "kind": "testing",
+       "order": 38
+      },
+      {
+       "id": "A2_3_4",
+       "sNo": "2.3.4",
+       "name": "Proto machine modification (Proto area)",
+       "plannedDays": 1,
+       "dependencyTeam": "Lab Proto Team",
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "task",
+       "order": 39
+      },
+      {
+       "id": "A2_3_5",
+       "sNo": "2.3.5",
+       "name": "Final component arrangement from store for reproto machine assy.",
+       "plannedDays": null,
+       "dependencyTeam": "Store Team",
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "material",
+       "order": 40
+      },
+      {
+       "id": "A2_3_6",
+       "sNo": "2.3.6",
+       "name": "Final review on proto machine",
+       "plannedDays": null,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project Incharge / Team leader",
+       "ownership": null,
+       "kind": "review",
+       "order": 41
+      },
+      {
+       "id": "A2_3_7",
+       "sNo": "2.3.7",
+       "name": "Proto final software request to electronics team",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "task",
+       "order": 42
+      },
+      {
+       "id": "A2_3_8",
+       "sNo": "2.3.8",
+       "name": "Software arrangment",
+       "plannedDays": 3,
+       "dependencyTeam": "Electronics Team/Supplier",
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "material",
+       "order": 43
+      },
+      {
+       "id": "A2_3_9",
+       "sNo": "2.3.9",
+       "name": "Machine handover to psy. Lab team",
+       "plannedDays": null,
+       "dependencyTeam": "Store Team",
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "handover",
+       "order": 44
+      },
+      {
+       "id": "A2_3_10",
+       "sNo": "2.3.10",
+       "name": "Proto machine installation validation (Psy lab)",
+       "plannedDays": null,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "testing",
+       "order": 45
+      },
+      {
+       "id": "A2_3_11",
+       "sNo": "2.3.11",
+       "name": "Proto psy lab final testing",
+       "plannedDays": 3,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project Incharge / Team leader",
+       "ownership": null,
+       "kind": "testing",
+       "order": 46
+      },
+      {
+       "id": "A2_3_12",
+       "sNo": "2.3.12",
+       "name": "Proto psy lab testing witness / observation",
+       "plannedDays": null,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project incharge / Team leader",
+       "ownership": null,
+       "kind": "witness",
+       "order": 47
+      },
+      {
+       "id": "A2_3_13",
+       "sNo": "2.3.13",
+       "name": "Machine handover to manual lab",
+       "plannedDays": null,
+       "dependencyTeam": "Store Team",
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "handover",
+       "order": 48
+      },
+      {
+       "id": "A2_3_14",
+       "sNo": "2.3.14",
+       "name": "Tube vibration balancing",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project incharge",
+       "ownership": null,
+       "kind": "testing",
+       "order": 49
+      },
+      {
+       "id": "A2_3_15",
+       "sNo": "2.3.15",
+       "name": "Tube vibration witness / observation",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project incharge",
+       "ownership": null,
+       "kind": "witness",
+       "order": 50
+      },
+      {
+       "id": "A2_3_16",
+       "sNo": "2.3.16",
+       "name": "if required tube design modification & review",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project incharge",
+       "ownership": null,
+       "kind": "review",
+       "order": 51
+      },
+      {
+       "id": "A2_3_17",
+       "sNo": "2.3.17",
+       "name": "Tube sample arrangement",
+       "plannedDays": 4,
+       "dependencyTeam": "Purchase Team",
+       "parallelWith": null,
+       "responsibility": "Team member / Project incharge",
+       "ownership": null,
+       "kind": "material",
+       "order": 52
+      },
+      {
+       "id": "A2_3_18",
+       "sNo": "2.3.18",
+       "name": "Proto machine tube fitment validation & assy.",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project incharge",
+       "ownership": null,
+       "kind": "testing",
+       "order": 53
+      },
+      {
+       "id": "A2_3_19",
+       "sNo": "2.3.19",
+       "name": "Proto machine retesting & confirmation",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project incharge",
+       "ownership": null,
+       "kind": "testing",
+       "order": 54
+      },
+      {
+       "id": "A2_3_20",
+       "sNo": "2.3.20",
+       "name": "Stress test (balancing)",
+       "plannedDays": 2,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project incharge",
+       "ownership": null,
+       "kind": "testing",
+       "order": 55
+      },
+      {
+       "id": "A2_3_21",
+       "sNo": "2.3.21",
+       "name": "Final Software arrangment after tube vibration test",
+       "plannedDays": 2,
+       "dependencyTeam": "Electronics Team",
+       "parallelWith": null,
+       "responsibility": "Team member / Project incharge",
+       "ownership": null,
+       "kind": "testing",
+       "order": 56
+      },
+      {
+       "id": "A2_3_22",
+       "sNo": "2.3.22",
+       "name": "Countermeasure if any failure observed during testing",
+       "plannedDays": 2,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project incharge / Team leader",
+       "ownership": null,
+       "kind": "testing",
+       "order": 57
+      },
+      {
+       "id": "A2_3_23",
+       "sNo": "2.3.23",
+       "name": "Machine handover to Noise lab team",
+       "plannedDays": null,
+       "dependencyTeam": "Store Team",
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "handover",
+       "order": 58
+      },
+      {
+       "id": "A2_3_24",
+       "sNo": "2.3.24",
+       "name": "Noise lab testing witness / observation",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project incharge / Team leader",
+       "ownership": null,
+       "kind": "witness",
+       "order": 59
+      },
+      {
+       "id": "A2_3_25",
+       "sNo": "2.3.25",
+       "name": "Unit submission to electonics lab for software validation",
+       "plannedDays": null,
+       "dependencyTeam": "Store Team",
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "handover",
+       "order": 60
+      }
+     ]
+    },
+    {
+     "sNo": "2.4",
+     "name": "Proto Documenation",
+     "plannedDays": null,
+     "activities": [
+      {
+       "id": "A2_4_1",
+       "sNo": "2.4.1",
+       "name": "Initial BOM (NPL/CPL)",
+       "plannedDays": 2,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "documentation",
+       "order": 61
+      },
+      {
+       "id": "A2_4_2",
+       "sNo": "2.4.2",
+       "name": "CCL",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project incharge / Team leader",
+       "ownership": null,
+       "kind": "documentation",
+       "order": 62
+      },
+      {
+       "id": "A2_4_3",
+       "sNo": "2.4.3",
+       "name": "Constuction Check preparation",
+       "plannedDays": 2,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "task",
+       "order": 63
+      },
+      {
+       "id": "A2_4_4",
+       "sNo": "2.4.4",
+       "name": "Constuction Check review",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project incharge",
+       "ownership": null,
+       "kind": "review",
+       "order": 64
+      },
+      {
+       "id": "A2_4_5",
+       "sNo": "2.4.5",
+       "name": "Benchmarking preparation",
+       "plannedDays": 2,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "task",
+       "order": 65
+      },
+      {
+       "id": "A2_4_6",
+       "sNo": "2.4.6",
+       "name": "Benchmarking review",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project incharge",
+       "ownership": null,
+       "kind": "review",
+       "order": 66
+      },
+      {
+       "id": "A2_4_7",
+       "sNo": "2.4.7",
+       "name": "Software validation report arrangement & upload in AQMS",
+       "plannedDays": 7,
+       "dependencyTeam": "Electronics Team",
+       "parallelWith": null,
+       "responsibility": "Project incharge",
+       "ownership": null,
+       "kind": "testing",
+       "order": 67
+      },
+      {
+       "id": "A2_4_8",
+       "sNo": "2.4.8",
+       "name": "FFR Checklist preparation",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "documentation",
+       "order": 68
+      },
+      {
+       "id": "A2_4_9",
+       "sNo": "2.4.9",
+       "name": "FFR Checklist review",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project incharge",
+       "ownership": null,
+       "kind": "review",
+       "order": 69
+      },
+      {
+       "id": "A2_4_10",
+       "sNo": "2.4.10",
+       "name": "Proto Signoff",
+       "plannedDays": 2,
+       "dependencyTeam": "Management",
+       "parallelWith": null,
+       "responsibility": "Project incharge / Team leader",
+       "ownership": null,
+       "kind": "approval",
+       "order": 70
+      },
+      {
+       "id": "A2_4_11",
+       "sNo": "2.4.11",
+       "name": "Documents uploaded on AQMS",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project incharge",
+       "ownership": null,
+       "kind": "documentation",
+       "order": 71
+      },
+      {
+       "id": "A2_4_12",
+       "sNo": "2.4.12",
+       "name": "Documents uploaded on AQMS Approval",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project incharge",
+       "ownership": null,
+       "kind": "approval",
+       "order": 72
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "code": "DV",
+   "sNo": "3",
+   "name": "DV Stage",
+   "plannedDays": 66,
+   "owner": "DQA+ Project Incharge",
+   "subStages": [
+    {
+     "sNo": "3.1",
+     "name": "DV Documenation",
+     "plannedDays": null,
+     "activities": [
+      {
+       "id": "A3_1_1",
+       "sNo": "3.1.1",
+       "name": "BOM share to plant team",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project incharge",
+       "ownership": null,
+       "kind": "documentation",
+       "order": 73
+      },
+      {
+       "id": "A3_1_2",
+       "sNo": "3.1.2",
+       "name": "NPL_CPL part drawing release",
+       "plannedDays": 3,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "design",
+       "order": 74
+      },
+      {
+       "id": "A3_1_3",
+       "sNo": "3.1.3",
+       "name": "Production guideline prepartion",
+       "plannedDays": 2,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "documentation",
+       "order": 75
+      },
+      {
+       "id": "A3_1_4",
+       "sNo": "3.1.4",
+       "name": "Production guideline review",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project incharge",
+       "ownership": null,
+       "kind": "review",
+       "order": 76
+      }
+     ]
+    },
+    {
+     "sNo": "3.2",
+     "name": "DV machine material arrangement",
+     "plannedDays": null,
+     "activities": [
+      {
+       "id": "A3_2_1",
+       "sNo": "3.2.1",
+       "name": "NPD parts material arrangement by R&D",
+       "plannedDays": 7,
+       "dependencyTeam": "Purchase/Sourcing Team",
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "material",
+       "order": 77
+      },
+      {
+       "id": "A3_2_2",
+       "sNo": "3.2.2",
+       "name": "NPD parts followup from supplier/sourcing team",
+       "plannedDays": 3,
+       "dependencyTeam": "Purchase/Sourcing Team",
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "follow-up",
+       "order": 78
+      },
+      {
+       "id": "A3_2_3",
+       "sNo": "3.2.3",
+       "name": "DV material arrival / Dispatch to plant",
+       "plannedDays": 4,
+       "dependencyTeam": "Purchase/Sourcing Team",
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "material",
+       "order": 79
+      }
+     ]
+    },
+    {
+     "sNo": "3.3",
+     "name": "DV unit Preparation target date followup from plant team",
+     "plannedDays": null,
+     "activities": [
+      {
+       "id": "A3_3",
+       "sNo": "3.3",
+       "name": "DV unit Preparation target date followup from plant team",
+       "plannedDays": 5,
+       "dependencyTeam": "Plant (PPC) Team",
+       "parallelWith": null,
+       "responsibility": "Project incharge",
+       "ownership": null,
+       "kind": "follow-up",
+       "order": 80
+      }
+     ]
+    },
+    {
+     "sNo": "3.4",
+     "name": "DV unit assy.",
+     "plannedDays": 2,
+     "activities": [
+      {
+       "id": "A3_4_1",
+       "sNo": "3.4.1",
+       "name": "R&D person aligned for DV machine assy.",
+       "plannedDays": 1,
+       "dependencyTeam": "DQA + Plant",
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "task",
+       "order": 81
+      },
+      {
+       "id": "A3_4_2",
+       "sNo": "3.4.2",
+       "name": "DV unit arrangement documentation process - Rajpura",
+       "plannedDays": 2,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "material",
+       "order": 82
+      },
+      {
+       "id": "A3_4_3",
+       "sNo": "3.4.3",
+       "name": "Follow up for unit arrangement",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "follow-up",
+       "order": 83
+      }
+     ]
+    },
+    {
+     "sNo": "3.5",
+     "name": "DV machine submission to DQA",
+     "plannedDays": 1,
+     "activities": [
+      {
+       "id": "A3_5_1",
+       "sNo": "3.5.1",
+       "name": "DV machine jointly construction witness with DQA",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "witness",
+       "order": 84
+      },
+      {
+       "id": "A3_5_2",
+       "sNo": "3.5.2",
+       "name": "DV machine construction closer",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "task",
+       "order": 85
+      }
+     ]
+    },
+    {
+     "sNo": "3.6",
+     "name": "DV testing lab management",
+     "plannedDays": null,
+     "activities": [
+      {
+       "id": "A3_6_1",
+       "sNo": "3.6.1",
+       "name": "DV machine test plan signed off",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "approval",
+       "order": 86
+      },
+      {
+       "id": "A3_6_2",
+       "sNo": "3.6.2",
+       "name": "DV machine handover to lab team",
+       "plannedDays": null,
+       "dependencyTeam": "DQA",
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "handover",
+       "order": 87
+      },
+      {
+       "id": "A3_6_3",
+       "sNo": "3.6.3",
+       "name": "Psy. Lab installation verification",
+       "plannedDays": null,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "task",
+       "order": 88
+      },
+      {
+       "id": "A3_6_4",
+       "sNo": "3.6.4",
+       "name": "DV testing witness",
+       "plannedDays": 3,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "witness",
+       "order": 89
+      },
+      {
+       "id": "A3_6_5",
+       "sNo": "3.6.5",
+       "name": "Psy. Lab testing observation / closer",
+       "plannedDays": 3,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "witness",
+       "order": 90
+      },
+      {
+       "id": "A3_6_6",
+       "sNo": "3.6.6",
+       "name": "DV testing manual lab management",
+       "plannedDays": null,
+       "dependencyTeam": "Lab Team",
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "testing",
+       "order": 91
+      },
+      {
+       "id": "A3_6_7",
+       "sNo": "3.6.7",
+       "name": "Machine hand over to lab team",
+       "plannedDays": null,
+       "dependencyTeam": "DQA",
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "handover",
+       "order": 92
+      },
+      {
+       "id": "A3_6_8",
+       "sNo": "3.6.8",
+       "name": "DV machine manual testing witness",
+       "plannedDays": 2,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "witness",
+       "order": 93
+      },
+      {
+       "id": "A3_6_9",
+       "sNo": "3.6.9",
+       "name": "DV machine manual testing observation / closer",
+       "plannedDays": 2,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "witness",
+       "order": 94
+      },
+      {
+       "id": "A3_6_10",
+       "sNo": "3.6.10",
+       "name": "DV machine transporation etc. testing witness",
+       "plannedDays": 2,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "witness",
+       "order": 95
+      }
+     ]
+    },
+    {
+     "sNo": "3.7",
+     "name": "Observation & Closer",
+     "plannedDays": null,
+     "activities": [
+      {
+       "id": "A3_7_1",
+       "sNo": "3.7.1",
+       "name": "Production line observation closer",
+       "plannedDays": 2,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "witness",
+       "order": 96
+      },
+      {
+       "id": "A3_7_2",
+       "sNo": "3.7.2",
+       "name": "NPL_CPL part drawing release",
+       "plannedDays": 3,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "design",
+       "order": 97
+      },
+      {
+       "id": "A3_7_3",
+       "sNo": "3.7.3",
+       "name": "NPL_CPL part drawing FPA request",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "design",
+       "order": 98
+      },
+      {
+       "id": "A3_7_4",
+       "sNo": "3.7.4",
+       "name": "NPL_CPL part drawing FPA Approval in AQMS",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "approval",
+       "order": 99
+      },
+      {
+       "id": "A3_7_5",
+       "sNo": "3.7.5",
+       "name": "DV observation meeting",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "witness",
+       "order": 100
+      },
+      {
+       "id": "A3_7_6",
+       "sNo": "3.7.6",
+       "name": "DV observation closer",
+       "plannedDays": 3,
+       "dependencyTeam": null,
+       "parallelWith": "45",
+       "responsibility": "Team member / Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "witness",
+       "order": 101
+      },
+      {
+       "id": "A3_7_7",
+       "sNo": "3.7.7",
+       "name": "machine alignment for reliablity lab testing",
+       "plannedDays": 1,
+       "dependencyTeam": "DQA",
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "testing",
+       "order": 102
+      },
+      {
+       "id": "A3_7_8",
+       "sNo": "3.7.8",
+       "name": "DV machine handover to DQA electronics team",
+       "plannedDays": 1,
+       "dependencyTeam": "DQA",
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "handover",
+       "order": 103
+      },
+      {
+       "id": "A3_7_9",
+       "sNo": "3.7.9",
+       "name": "DV machine software validation & closer",
+       "plannedDays": 5,
+       "dependencyTeam": "Electronics Team",
+       "parallelWith": null,
+       "responsibility": "Project Incharge",
+       "ownership": null,
+       "kind": "testing",
+       "order": 104
+      }
+     ]
+    },
+    {
+     "sNo": "3.8",
+     "name": "DV Signed off",
+     "plannedDays": null,
+     "activities": [
+      {
+       "id": "A3_8",
+       "sNo": "3.8",
+       "name": "DV Signed off",
+       "plannedDays": null,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": null,
+       "ownership": "DQA + Project Incharge",
+       "kind": "approval",
+       "order": 105
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "code": "PP",
+   "sNo": "4",
+   "name": "PP Unit Assy.",
+   "plannedDays": 34,
+   "owner": "Plant R&D + Plant Purchase+ Project Incharge",
+   "subStages": [
+    {
+     "sNo": "4.0",
+     "name": "PP Unit Assy.",
+     "plannedDays": null,
+     "activities": [
+      {
+       "id": "A4_1",
+       "sNo": "4.1",
+       "name": "Documents uploaded on AQMS Review & Approval",
+       "plannedDays": 1,
+       "dependencyTeam": "DQA",
+       "parallelWith": null,
+       "responsibility": "Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "approval",
+       "order": 106
+      },
+      {
+       "id": "A4_2",
+       "sNo": "4.2",
+       "name": "PP Event Documenation",
+       "plannedDays": 2,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": null,
+       "ownership": null,
+       "kind": "task",
+       "order": 107
+      },
+      {
+       "id": "A4_3",
+       "sNo": "4.3",
+       "name": "Artwork & Printing parts drawings prepartion",
+       "plannedDays": 3,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "design",
+       "order": 108
+      },
+      {
+       "id": "A4_4",
+       "sNo": "4.4",
+       "name": "Final artwork approval from customer",
+       "plannedDays": 3,
+       "dependencyTeam": "Customer",
+       "parallelWith": null,
+       "responsibility": "Project Incharge",
+       "ownership": null,
+       "kind": "approval",
+       "order": 109
+      },
+      {
+       "id": "A4_5",
+       "sNo": "4.5",
+       "name": "Final drawing relased in team center",
+       "plannedDays": 2,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member",
+       "ownership": null,
+       "kind": "design",
+       "order": 110
+      },
+      {
+       "id": "A4_6",
+       "sNo": "4.6",
+       "name": "Final BOM / NPL _CPL prepartion",
+       "plannedDays": 2,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "documentation",
+       "order": 111
+      },
+      {
+       "id": "A4_7",
+       "sNo": "4.7",
+       "name": "Final BOM / NPL _CPL review & signed off",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "approval",
+       "order": 112
+      },
+      {
+       "id": "A4_8",
+       "sNo": "4.8",
+       "name": "Final Production guideline prepration",
+       "plannedDays": 2,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "documentation",
+       "order": 113
+      },
+      {
+       "id": "A4_9",
+       "sNo": "4.9",
+       "name": "Final Production guideline review",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "review",
+       "order": 114
+      },
+      {
+       "id": "A4_11",
+       "sNo": "4.11",
+       "name": "PP document Prepration",
+       "plannedDays": 3,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "documentation",
+       "order": 115
+      },
+      {
+       "id": "A4_12",
+       "sNo": "4.12",
+       "name": "Appendix sheet",
+       "plannedDays": null,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "documentation",
+       "order": 116
+      },
+      {
+       "id": "A4_13",
+       "sNo": "4.13",
+       "name": "Service BOM",
+       "plannedDays": null,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "documentation",
+       "order": 117
+      },
+      {
+       "id": "A4_14",
+       "sNo": "4.14",
+       "name": "Exploded view",
+       "plannedDays": null,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "task",
+       "order": 118
+      },
+      {
+       "id": "A4_15",
+       "sNo": "4.15",
+       "name": "PP decision sheet Making",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "documentation",
+       "order": 119
+      },
+      {
+       "id": "A4_16",
+       "sNo": "4.16",
+       "name": "PP documents review",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "review",
+       "order": 120
+      },
+      {
+       "id": "A4_17",
+       "sNo": "4.17",
+       "name": "Follow up material arrangment",
+       "plannedDays": null,
+       "dependencyTeam": "Plant (PPC) / Sourcing Team",
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "follow-up",
+       "order": 121
+      },
+      {
+       "id": "A4_18",
+       "sNo": "4.18",
+       "name": "Follow up for FPA",
+       "plannedDays": null,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "follow-up",
+       "order": 122
+      },
+      {
+       "id": "A4_19",
+       "sNo": "4.19",
+       "name": "Follow up for PP target date",
+       "plannedDays": null,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "follow-up",
+       "order": 123
+      },
+      {
+       "id": "A4_20",
+       "sNo": "4.20",
+       "name": "PP decision sheet signed off",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "approval",
+       "order": 124
+      },
+      {
+       "id": "A4_21",
+       "sNo": "4.21",
+       "name": "PP final document shared with plant team",
+       "plannedDays": null,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "documentation",
+       "order": 125
+      },
+      {
+       "id": "A4_22",
+       "sNo": "4.22",
+       "name": "R&D person aligned for PP machine assy.",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "task",
+       "order": 126
+      },
+      {
+       "id": "A4_23",
+       "sNo": "4.23",
+       "name": "Production construction points QA observation review",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "review",
+       "order": 127
+      },
+      {
+       "id": "A4_24",
+       "sNo": "4.24",
+       "name": "Production construction points QA observation closer",
+       "plannedDays": 2,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "witness",
+       "order": 128
+      },
+      {
+       "id": "A4_25",
+       "sNo": "4.25",
+       "name": "Customer observation review",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "review",
+       "order": 129
+      },
+      {
+       "id": "A4_26",
+       "sNo": "4.26",
+       "name": "Customer observation closer",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "witness",
+       "order": 130
+      },
+      {
+       "id": "A4_27",
+       "sNo": "4.27",
+       "name": "PP machine psy. Lab management",
+       "plannedDays": null,
+       "dependencyTeam": "Lab Team",
+       "parallelWith": null,
+       "responsibility": "Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "task",
+       "order": 131
+      },
+      {
+       "id": "A4_28",
+       "sNo": "4.28",
+       "name": "PP machine psy. Lab testing",
+       "plannedDays": 2,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "testing",
+       "order": 132
+      },
+      {
+       "id": "A4_29",
+       "sNo": "4.29",
+       "name": "PP machine psy. Lab test report review",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "review",
+       "order": 133
+      },
+      {
+       "id": "A4_30",
+       "sNo": "4.30",
+       "name": "PP machine test report submission to customer",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "handover",
+       "order": 134
+      },
+      {
+       "id": "A4_31",
+       "sNo": "4.31",
+       "name": "PP event closer",
+       "plannedDays": 1,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "task",
+       "order": 135
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "code": "MP",
+   "sNo": "5",
+   "name": "MP event",
+   "plannedDays": 4,
+   "owner": "Plant R&D + Plant Purchase+ Project Incharge",
+   "subStages": [
+    {
+     "sNo": "5.0",
+     "name": "MP event",
+     "plannedDays": null,
+     "activities": [
+      {
+       "id": "A5_1_1",
+       "sNo": "5.1.1",
+       "name": "MP decision sheet document prepartion",
+       "plannedDays": 2,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Team member / Project Incharge",
+       "ownership": null,
+       "kind": "documentation",
+       "order": 136
+      },
+      {
+       "id": "A5_1_2",
+       "sNo": "5.1.2",
+       "name": "MP decision sheet signed off",
+       "plannedDays": 2,
+       "dependencyTeam": null,
+       "parallelWith": null,
+       "responsibility": "Project Incharge /Team Leader",
+       "ownership": null,
+       "kind": "approval",
+       "order": 137
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

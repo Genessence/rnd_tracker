@@ -1,0 +1,53 @@
+WEBVTT
+NOTE Demo transcript for the R&D Control Tower POC. Fictional dialogue, speakers named by role only. Meeting: Weekly cross-functional review — MHI 2028 line-up, Fri 16 Oct 2026.
+
+00:00:04.000 --> 00:00:11.000
+<v R&D Head>Let's start with the items on the agenda. First one, MHI 15K3S DV closure. It shows blocked on DQA.
+
+00:00:12.000 --> 00:00:21.000
+<v RAC Team Leader>Yes. DV closure was committed for the 16th. DQA moved the software validation report to next Tuesday.
+
+00:00:22.000 --> 00:00:33.000
+<v DQA Lead>We can't sign the validation until we get the final build from Electronics. The build we have still has the low-ambient protection issue.
+
+00:00:34.000 --> 00:00:44.000
+<v Electronics Lead>The fix is ready. Megmeet sent the corrected parameter file yesterday. We need two days to flash and run our bench checks.
+
+00:00:45.000 --> 00:00:52.000
+<v R&D Head>So when does DQA get the build? I want one date, not a range.
+
+00:00:53.000 --> 00:00:58.000
+<v Electronics Lead>Monday the 19th, end of day.
+
+00:00:59.000 --> 00:01:08.000
+<v R&D Head>Decision then: Electronics releases the final 15K3S build to DQA by Monday the 19th. DQA, can you close validation by Wednesday the 21st?
+
+00:01:09.000 --> 00:01:15.000
+<v DQA Lead>If the build comes Monday, yes. Validation closed by the 21st.
+
+00:01:16.000 --> 00:01:24.000
+<v RAC Team Leader>Then DV closure moves to the 22nd. I'll update the forecast and mark the reason as waiting on Electronics.
+
+00:01:25.000 --> 00:01:35.000
+<v R&D Head>Agreed. Second item, MHI 12K5S software change. Same supplier. Where are we?
+
+00:01:36.000 --> 00:01:46.000
+<v Electronics Lead>The 12K5S change is queued behind 15K3S. Realistically the 23rd. It is one of the twelve stuck Megmeet items.
+
+00:01:47.000 --> 00:01:57.000
+<v R&D Head>Action for me: I'll take the Megmeet backlog to management this week and ask for a seven-day SLA. Put it on my list.
+
+00:01:58.000 --> 00:02:08.000
+<v Sourcing Lead>For the Megmeet escalation, I can share the PO terms. There's a service clause we haven't used.
+
+00:02:09.000 --> 00:02:15.000
+<v R&D Head>Good. Action for Sourcing: share Megmeet PO terms and the service clause with me by Tuesday the 20th.
+
+00:02:16.000 --> 00:02:26.000
+<v RAC Team Leader>Last one from my side. Thailand dispatch of the five machines is overdue since the 8th. Packing is done, we are waiting on the export documents.
+
+00:02:27.000 --> 00:02:35.000
+<v R&D Head>Action: RAC to confirm the dispatch date with the EXIM team by Monday. If it slips again, flag it to me.
+
+00:02:36.000 --> 00:02:41.000
+<v R&D Head>That's all. MOM in the platform today please.

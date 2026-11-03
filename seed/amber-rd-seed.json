@@ -1,0 +1,3830 @@
+{
+ "meta": {
+  "source": "RD_workflow_1.pdf (R&D AC deck, 13 Oct 2026; team files 9-12 Oct). Emails are fake placeholders. Supporting-department leads are placeholders.",
+  "demoToday": "2026-10-13",
+  "note": "tasks[] holds only the items the deck lists by name. deckKpis holds the deck totals; the app should top up generated filler tasks per team so live counts match deckKpis (see plan section 6).",
+  "heroStory": "tsk-011 (Jatin, MHI 15K3S DV closure, committed 16 Oct) is blocked by req-001 (to DQA, raised 12 Oct, still OPEN, planned TAT 5 days). Project prj-rac-01 milestone: DV closures 30 Oct. Activity 3.7.9 of the instantiated plan links to req-001."
+ },
+ "teams": [
+  {
+   "id": "rac",
+   "name": "RAC (SAC / WAC)",
+   "kind": "model",
+   "leaderId": "p-satbir-singh"
+  },
+  {
+   "id": "cac",
+   "name": "CAC Tower & Cassette (LCAC)",
+   "kind": "model",
+   "leaderId": "p-harvinder-singh"
+  },
+  {
+   "id": "duct",
+   "name": "Ductables",
+   "kind": "model",
+   "leaderId": "p-iftekhar-ahmad"
+  },
+  {
+   "id": "apwd",
+   "name": "Air Purifier & Water Dispenser",
+   "kind": "model",
+   "leaderId": "p-akhilesh-kumar"
+  },
+  {
+   "id": "structure",
+   "name": "Structure (CAD / CAE)",
+   "kind": "support-rnd",
+   "leaderId": "p-t-krishna-rao"
+  },
+  {
+   "id": "electronics",
+   "name": "Electronics",
+   "kind": "support-rnd",
+   "leaderId": "p-neeraj-kumar-electronics"
+  },
+  {
+   "id": "lab",
+   "name": "Lab (Psy labs, NABL, infrastructure, stores)",
+   "kind": "support-rnd",
+   "leaderId": "p-deepak-kumar"
+  },
+  {
+   "id": "sourcing",
+   "name": "Purchase / Sourcing",
+   "kind": "cross-functional",
+   "leaderId": "p-sourcing-lead"
+  },
+  {
+   "id": "dqa",
+   "name": "DQA",
+   "kind": "cross-functional",
+   "leaderId": "p-dqa-lead"
+  },
+  {
+   "id": "plant-ppc",
+   "name": "Plant (PPC)",
+   "kind": "cross-functional",
+   "leaderId": "p-plant-ppc-lead"
+  },
+  {
+   "id": "stores",
+   "name": "Stores",
+   "kind": "cross-functional",
+   "leaderId": "p-stores-lead"
+  },
+  {
+   "id": "costing",
+   "name": "Costing",
+   "kind": "cross-functional",
+   "leaderId": "p-costing-lead"
+  },
+  {
+   "id": "cycle",
+   "name": "Cycle team",
+   "kind": "cross-functional",
+   "leaderId": "p-cycle-lead"
+  },
+  {
+   "id": "supplier",
+   "name": "Supplier (external)",
+   "kind": "external",
+   "leaderId": "p-supplier-lead"
+  },
+  {
+   "id": "customer",
+   "name": "Customer (external)",
+   "kind": "external",
+   "leaderId": "p-customer-lead"
+  },
+  {
+   "id": "management",
+   "name": "Management",
+   "kind": "cross-functional",
+   "leaderId": "p-management-lead"
+  }
+ ],
+ "people": [
+  {
+   "id": "p-mahender",
+   "name": "Mahender Kumar",
+   "teamId": "rnd-head",
+   "title": "R&D Head",
+   "role": "HEAD",
+   "level": "L3",
+   "reportsTo": null,
+   "email": "mahender.demo@example.com"
+  },
+  {
+   "id": "p-satbir-singh",
+   "name": "Satbir Singh",
+   "teamId": "rac",
+   "title": "Team leader",
+   "role": "TEAM_LEADER",
+   "level": "L2",
+   "reportsTo": "p-mahender",
+   "email": "satbir.singh.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-jatin-sharma",
+   "name": "Jatin Sharma",
+   "teamId": "rac",
+   "title": "Assistant Manager",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-satbir-singh",
+   "email": "jatin.sharma.demo@example.com",
+   "deckOverdue": 3,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-abhishek-sharma",
+   "name": "Abhishek Sharma",
+   "teamId": "rac",
+   "title": "Deputy Manager",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-satbir-singh",
+   "email": "abhishek.sharma.demo@example.com",
+   "deckOverdue": 4,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-sanjeev-kumar",
+   "name": "Sanjeev Kumar",
+   "teamId": "rac",
+   "title": "Assistant Manager",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-satbir-singh",
+   "email": "sanjeev.kumar.demo@example.com",
+   "deckOverdue": 0,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-pawan-kumar",
+   "name": "Pawan Kumar",
+   "teamId": "rac",
+   "title": "Assistant Manager",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-satbir-singh",
+   "email": "pawan.kumar.demo@example.com",
+   "deckOverdue": 2,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-sashi",
+   "name": "Sashi",
+   "teamId": "rac",
+   "title": "Assistant Manager",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-satbir-singh",
+   "email": "sashi.demo@example.com",
+   "deckOverdue": 0,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-suraj-mehta",
+   "name": "Suraj Mehta",
+   "teamId": "rac",
+   "title": "Engineer",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-satbir-singh",
+   "email": "suraj.mehta.demo@example.com",
+   "deckOverdue": 0,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-chandrashekhar",
+   "name": "Chandrashekhar",
+   "teamId": "rac",
+   "title": "Senior Engineer",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-satbir-singh",
+   "email": "chandrashekhar.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-kismat",
+   "name": "Kismat",
+   "teamId": "rac",
+   "title": "Senior Engineer",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-satbir-singh",
+   "email": "kismat.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-himanshu",
+   "name": "Himanshu",
+   "teamId": "rac",
+   "title": "Engineer",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-satbir-singh",
+   "email": "himanshu.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-harvinder-singh",
+   "name": "Harvinder Singh",
+   "teamId": "cac",
+   "title": "Team leader",
+   "role": "TEAM_LEADER",
+   "level": "L2",
+   "reportsTo": "p-mahender",
+   "email": "harvinder.singh.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-nishu-kumar",
+   "name": "Nishu Kumar",
+   "teamId": "cac",
+   "title": "Sub-team lead",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-harvinder-singh",
+   "email": "nishu.kumar.demo@example.com",
+   "deckOverdue": 4,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-krishna-rawat",
+   "name": "Krishna Rawat",
+   "teamId": "cac",
+   "title": "Sub-team lead",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-harvinder-singh",
+   "email": "krishna.rawat.demo@example.com",
+   "deckOverdue": 1,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-gurjant-singh",
+   "name": "Gurjant Singh",
+   "teamId": "cac",
+   "title": "Sub-team lead",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-harvinder-singh",
+   "email": "gurjant.singh.demo@example.com",
+   "deckOverdue": 2,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-gaurav-negi-cac",
+   "name": "Gaurav Negi",
+   "teamId": "cac",
+   "title": "PIC",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-harvinder-singh",
+   "email": "gaurav.negi.demo@example.com",
+   "deckOverdue": 1,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-manpreet-singh",
+   "name": "Manpreet Singh",
+   "teamId": "cac",
+   "title": "Team member",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-harvinder-singh",
+   "email": "manpreet.singh.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-chandan-tyagi",
+   "name": "Chandan Tyagi",
+   "teamId": "cac",
+   "title": "Team member",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-harvinder-singh",
+   "email": "chandan.tyagi.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-ajay-yadav",
+   "name": "Ajay Yadav",
+   "teamId": "cac",
+   "title": "Team member",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-harvinder-singh",
+   "email": "ajay.yadav.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-jaskaran-singh",
+   "name": "Jaskaran Singh",
+   "teamId": "cac",
+   "title": "Team member",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-harvinder-singh",
+   "email": "jaskaran.singh.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-pankaj-bhatt",
+   "name": "Pankaj Bhatt",
+   "teamId": "cac",
+   "title": "Team member",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-harvinder-singh",
+   "email": "pankaj.bhatt.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-vivek-kumar",
+   "name": "Vivek Kumar",
+   "teamId": "cac",
+   "title": "Team member",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-harvinder-singh",
+   "email": "vivek.kumar.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-iftekhar-ahmad",
+   "name": "Iftekhar Ahmad",
+   "teamId": "duct",
+   "title": "Team leader",
+   "role": "TEAM_LEADER",
+   "level": "L2",
+   "reportsTo": "p-mahender",
+   "email": "iftekhar.ahmad.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-gurkirpal-singh",
+   "name": "Gurkirpal Singh",
+   "teamId": "duct",
+   "title": "Customer handling",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-iftekhar-ahmad",
+   "email": "gurkirpal.singh.demo@example.com",
+   "deckOverdue": 2,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-gaurav-kulkarni-duct",
+   "name": "Gaurav Kulkarni",
+   "teamId": "duct",
+   "title": "Engineer",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-iftekhar-ahmad",
+   "email": "gaurav.kulkarni.demo@example.com",
+   "deckOverdue": 2,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-shivani-sharma",
+   "name": "Shivani Sharma",
+   "teamId": "duct",
+   "title": "Engineer",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-iftekhar-ahmad",
+   "email": "shivani.sharma.demo@example.com",
+   "deckOverdue": 0,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-akash-kumar",
+   "name": "Akash Kumar",
+   "teamId": "duct",
+   "title": "Engineer",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-iftekhar-ahmad",
+   "email": "akash.kumar.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-aditya",
+   "name": "Aditya",
+   "teamId": "duct",
+   "title": "Engineer",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-iftekhar-ahmad",
+   "email": "aditya.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-borun-kumar",
+   "name": "Borun Kumar",
+   "teamId": "duct",
+   "title": "Engineer",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-iftekhar-ahmad",
+   "email": "borun.kumar.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-karan",
+   "name": "Karan",
+   "teamId": "duct",
+   "title": "Engineer",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-iftekhar-ahmad",
+   "email": "karan.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-manish-taneja",
+   "name": "Manish Taneja",
+   "teamId": "duct",
+   "title": "Engineer",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-iftekhar-ahmad",
+   "email": "manish.taneja.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-neha",
+   "name": "Neha",
+   "teamId": "duct",
+   "title": "Engineer",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-iftekhar-ahmad",
+   "email": "neha.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-jyoti",
+   "name": "Jyoti",
+   "teamId": "duct",
+   "title": "Engineer",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-iftekhar-ahmad",
+   "email": "jyoti.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-akhilesh-kumar",
+   "name": "Akhilesh Kumar",
+   "teamId": "apwd",
+   "title": "Team leader",
+   "role": "TEAM_LEADER",
+   "level": "L2",
+   "reportsTo": "p-mahender",
+   "email": "akhilesh.kumar.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-manoj-kainwal",
+   "name": "Manoj Kainwal",
+   "teamId": "apwd",
+   "title": "Assistant Manager",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-akhilesh-kumar",
+   "email": "manoj.kainwal.demo@example.com",
+   "deckOverdue": 1,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-harsh-saini",
+   "name": "Harsh Saini",
+   "teamId": "apwd",
+   "title": "Engineer",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-akhilesh-kumar",
+   "email": "harsh.saini.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-rishu-kushwaha",
+   "name": "Rishu Kushwaha",
+   "teamId": "apwd",
+   "title": "GET",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-akhilesh-kumar",
+   "email": "rishu.kushwaha.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-t-krishna-rao",
+   "name": "T. Krishna Rao",
+   "teamId": "structure",
+   "title": "Team lead",
+   "role": "TEAM_LEADER",
+   "level": "L2",
+   "reportsTo": "p-mahender",
+   "email": "t.krishna.rao.demo@example.com",
+   "deckOverdue": 0,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-mohd-adnan",
+   "name": "Mohd Adnan",
+   "teamId": "structure",
+   "title": "CAD sub-lead",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-t-krishna-rao",
+   "email": "mohd.adnan.demo@example.com",
+   "deckOverdue": 3,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-saurav-jha",
+   "name": "Saurav Jha",
+   "teamId": "structure",
+   "title": "CAD & CAE",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-t-krishna-rao",
+   "email": "saurav.jha.demo@example.com",
+   "deckOverdue": 3,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-abhishek-kumar-structure",
+   "name": "Abhishek Kumar",
+   "teamId": "structure",
+   "title": "CAD",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-t-krishna-rao",
+   "email": "abhishek.kumar.demo@example.com",
+   "deckOverdue": 1,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-amit",
+   "name": "Amit",
+   "teamId": "structure",
+   "title": "CAD (outsourced)",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-t-krishna-rao",
+   "email": "amit.demo@example.com",
+   "deckOverdue": 1,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-harshdeep-singh",
+   "name": "Harshdeep Singh",
+   "teamId": "structure",
+   "title": "CAD sub-lead",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-t-krishna-rao",
+   "email": "harshdeep.singh.demo@example.com",
+   "deckOverdue": 1,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-ajay-structure",
+   "name": "Ajay",
+   "teamId": "structure",
+   "title": "CAD",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-t-krishna-rao",
+   "email": "ajay.demo@example.com",
+   "deckOverdue": 1,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-jagjit",
+   "name": "Jagjit",
+   "teamId": "structure",
+   "title": "CAD",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-t-krishna-rao",
+   "email": "jagjit.demo@example.com",
+   "deckOverdue": 1,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-mayank",
+   "name": "Mayank",
+   "teamId": "structure",
+   "title": "CAE",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-t-krishna-rao",
+   "email": "mayank.demo@example.com",
+   "deckOverdue": 0,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-neeraj-kumar-electronics",
+   "name": "Neeraj Kumar",
+   "teamId": "electronics",
+   "title": "Coordinator RAC & other",
+   "role": "TEAM_LEADER",
+   "level": "L2",
+   "reportsTo": "p-mahender",
+   "email": "neeraj.kumar.demo@example.com",
+   "deckOverdue": 0,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-akash-deep",
+   "name": "Akash Deep",
+   "teamId": "electronics",
+   "title": "Coordinator CAC & Duct",
+   "role": "TEAM_LEADER",
+   "level": "L2",
+   "reportsTo": "p-mahender",
+   "email": "akash.deep.demo@example.com",
+   "deckOverdue": 0,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-dhiraj-gupta",
+   "name": "Dhiraj Gupta",
+   "teamId": "electronics",
+   "title": "Software lead",
+   "role": "TEAM_LEADER",
+   "level": "L2",
+   "reportsTo": "p-mahender",
+   "email": "dhiraj.gupta.demo@example.com",
+   "deckOverdue": 7,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-neha-pal",
+   "name": "Neha Pal",
+   "teamId": "electronics",
+   "title": "Senior Engineer",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-neeraj-kumar-electronics",
+   "email": "neha.pal.demo@example.com",
+   "deckOverdue": 0,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-nishant-thakur",
+   "name": "Nishant Thakur",
+   "teamId": "electronics",
+   "title": "Engineer",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-neeraj-kumar-electronics",
+   "email": "nishant.thakur.demo@example.com",
+   "deckOverdue": 1,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-irfan-qayoom",
+   "name": "Irfan Qayoom",
+   "teamId": "electronics",
+   "title": "Engineer",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-neeraj-kumar-electronics",
+   "email": "irfan.qayoom.demo@example.com",
+   "deckOverdue": 0,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-anil-pal",
+   "name": "Anil Pal",
+   "teamId": "electronics",
+   "title": "Engineer (motors)",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-neeraj-kumar-electronics",
+   "email": "anil.pal.demo@example.com",
+   "deckOverdue": 3,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-harshul-sambyal",
+   "name": "Harshul Sambyal",
+   "teamId": "electronics",
+   "title": "Engineer (software)",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-neeraj-kumar-electronics",
+   "email": "harshul.sambyal.demo@example.com",
+   "deckOverdue": 0,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-jashanpreet-singh",
+   "name": "Jashanpreet Singh",
+   "teamId": "electronics",
+   "title": "Engineer (software)",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-neeraj-kumar-electronics",
+   "email": "jashanpreet.singh.demo@example.com",
+   "deckOverdue": 1,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-sandeep-kumar-electronics",
+   "name": "Sandeep Kumar",
+   "teamId": "electronics",
+   "title": "GET",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-neeraj-kumar-electronics",
+   "email": "sandeep.kumar.demo@example.com",
+   "deckOverdue": 1,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-lakhvir-singh",
+   "name": "Lakhvir Singh",
+   "teamId": "electronics",
+   "title": "Senior Engineer (software)",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-neeraj-kumar-electronics",
+   "email": "lakhvir.singh.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-deepak-kumar",
+   "name": "Deepak Kumar",
+   "teamId": "lab",
+   "title": "Team leader",
+   "role": "TEAM_LEADER",
+   "level": "L2",
+   "reportsTo": "p-mahender",
+   "email": "deepak.kumar.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": false
+  },
+  {
+   "id": "p-shammi-lagwal",
+   "name": "Shammi Lagwal",
+   "teamId": "lab",
+   "title": "DM - Maintenance & Infra",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-deepak-kumar",
+   "email": "shammi.lagwal.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-jatinder-singh",
+   "name": "Jatinder Singh",
+   "teamId": "lab",
+   "title": "AM - NABL & Lab Maintenance",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-deepak-kumar",
+   "email": "jatinder.singh.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-prince-mishra",
+   "name": "Prince Mishra",
+   "teamId": "lab",
+   "title": "AM - Stores, scrap mgmt, ERP/SAP",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-deepak-kumar",
+   "email": "prince.mishra.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-pardeep-kumar",
+   "name": "Pardeep Kumar",
+   "teamId": "lab",
+   "title": "AM - NABL / Team Lead CAC & Manual Labs",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-deepak-kumar",
+   "email": "pardeep.kumar.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-rohit-kumar",
+   "name": "Rohit Kumar",
+   "teamId": "lab",
+   "title": "Sr Engg - NABL / Team Lead RAC Labs",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-deepak-kumar",
+   "email": "rohit.kumar.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-narinder-singh",
+   "name": "Narinder Singh",
+   "teamId": "lab",
+   "title": "Engineer - NABL & Lab Maintenance",
+   "role": "ENGINEER",
+   "level": "L1",
+   "reportsTo": "p-deepak-kumar",
+   "email": "narinder.singh.demo@example.com",
+   "deckOverdue": null,
+   "deckNoTasksLogged": true
+  },
+  {
+   "id": "p-sourcing-lead",
+   "name": "Sourcing Lead",
+   "teamId": "sourcing",
+   "title": "Sourcing Lead",
+   "role": "DEPT_LEAD",
+   "level": "L2",
+   "reportsTo": null,
+   "email": "sourcing.lead.demo@example.com",
+   "placeholder": true
+  },
+  {
+   "id": "p-dqa-lead",
+   "name": "DQA Lead",
+   "teamId": "dqa",
+   "title": "DQA Lead",
+   "role": "DEPT_LEAD",
+   "level": "L2",
+   "reportsTo": null,
+   "email": "dqa.lead.demo@example.com",
+   "placeholder": true
+  },
+  {
+   "id": "p-plant-ppc-lead",
+   "name": "Plant PPC Lead",
+   "teamId": "plant-ppc",
+   "title": "Plant PPC Lead",
+   "role": "DEPT_LEAD",
+   "level": "L2",
+   "reportsTo": null,
+   "email": "plant-ppc.lead.demo@example.com",
+   "placeholder": true
+  },
+  {
+   "id": "p-stores-lead",
+   "name": "Stores Lead",
+   "teamId": "stores",
+   "title": "Stores Lead",
+   "role": "DEPT_LEAD",
+   "level": "L2",
+   "reportsTo": null,
+   "email": "stores.lead.demo@example.com",
+   "placeholder": true
+  },
+  {
+   "id": "p-costing-lead",
+   "name": "Costing Lead",
+   "teamId": "costing",
+   "title": "Costing Lead",
+   "role": "DEPT_LEAD",
+   "level": "L2",
+   "reportsTo": null,
+   "email": "costing.lead.demo@example.com",
+   "placeholder": true
+  },
+  {
+   "id": "p-cycle-lead",
+   "name": "Cycle Team Lead",
+   "teamId": "cycle",
+   "title": "Cycle Team Lead",
+   "role": "DEPT_LEAD",
+   "level": "L2",
+   "reportsTo": null,
+   "email": "cycle.lead.demo@example.com",
+   "placeholder": true
+  },
+  {
+   "id": "p-supplier-lead",
+   "name": "Supplier contact",
+   "teamId": "supplier",
+   "title": "Supplier contact",
+   "role": "DEPT_LEAD",
+   "level": "L2",
+   "reportsTo": null,
+   "email": "supplier.lead.demo@example.com",
+   "placeholder": true
+  },
+  {
+   "id": "p-customer-lead",
+   "name": "Customer contact",
+   "teamId": "customer",
+   "title": "Customer contact",
+   "role": "DEPT_LEAD",
+   "level": "L2",
+   "reportsTo": null,
+   "email": "customer.lead.demo@example.com",
+   "placeholder": true
+  },
+  {
+   "id": "p-management-lead",
+   "name": "Management",
+   "teamId": "management",
+   "title": "Management",
+   "role": "DEPT_LEAD",
+   "level": "L2",
+   "reportsTo": null,
+   "email": "management.lead.demo@example.com",
+   "placeholder": true
+  }
+ ],
+ "projects": [
+  {
+   "id": "prj-rac-01",
+   "name": "MHI 2028 BEE line-up (5 models)",
+   "teamId": "rac",
+   "customer": "MHI",
+   "note": "15K3S waits DQA software; 12K5S software change",
+   "stage": "DV",
+   "onHold": false,
+   "nextMilestone": "DV closures",
+   "nextMilestoneDate": "2026-10-30",
+   "rag": "amber",
+   "ownerId": "p-satbir-singh",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-rac-02",
+   "name": "MHI/MEI 12K 5S INV",
+   "teamId": "rac",
+   "customer": "MHI / MEI",
+   "note": "Sweat test fails at silent speed",
+   "stage": "PROTO",
+   "onHold": false,
+   "nextMilestone": "Proto closure",
+   "nextMilestoneDate": "2026-08-05",
+   "rag": "red",
+   "ownerId": "p-satbir-singh",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-rac-03",
+   "name": "Amber CBU 18K 3S 10-pole",
+   "teamId": "rac",
+   "customer": "Amber CBU",
+   "note": null,
+   "stage": "PROTO",
+   "onHold": false,
+   "nextMilestone": "Proto closure",
+   "nextMilestoneDate": "2026-10-16",
+   "rag": "amber",
+   "ownerId": "p-satbir-singh",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-rac-04",
+   "name": "SAC 12K 5S H&C",
+   "teamId": "rac",
+   "customer": "Amber CBU",
+   "note": "Delayed; PSY slot 22 Oct",
+   "stage": "DV",
+   "onHold": false,
+   "nextMilestone": "DV PSY test",
+   "nextMilestoneDate": "2026-10-24",
+   "rag": "amber",
+   "ownerId": "p-satbir-singh",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-rac-05",
+   "name": "Cruise K1/N1 kitchen AC",
+   "teamId": "rac",
+   "customer": "Cruise",
+   "note": "Horizontal vane leaks air; redesign",
+   "stage": "CE",
+   "onHold": false,
+   "nextMilestone": "IDU readiness",
+   "nextMilestoneDate": "2026-10-15",
+   "rag": "amber",
+   "ownerId": "p-satbir-singh",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-rac-06",
+   "name": "Hitachi WAC FS",
+   "teamId": "rac",
+   "customer": "Hitachi",
+   "note": "Grill tool waits plant",
+   "stage": "PP",
+   "onHold": false,
+   "nextMilestone": "E5 software + grill lock",
+   "nextMilestoneDate": "2026-10-18",
+   "rag": "amber",
+   "ownerId": "p-satbir-singh",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-rac-07",
+   "name": "BSL WAC 18K 2S FS",
+   "teamId": "rac",
+   "customer": "Blue Star",
+   "note": "Failed 4x on ISEER; on hold",
+   "stage": "DV",
+   "onHold": false,
+   "nextMilestone": "NABL",
+   "nextMilestoneDate": null,
+   "rag": "red",
+   "ownerId": "p-satbir-singh",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-rac-08",
+   "name": "1200 mm IDU (new)",
+   "teamId": "rac",
+   "customer": "Amber CBU / MHI",
+   "note": "Dual blower airflow ~280 CMH",
+   "stage": "PROTO",
+   "onHold": false,
+   "nextMilestone": "PSY + noise confirmation",
+   "nextMilestoneDate": "2026-10-13",
+   "rag": "amber",
+   "ownerId": "p-satbir-singh",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-rac-09",
+   "name": "A18 Antartica PFC condenser",
+   "teamId": "rac",
+   "customer": "Amber CBU",
+   "note": "A18 tools rusted, unfit (plant)",
+   "stage": "ON_HOLD",
+   "onHold": true,
+   "nextMilestone": "Coil samples",
+   "nextMilestoneDate": "2026-10-16",
+   "rag": "red",
+   "ownerId": "p-satbir-singh",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-cac-01",
+   "name": "22K 3S INV H&C Tower",
+   "teamId": "cac",
+   "customer": "Amber / Dunham Bush",
+   "note": "Megmeet SW: full-load freq. not as requested",
+   "stage": "PROTO",
+   "onHold": false,
+   "nextMilestone": "Proto closure",
+   "nextMilestoneDate": "2026-10-08",
+   "rag": "red",
+   "ownerId": "p-harvinder-singh",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-cac-02",
+   "name": "3.7Tr 1S FS Cassette",
+   "teamId": "cac",
+   "customer": "Cruise / MEI / Akabishi",
+   "note": "Freeze-up & migration test 13 Oct; alt 4Tr TXV",
+   "stage": "DV",
+   "onHold": false,
+   "nextMilestone": "DV closure",
+   "nextMilestoneDate": "2026-09-11",
+   "rag": "red",
+   "ownerId": "p-harvinder-singh",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-cac-03",
+   "name": "3.7Tr 1S FS Tower",
+   "teamId": "cac",
+   "customer": "Cruise",
+   "note": "To be tested after cassette",
+   "stage": "DV",
+   "onHold": false,
+   "nextMilestone": "DV closure",
+   "nextMilestoneDate": "2026-09-24",
+   "rag": "red",
+   "ownerId": "p-harvinder-singh",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-cac-04",
+   "name": "3.5Tr 1S FS Cassette",
+   "teamId": "cac",
+   "customer": "Akabishi",
+   "note": "Stress test fail; new tube test 13 Oct",
+   "stage": "DV",
+   "onHold": false,
+   "nextMilestone": "DV closure",
+   "nextMilestoneDate": "2026-09-30",
+   "rag": "red",
+   "ownerId": "p-harvinder-singh",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-cac-05",
+   "name": "3.5Tr 1S FS Tower",
+   "teamId": "cac",
+   "customer": "Amber / Mitsubishi / BSL",
+   "note": "Stress test fail; new tube test 15 Oct",
+   "stage": "DV",
+   "onHold": false,
+   "nextMilestone": "DV closure",
+   "nextMilestoneDate": "2026-10-17",
+   "rag": "amber",
+   "ownerId": "p-harvinder-singh",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-cac-06",
+   "name": "MEI 36K 2S FS Cassette",
+   "teamId": "cac",
+   "customer": "MEI",
+   "note": "DV closure meeting aligned with DQA",
+   "stage": "DV",
+   "onHold": false,
+   "nextMilestone": "DV closure",
+   "nextMilestoneDate": "2026-10-23",
+   "rag": "green",
+   "ownerId": "p-harvinder-singh",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-cac-07",
+   "name": "Akabishi Tower 4Tr 3S INV",
+   "teamId": "cac",
+   "customer": "Akabishi",
+   "note": "PP done, SW validation 22 Oct",
+   "stage": "PP",
+   "onHold": false,
+   "nextMilestone": "Stress test at RJP",
+   "nextMilestoneDate": "2026-10-17",
+   "rag": "amber",
+   "ownerId": "p-harvinder-singh",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-cac-08",
+   "name": "18K 3S INV H&C 1-Way Cassette",
+   "teamId": "cac",
+   "customer": "Amber",
+   "note": "Next: DV assy (RD review delay -8 days)",
+   "stage": "DV",
+   "onHold": false,
+   "nextMilestone": "DV closure",
+   "nextMilestoneDate": "2026-11-19",
+   "rag": "amber",
+   "ownerId": "p-harvinder-singh",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-cac-09",
+   "name": "24K 3S INV H&C 1-Way Cassette",
+   "teamId": "cac",
+   "customer": "Amber",
+   "note": "Hold by R&D head till confirmation",
+   "stage": "ON_HOLD",
+   "onHold": true,
+   "nextMilestone": "DV closure",
+   "nextMilestoneDate": "2026-09-17",
+   "rag": "amber",
+   "ownerId": "p-harvinder-singh",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-duct-01",
+   "name": "8.5TR Inv Duct",
+   "teamId": "duct",
+   "customer": "Amber CBU",
+   "note": "DV closure slipped from 16 Sep; proto SW not finalised",
+   "stage": "DV",
+   "onHold": false,
+   "nextMilestone": "DV closure",
+   "nextMilestoneDate": "2026-10-26",
+   "rag": "red",
+   "ownerId": "p-iftekhar-ahmad",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-duct-02",
+   "name": "5.5TR Inv Duct",
+   "teamId": "duct",
+   "customer": "Amber CBU",
+   "note": "Slipped from 26 Sep; DV obs closure due 17 Oct",
+   "stage": "DV",
+   "onHold": false,
+   "nextMilestone": "DV closure",
+   "nextMilestoneDate": "2026-10-30",
+   "rag": "amber",
+   "ownerId": "p-iftekhar-ahmad",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-duct-03",
+   "name": "21TR FS Duct",
+   "teamId": "duct",
+   "customer": "Amber CBU",
+   "note": "Slipped from 15 Sep; proto testing, DQA docs pending",
+   "stage": "PROTO",
+   "onHold": false,
+   "nextMilestone": "Proto closure",
+   "nextMilestoneDate": "2026-10-15",
+   "rag": "red",
+   "ownerId": "p-iftekhar-ahmad",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-duct-04",
+   "name": "11TR Inv Duct",
+   "teamId": "duct",
+   "customer": "Amber CBU",
+   "note": "Oct target on hold; controller cycle balancing pending",
+   "stage": "ON_HOLD",
+   "onHold": true,
+   "nextMilestone": "Proto closure",
+   "nextMilestoneDate": "2026-10-25",
+   "rag": "amber",
+   "ownerId": "p-iftekhar-ahmad",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-duct-05",
+   "name": "11TR Twin Ckt CI (APIN)",
+   "teamId": "duct",
+   "customer": "APIN",
+   "note": "Plant DV-making confirmation awaited; DV closure 15 Dec",
+   "stage": "DV",
+   "onHold": false,
+   "nextMilestone": "DV event (tentative)",
+   "nextMilestoneDate": "2026-10-16",
+   "rag": "amber",
+   "ownerId": "p-iftekhar-ahmad",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-duct-06",
+   "name": "8.5TR FS Duct CI (A38)",
+   "teamId": "duct",
+   "customer": "Amber CBU",
+   "note": "Valve plate/NPL 20 Oct; DQA doc revision",
+   "stage": "PROTO",
+   "onHold": false,
+   "nextMilestone": "Proto closure",
+   "nextMilestoneDate": "2026-11-15",
+   "rag": "green",
+   "ownerId": "p-iftekhar-ahmad",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-duct-07",
+   "name": "5.5TR FS Duct CI (A32)",
+   "teamId": "duct",
+   "customer": "Amber CBU",
+   "note": "Design done; machine making due 10 Oct still open",
+   "stage": "PROTO",
+   "onHold": false,
+   "nextMilestone": "Proto closure",
+   "nextMilestoneDate": "2026-11-28",
+   "rag": "amber",
+   "ownerId": "p-iftekhar-ahmad",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-duct-08",
+   "name": "22TR FS Duct",
+   "teamId": "duct",
+   "customer": "Amber CBU",
+   "note": "Proto SW unconfirmed; sight-glass compressor PO pending",
+   "stage": "PROTO",
+   "onHold": false,
+   "nextMilestone": "Chassis T2 samples",
+   "nextMilestoneDate": "2026-10-17",
+   "rag": "amber",
+   "ownerId": "p-iftekhar-ahmad",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-duct-09",
+   "name": "Akabishi 1.5-4TR Inv Duct",
+   "teamId": "duct",
+   "customer": "Akabishi",
+   "note": "PP ready; MRP awaited from Akabishi, remote SW pending",
+   "stage": "PP",
+   "onHold": false,
+   "nextMilestone": "PP event",
+   "nextMilestoneDate": null,
+   "rag": "amber",
+   "ownerId": "p-iftekhar-ahmad",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-apwd-01",
+   "name": "Sharp Air Purifier (FP-FA40M-W)",
+   "teamId": "apwd",
+   "customer": "Sharp",
+   "note": "Re-PP done 8 Sep; Japan sample corrections in progress",
+   "stage": "PP",
+   "onHold": false,
+   "nextMilestone": "Mass production",
+   "nextMilestoneDate": null,
+   "rag": "amber",
+   "ownerId": "p-akhilesh-kumar",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-apwd-02",
+   "name": "Amber CBU Air Purifier",
+   "teamId": "apwd",
+   "customer": "Amber CBU",
+   "note": "PP done 25 Sep (6 units); MP date TBD",
+   "stage": "PP",
+   "onHold": false,
+   "nextMilestone": "Tools reach Jhajjar plant",
+   "nextMilestoneDate": "2026-10-16",
+   "rag": "amber",
+   "ownerId": "p-akhilesh-kumar",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-apwd-03",
+   "name": "Bluestar Water Dispenser",
+   "teamId": "apwd",
+   "customer": "Bluestar",
+   "note": "Outlet water <16 C; mockup under test at Bluestar",
+   "stage": "PROTO",
+   "onHold": false,
+   "nextMilestone": "Hardware parts development",
+   "nextMilestoneDate": "2026-10-30",
+   "rag": "amber",
+   "ownerId": "p-akhilesh-kumar",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-apwd-04",
+   "name": "Air Purifier sample to Bluestar",
+   "teamId": "apwd",
+   "customer": "Bluestar",
+   "note": "Needs China filter sample due 17 Oct",
+   "stage": "TOOLING",
+   "onHold": false,
+   "nextMilestone": "Send sample with updated filter",
+   "nextMilestoneDate": "2026-10-19",
+   "rag": "amber",
+   "ownerId": "p-akhilesh-kumar",
+   "templateId": null
+  },
+  {
+   "id": "prj-apwd-05",
+   "name": "Air purifier Wi-Fi + mobile app",
+   "teamId": "apwd",
+   "customer": "Amber CBU",
+   "note": "Electronics team arranging app and Wi-Fi software",
+   "stage": "CE",
+   "onHold": false,
+   "nextMilestone": "Wi-Fi + app integration",
+   "nextMilestoneDate": "2026-10-20",
+   "rag": "amber",
+   "ownerId": "p-akhilesh-kumar",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-apwd-06",
+   "name": "Water Dispenser Peltier evaluation",
+   "teamId": "apwd",
+   "customer": "Bluestar",
+   "note": "Initial cold-water test done",
+   "stage": "PROTO",
+   "onHold": false,
+   "nextMilestone": "Retest after Peltier fitment",
+   "nextMilestoneDate": null,
+   "rag": "green",
+   "ownerId": "p-akhilesh-kumar",
+   "templateId": "RD-CYCLE-AC-v1"
+  },
+  {
+   "id": "prj-structure-01",
+   "name": "Tower AC (2 Ton + 4 Ton)",
+   "teamId": "structure",
+   "customer": "Amber CBU",
+   "note": "On track; final drawings in progress",
+   "stage": "CE",
+   "onHold": false,
+   "nextMilestone": "Drawing release to tool development",
+   "nextMilestoneDate": "2026-10-15",
+   "rag": "green",
+   "ownerId": "p-t-krishna-rao",
+   "templateId": null
+  },
+  {
+   "id": "prj-structure-02",
+   "name": "MHI I2/I4 Front Grill (Case-B) & Facia (Case-C)",
+   "teamId": "structure",
+   "customer": "MHI",
+   "note": "Tools at Jhajjar plant; 4M trial planned this week",
+   "stage": "TOOLING",
+   "onHold": false,
+   "nextMilestone": "4M trial",
+   "nextMilestoneDate": "2026-10-05",
+   "rag": "amber",
+   "ownerId": "p-t-krishna-rao",
+   "templateId": null
+  },
+  {
+   "id": "prj-structure-03",
+   "name": "1200mm IDU (K4)",
+   "teamId": "structure",
+   "customer": "Amber CBU / MHI",
+   "note": "MHI dwg released; CBU due this week; delayed since Jun",
+   "stage": "CE",
+   "onHold": false,
+   "nextMilestone": "Amber CBU (symmetric) drawing release to tool dev",
+   "nextMilestoneDate": "2026-10-17",
+   "rag": "red",
+   "ownerId": "p-t-krishna-rao",
+   "templateId": null
+  },
+  {
+   "id": "prj-structure-04",
+   "name": "Facia + Side Corners (C3)",
+   "teamId": "structure",
+   "customer": null,
+   "note": "Tool maker delay; T0 feedback shared, T1 dates awaited",
+   "stage": "TOOLING",
+   "onHold": false,
+   "nextMilestone": "T1 trial",
+   "nextMilestoneDate": null,
+   "rag": "red",
+   "ownerId": "p-t-krishna-rao",
+   "templateId": null
+  },
+  {
+   "id": "prj-structure-05",
+   "name": "4-Way Cassette Facia + Side Corner (C1/C2)",
+   "teamId": "structure",
+   "customer": "Akabishi",
+   "note": "Tools at DDN plant; 4M trial pending from plant",
+   "stage": "TOOLING",
+   "onHold": false,
+   "nextMilestone": "4M trial",
+   "nextMilestoneDate": "2026-09-18",
+   "rag": "amber",
+   "ownerId": "p-t-krishna-rao",
+   "templateId": null
+  },
+  {
+   "id": "prj-structure-06",
+   "name": "One Way Cassette Facia + Side Corners",
+   "teamId": "structure",
+   "customer": "Amber CBU",
+   "note": "Sheet says on track; Sep 4M target not closed",
+   "stage": "TOOLING",
+   "onHold": false,
+   "nextMilestone": "4M trial",
+   "nextMilestoneDate": "2026-09-18",
+   "rag": "amber",
+   "ownerId": "p-t-krishna-rao",
+   "templateId": null
+  },
+  {
+   "id": "prj-structure-07",
+   "name": "Remote Holder",
+   "teamId": "structure",
+   "customer": "Common",
+   "note": "Samples received",
+   "stage": "TOOLING",
+   "onHold": false,
+   "nextMilestone": "T0 trial",
+   "nextMilestoneDate": "2026-10-29",
+   "rag": "green",
+   "ownerId": "p-t-krishna-rao",
+   "templateId": null
+  },
+  {
+   "id": "prj-structure-08",
+   "name": "Remote_New",
+   "teamId": "structure",
+   "customer": "Amber CBU",
+   "note": "Scope changed; final drawing released to Electronics",
+   "stage": "ON_HOLD",
+   "onHold": true,
+   "nextMilestone": "Schedule update per LIT team",
+   "nextMilestoneDate": null,
+   "rag": "amber",
+   "ownerId": "p-t-krishna-rao",
+   "templateId": null
+  },
+  {
+   "id": "prj-structure-09",
+   "name": "Blue Star WAC",
+   "teamId": "structure",
+   "customer": "Blue Star",
+   "note": "Hold by customer",
+   "stage": "ON_HOLD",
+   "onHold": true,
+   "nextMilestone": null,
+   "nextMilestoneDate": null,
+   "rag": "amber",
+   "ownerId": "p-t-krishna-rao",
+   "templateId": null
+  },
+  {
+   "id": "prj-electronics-01",
+   "name": "MHI 2028 line-up software",
+   "teamId": "electronics",
+   "customer": "MHI",
+   "note": "Megmeet + DQA dependent",
+   "stage": "DV",
+   "onHold": false,
+   "nextMilestone": "15K3S / 12K5S / 15K5S DV",
+   "nextMilestoneDate": "2026-10-19",
+   "rag": "amber",
+   "ownerId": "p-neeraj-kumar-electronics",
+   "templateId": null
+  },
+  {
+   "id": "prj-electronics-02",
+   "name": "Megmeet software backlog (12 items)",
+   "teamId": "electronics",
+   "customer": "Several",
+   "note": "Hitachi 18K5S open since 29 May",
+   "stage": "TOOLING",
+   "onHold": false,
+   "nextMilestone": "Supplier SLA",
+   "nextMilestoneDate": null,
+   "rag": "red",
+   "ownerId": "p-neeraj-kumar-electronics",
+   "templateId": null
+  },
+  {
+   "id": "prj-electronics-03",
+   "name": "Air purifier electronics (Sharp + CBU)",
+   "teamId": "electronics",
+   "customer": "Sharp / Amber CBU",
+   "note": "Specs refused; SST rust",
+   "stage": "PP",
+   "onHold": false,
+   "nextMilestone": "Megmeet data pack",
+   "nextMilestoneDate": "2026-10-15",
+   "rag": "red",
+   "ownerId": "p-neeraj-kumar-electronics",
+   "templateId": null
+  },
+  {
+   "id": "prj-electronics-04",
+   "name": "Portable AC harmonic + DST-24",
+   "teamId": "electronics",
+   "customer": "Amber CBU / Blue Star",
+   "note": "4 trials failed",
+   "stage": "DV",
+   "onHold": false,
+   "nextMilestone": "Root cause",
+   "nextMilestoneDate": "2026-10-15",
+   "rag": "red",
+   "ownerId": "p-neeraj-kumar-electronics",
+   "templateId": null
+  },
+  {
+   "id": "prj-electronics-05",
+   "name": "CVTE controller cost programme",
+   "teamId": "electronics",
+   "customer": "Amber CBU",
+   "note": "18 variants, most in design",
+   "stage": "CE",
+   "onHold": false,
+   "nextMilestone": "2TR INV cassette lab",
+   "nextMilestoneDate": "2026-10-19",
+   "rag": "amber",
+   "ownerId": "p-neeraj-kumar-electronics",
+   "templateId": null
+  },
+  {
+   "id": "prj-electronics-06",
+   "name": "Duct controllers 11/22TR",
+   "teamId": "electronics",
+   "customer": "Amber CBU / LG",
+   "note": "No reliability infra; 11TR hold",
+   "stage": "PROTO",
+   "onHold": false,
+   "nextMilestone": "Reliability + proto",
+   "nextMilestoneDate": "2026-10-30",
+   "rag": "red",
+   "ownerId": "p-neeraj-kumar-electronics",
+   "templateId": null
+  },
+  {
+   "id": "prj-electronics-07",
+   "name": "CAC display PCBs (Triphase, Megmeet, 7-seg)",
+   "teamId": "electronics",
+   "customer": "Amber CBU",
+   "note": null,
+   "stage": "DV",
+   "onHold": false,
+   "nextMilestone": "Sign-offs",
+   "nextMilestoneDate": "2026-10-25",
+   "rag": "green",
+   "ownerId": "p-neeraj-kumar-electronics",
+   "templateId": null
+  },
+  {
+   "id": "prj-electronics-08",
+   "name": "IDU motors (Nidec, PICL, Welling, Wolong)",
+   "teamId": "electronics",
+   "customer": "Amber CBU",
+   "note": "Nidec 95W temp-rise fail",
+   "stage": "PROTO",
+   "onHold": false,
+   "nextMilestone": "Nidec temp-rise re-test",
+   "nextMilestoneDate": "2026-10-20",
+   "rag": "amber",
+   "ownerId": "p-neeraj-kumar-electronics",
+   "templateId": null
+  },
+  {
+   "id": "prj-electronics-09",
+   "name": "Havells drain pump (duct + tower)",
+   "teamId": "electronics",
+   "customer": "Havells",
+   "note": "Electronics \"not in priority\" vs milestone",
+   "stage": "PROTO",
+   "onHold": false,
+   "nextMilestone": "Duct fitment",
+   "nextMilestoneDate": "2026-10-14",
+   "rag": "red",
+   "ownerId": "p-neeraj-kumar-electronics",
+   "templateId": null
+  },
+  {
+   "id": "prj-lab-01",
+   "name": "Cold Chain Testing Lab installation",
+   "teamId": "lab",
+   "customer": "Internal (R&D labs)",
+   "note": "No status or dates in R&R sheet",
+   "stage": "INFRA",
+   "onHold": false,
+   "nextMilestone": null,
+   "nextMilestoneDate": null,
+   "rag": "amber",
+   "ownerId": "p-deepak-kumar",
+   "templateId": null
+  },
+  {
+   "id": "prj-lab-02",
+   "name": "Fire Safety Lab at new location",
+   "teamId": "lab",
+   "customer": "Internal (R&D labs)",
+   "note": "No status or dates in R&R sheet",
+   "stage": "INFRA",
+   "onHold": false,
+   "nextMilestone": null,
+   "nextMilestoneDate": null,
+   "rag": "amber",
+   "ownerId": "p-deepak-kumar",
+   "templateId": null
+  },
+  {
+   "id": "prj-lab-03",
+   "name": "Fire & Safety external audit closure",
+   "teamId": "lab",
+   "customer": "Internal (R&D labs)",
+   "note": "No status or dates in R&R sheet",
+   "stage": "INFRA",
+   "onHold": false,
+   "nextMilestone": null,
+   "nextMilestoneDate": null,
+   "rag": "amber",
+   "ownerId": "p-deepak-kumar",
+   "templateId": null
+  },
+  {
+   "id": "prj-lab-04",
+   "name": "Electrical Safety external audit",
+   "teamId": "lab",
+   "customer": "Internal (R&D labs)",
+   "note": "No status or dates in R&R sheet",
+   "stage": "INFRA",
+   "onHold": false,
+   "nextMilestone": null,
+   "nextMilestoneDate": null,
+   "rag": "amber",
+   "ownerId": "p-deepak-kumar",
+   "templateId": null
+  },
+  {
+   "id": "prj-lab-05",
+   "name": "Psy Lab 6 issues solution",
+   "teamId": "lab",
+   "customer": "Internal (R&D labs)",
+   "note": "No status or dates in R&R sheet",
+   "stage": "INFRA",
+   "onHold": false,
+   "nextMilestone": null,
+   "nextMilestoneDate": null,
+   "rag": "amber",
+   "ownerId": "p-deepak-kumar",
+   "templateId": null
+  },
+  {
+   "id": "prj-lab-06",
+   "name": "Psy Lab 1 conditioning upgrade (R404a)",
+   "teamId": "lab",
+   "customer": "Internal (R&D labs)",
+   "note": "No status or dates in R&R sheet",
+   "stage": "INFRA",
+   "onHold": false,
+   "nextMilestone": null,
+   "nextMilestoneDate": null,
+   "rag": "amber",
+   "ownerId": "p-deepak-kumar",
+   "templateId": null
+  },
+  {
+   "id": "prj-lab-07",
+   "name": "Psy Lab 2 compressor replacement & re-gas",
+   "teamId": "lab",
+   "customer": "Internal (R&D labs)",
+   "note": "No status or dates in R&R sheet",
+   "stage": "INFRA",
+   "onHold": false,
+   "nextMilestone": null,
+   "nextMilestoneDate": null,
+   "rag": "amber",
+   "ownerId": "p-deepak-kumar",
+   "templateId": null
+  },
+  {
+   "id": "prj-lab-08",
+   "name": "Psy Lab 2 software/hardware upgrade",
+   "teamId": "lab",
+   "customer": "Internal (R&D labs)",
+   "note": "No status or dates in R&R sheet",
+   "stage": "INFRA",
+   "onHold": false,
+   "nextMilestone": null,
+   "nextMilestoneDate": null,
+   "rag": "amber",
+   "ownerId": "p-deepak-kumar",
+   "templateId": null
+  },
+  {
+   "id": "prj-lab-09",
+   "name": "MHI SAC glass-compressor tests (6 models), Lab 5",
+   "teamId": "lab",
+   "customer": "MHI",
+   "note": "Planned 16, 20, 21 Oct in Psy Lab 5",
+   "stage": "INFRA",
+   "onHold": false,
+   "nextMilestone": "Glass Compressor 12K 5S & 18K 3S start",
+   "nextMilestoneDate": "2026-10-16",
+   "rag": "green",
+   "ownerId": "p-deepak-kumar",
+   "templateId": null
+  }
+ ],
+ "tasks": [
+  {
+   "id": "tsk-001",
+   "title": "A32 EPS: tooling schedule from supplier",
+   "teamId": "rac",
+   "projectId": null,
+   "ownerIds": [
+    "p-pawan-kumar"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "DEPT",
+    "id": "sourcing",
+    "note": "Sourcing"
+   },
+   "baselineDate": "2026-10-01",
+   "committedDate": "2026-10-01",
+   "forecastDate": "2026-10-01",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-002",
+   "title": "K-series CFF: new samples joint confirmation",
+   "teamId": "rac",
+   "projectId": null,
+   "ownerIds": [
+    "p-abhishek-sharma"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": {
+    "kind": "NOTE",
+    "note": "Joint confirmation"
+   },
+   "baselineDate": "2026-10-06",
+   "committedDate": "2026-10-06",
+   "forecastDate": "2026-10-06",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-003",
+   "title": "K-series CFF: development schedule go-ahead",
+   "teamId": "rac",
+   "projectId": null,
+   "ownerIds": [
+    "p-abhishek-sharma"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "HEAD"
+   },
+   "baselineDate": "2026-10-07",
+   "committedDate": "2026-10-07",
+   "forecastDate": "2026-10-07",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-004",
+   "title": "MHI Thailand machines dispatch (12K, 15K5S, 15K, 18K, 22K)",
+   "teamId": "rac",
+   "projectId": "prj-rac-01",
+   "ownerIds": [
+    "p-abhishek-sharma"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-08",
+   "committedDate": "2026-10-08",
+   "forecastDate": "2026-10-08",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-005",
+   "title": "Hitachi WAC grill lock modification",
+   "teamId": "rac",
+   "projectId": "prj-rac-06",
+   "ownerIds": [
+    "p-jatin-sharma"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "DEPT",
+    "id": "plant-ppc",
+    "note": "Plant: tool submission"
+   },
+   "baselineDate": "2026-10-08",
+   "committedDate": "2026-10-08",
+   "forecastDate": "2026-10-08",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-006",
+   "title": "MHI 15K5S: DV tests (sweat, bump/jolt, drop re-test)",
+   "teamId": "rac",
+   "projectId": "prj-rac-01",
+   "ownerIds": [
+    "p-abhishek-sharma"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": {
+    "kind": "NOTE",
+    "note": "Drop test failed earlier (fan broken)"
+   },
+   "baselineDate": "2026-10-13",
+   "committedDate": "2026-10-13",
+   "forecastDate": "2026-10-13",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-007",
+   "title": "WAC high-depth condenser coil: drawing release",
+   "teamId": "rac",
+   "projectId": null,
+   "ownerIds": [
+    "p-suraj-mehta",
+    "p-jatin-sharma"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-13",
+   "committedDate": "2026-10-13",
+   "forecastDate": "2026-10-13",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-008",
+   "title": "New 1200 mm IDU: PSY + noise test (dual blower ~280 CMH)",
+   "teamId": "rac",
+   "projectId": "prj-rac-08",
+   "ownerIds": [
+    "p-abhishek-sharma"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-13",
+   "committedDate": "2026-10-13",
+   "forecastDate": "2026-10-13",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-009",
+   "title": "i2 CFF skew samples: drawing to supplier",
+   "teamId": "rac",
+   "projectId": null,
+   "ownerIds": [
+    "p-abhishek-sharma"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-14",
+   "committedDate": "2026-10-14",
+   "forecastDate": "2026-10-14",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-010",
+   "title": "Cruise K1/N1 kitchen AC: horizontal vane redesign (air leak)",
+   "teamId": "rac",
+   "projectId": "prj-rac-05",
+   "ownerIds": [
+    "p-sanjeev-kumar"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-15",
+   "committedDate": "2026-10-15",
+   "forecastDate": "2026-10-15",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-011",
+   "title": "MHI 15K3S: DV closure",
+   "teamId": "rac",
+   "projectId": "prj-rac-01",
+   "ownerIds": [
+    "p-jatin-sharma"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "DEPT",
+    "id": "dqa",
+    "note": "DQA: software validation pending",
+    "requestId": "req-001"
+   },
+   "baselineDate": "2026-10-16",
+   "committedDate": "2026-10-16",
+   "forecastDate": "2026-10-16",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-012",
+   "title": "i4 vertical vane: link jerking fix",
+   "teamId": "rac",
+   "projectId": null,
+   "ownerIds": [
+    "p-pawan-kumar"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "DEPT",
+    "id": "supplier",
+    "note": "Improved link samples"
+   },
+   "baselineDate": "2026-10-16",
+   "committedDate": "2026-10-16",
+   "forecastDate": "2026-10-16",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-013",
+   "title": "Akabishi Tower 4Tr 3S INV - customer MP documentation",
+   "teamId": "cac",
+   "projectId": "prj-cac-07",
+   "ownerIds": [
+    "p-nishu-kumar"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "TEAM",
+    "id": "lab",
+    "note": "Stress test at RJP 17 Oct; software validation 22 Oct"
+   },
+   "baselineDate": "2026-07-29",
+   "committedDate": "2026-07-29",
+   "forecastDate": "2026-07-29",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-014",
+   "title": "Tower IDU capacity: CNC vs tooled-up comparison",
+   "teamId": "cac",
+   "projectId": null,
+   "ownerIds": [
+    "p-nishu-kumar"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "TEAM",
+    "id": "structure",
+    "note": "Tool data from design team"
+   },
+   "baselineDate": "2026-09-10",
+   "committedDate": "2026-09-10",
+   "forecastDate": "2026-09-10",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-015",
+   "title": "Voltas Tower CI - testing + sample (re-sampling needed)",
+   "teamId": "cac",
+   "projectId": null,
+   "ownerIds": [
+    "p-nishu-kumar"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "DEPT",
+    "id": "plant-ppc",
+    "note": "Plant (sample pending)"
+   },
+   "baselineDate": "2026-09-21",
+   "committedDate": "2026-09-21",
+   "forecastDate": "2026-09-21",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-016",
+   "title": "Stress analysis (Ansys) - 3.7Tr 1S",
+   "teamId": "cac",
+   "projectId": "prj-cac-03",
+   "ownerIds": [
+    "p-krishna-rawat",
+    "p-gaurav-negi-cac"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": {
+    "kind": "NOTE",
+    "note": "Starts after 3.5Tr"
+   },
+   "baselineDate": "2026-09-24",
+   "committedDate": "2026-09-24",
+   "forecastDate": "2026-09-24",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-017",
+   "title": "Stress analysis (Ansys) - Mini Cassette 12K 3S INV",
+   "teamId": "cac",
+   "projectId": null,
+   "ownerIds": [
+    "p-gurjant-singh"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": {
+    "kind": "NOTE",
+    "note": "Starts after 3.7Tr analysis"
+   },
+   "baselineDate": "2026-09-30",
+   "committedDate": "2026-09-30",
+   "forecastDate": "2026-09-30",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-018",
+   "title": "Blue Star 3Tr FS Cassette - PP event documentation",
+   "teamId": "cac",
+   "projectId": null,
+   "ownerIds": [
+    "p-nishu-kumar"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-14",
+   "committedDate": "2026-10-14",
+   "forecastDate": "2026-10-14",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-019",
+   "title": "3.5Tr 1S FS Tower - DV closure (new tube design test 15 Oct)",
+   "teamId": "cac",
+   "projectId": "prj-cac-05",
+   "ownerIds": [
+    "p-gaurav-negi-cac"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": {
+    "kind": "NOTE",
+    "note": "New tube design testing 15 Oct"
+   },
+   "baselineDate": "2026-10-17",
+   "committedDate": "2026-10-17",
+   "forecastDate": "2026-10-17",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-020",
+   "title": "3/4TR Inv duct IDU (APIN) OI/II manual update",
+   "teamId": "duct",
+   "projectId": null,
+   "ownerIds": [
+    "p-gurkirpal-singh"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "DEPT",
+    "id": "customer",
+    "note": "Customer (APIN) confirmation"
+   },
+   "baselineDate": "2026-09-18",
+   "committedDate": "2026-09-18",
+   "forecastDate": "2026-09-18",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-021",
+   "title": "APIN 11TR twin-ckt CI: BOM/PG to plant, DV readiness",
+   "teamId": "duct",
+   "projectId": "prj-duct-05",
+   "ownerIds": [
+    "p-gurkirpal-singh"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "DEPT",
+    "id": "plant-ppc",
+    "note": "Plant DV-making confirmation"
+   },
+   "baselineDate": "2026-09-26",
+   "committedDate": "2026-09-26",
+   "forecastDate": "2026-09-26",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-022",
+   "title": "8.5TR Inv duct proto software finalisation",
+   "teamId": "duct",
+   "projectId": "prj-duct-01",
+   "ownerIds": [
+    "p-gurkirpal-singh"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "TEAM",
+    "id": "electronics",
+    "note": "Electronics (SW promised 30 Sep)"
+   },
+   "baselineDate": "2026-09-30",
+   "committedDate": "2026-09-30",
+   "forecastDate": "2026-09-30",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-023",
+   "title": "11TR Inv duct (LG) initial benchmarking - ODU pending",
+   "teamId": "duct",
+   "projectId": null,
+   "ownerIds": [
+    "p-gaurav-kulkarni-duct"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": {
+    "kind": "NOTE",
+    "note": "LG benchmarking"
+   },
+   "baselineDate": "2026-10-01",
+   "committedDate": "2026-10-01",
+   "forecastDate": "2026-10-01",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-024",
+   "title": "5.5TR FS A32 duct: control box, valve plate, machine making",
+   "teamId": "duct",
+   "projectId": "prj-duct-07",
+   "ownerIds": [
+    "p-gaurav-kulkarni-duct"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-10",
+   "committedDate": "2026-10-10",
+   "forecastDate": "2026-10-10",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-025",
+   "title": "3.0TR FS duct 5mm cond coil + Highly compressor arrangement",
+   "teamId": "duct",
+   "projectId": null,
+   "ownerIds": [
+    "p-gurkirpal-singh"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "DEPT",
+    "id": "supplier",
+    "note": "Supplier HE ETD confirmation"
+   },
+   "baselineDate": "2026-10-13",
+   "committedDate": "2026-10-13",
+   "forecastDate": "2026-10-13",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-026",
+   "title": "16.5TR twin-ckt Havells: proto docs & draft specs share",
+   "teamId": "duct",
+   "projectId": null,
+   "ownerIds": [
+    "p-shivani-sharma"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-13",
+   "committedDate": "2026-10-13",
+   "forecastDate": "2026-10-13",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-027",
+   "title": "21TR FS duct NPD docs, CE, proto EVA assy design",
+   "teamId": "duct",
+   "projectId": "prj-duct-03",
+   "ownerIds": [
+    "p-gaurav-kulkarni-duct"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "DEPT",
+    "id": "dqa",
+    "note": "DQA document revision"
+   },
+   "baselineDate": "2026-10-14",
+   "committedDate": "2026-10-14",
+   "forecastDate": "2026-10-14",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-028",
+   "title": "Havells 8.5/11TR FS duct drain pump fitment check",
+   "teamId": "duct",
+   "projectId": null,
+   "ownerIds": [
+    "p-gurkirpal-singh"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "TEAM",
+    "id": "electronics",
+    "note": "Electronics (marked not in priority)"
+   },
+   "baselineDate": "2026-10-14",
+   "committedDate": "2026-10-14",
+   "forecastDate": "2026-10-14",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-029",
+   "title": "8.5TR A38 FS duct NPD documents readiness",
+   "teamId": "duct",
+   "projectId": "prj-duct-06",
+   "ownerIds": [
+    "p-gaurav-kulkarni-duct"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "DEPT",
+    "id": "dqa",
+    "note": "DQA document revision"
+   },
+   "baselineDate": "2026-10-15",
+   "committedDate": "2026-10-15",
+   "forecastDate": "2026-10-15",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-030",
+   "title": "3.0TR FS duct ODU arrangement for CI model",
+   "teamId": "duct",
+   "projectId": null,
+   "ownerIds": [
+    "p-gurkirpal-singh"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-15",
+   "committedDate": "2026-10-15",
+   "forecastDate": "2026-10-15",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-031",
+   "title": "Improved-airflow round filter sample from China",
+   "teamId": "apwd",
+   "projectId": "prj-apwd-02",
+   "ownerIds": [
+    "p-manoj-kainwal"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "DEPT",
+    "id": "supplier",
+    "note": "Supplier (China) - 1 pc sample due 17 Oct"
+   },
+   "baselineDate": "2026-10-07",
+   "committedDate": "2026-10-07",
+   "forecastDate": "2026-10-07",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-032",
+   "title": "Collect RoHS reports for filter, PCB, motor, hardware",
+   "teamId": "apwd",
+   "projectId": "prj-apwd-01",
+   "ownerIds": [
+    "p-manoj-kainwal"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "DEPT",
+    "id": "supplier",
+    "note": "Suppliers (mail sent to each)"
+   },
+   "baselineDate": "2026-10-17",
+   "committedDate": "2026-10-17",
+   "forecastDate": "2026-10-17",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-033",
+   "title": "Al. foil in OWC control box sample validation",
+   "teamId": "structure",
+   "projectId": null,
+   "ownerIds": [
+    "p-mohd-adnan",
+    "p-abhishek-kumar-structure",
+    "p-saurav-jha",
+    "p-amit"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "DEPT",
+    "id": "supplier",
+    "note": "Samples (drawing released, samples awaited)"
+   },
+   "baselineDate": "2026-09-11",
+   "committedDate": "2026-09-11",
+   "forecastDate": "2026-09-11",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-034",
+   "title": "4-Way Cassette Facia + Side Corner 4M trial",
+   "teamId": "structure",
+   "projectId": "prj-structure-05",
+   "ownerIds": [
+    "p-jagjit"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "DEPT",
+    "id": "plant-ppc",
+    "note": "DDN plant (4M trial in plant scope)"
+   },
+   "baselineDate": "2026-09-18",
+   "committedDate": "2026-09-18",
+   "forecastDate": "2026-09-18",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-035",
+   "title": "One Way Cassette Facia + Side Corner 4M trial",
+   "teamId": "structure",
+   "projectId": "prj-structure-06",
+   "ownerIds": [
+    "p-harshdeep-singh",
+    "p-ajay-structure"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-09-18",
+   "committedDate": "2026-09-18",
+   "forecastDate": "2026-09-18",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-036",
+   "title": "MHI I4 Front Grill Assy (Case-B) 4M trial",
+   "teamId": "structure",
+   "projectId": "prj-structure-02",
+   "ownerIds": [
+    "p-mohd-adnan",
+    "p-saurav-jha"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "DEPT",
+    "id": "plant-ppc",
+    "note": "Jhajjar plant (tools reached plant)"
+   },
+   "baselineDate": "2026-10-05",
+   "committedDate": "2026-10-05",
+   "forecastDate": "2026-10-05",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-037",
+   "title": "MHI I4 Facia (Case-C) 4M trial",
+   "teamId": "structure",
+   "projectId": "prj-structure-02",
+   "ownerIds": [
+    "p-mohd-adnan",
+    "p-saurav-jha"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "DEPT",
+    "id": "plant-ppc",
+    "note": "Jhajjar plant"
+   },
+   "baselineDate": "2026-10-05",
+   "committedDate": "2026-10-05",
+   "forecastDate": "2026-10-05",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-038",
+   "title": "Tower AC drawing release to tool development",
+   "teamId": "structure",
+   "projectId": "prj-structure-01",
+   "ownerIds": [
+    "p-mohd-adnan",
+    "p-abhishek-kumar-structure",
+    "p-saurav-jha",
+    "p-amit"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-15",
+   "committedDate": "2026-10-15",
+   "forecastDate": "2026-10-15",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-039",
+   "title": "Front Grill Assy 2 Ton (with existing facia) - shifted from last week",
+   "teamId": "structure",
+   "projectId": "prj-structure-01",
+   "ownerIds": [
+    "p-mohd-adnan",
+    "p-abhishek-kumar-structure"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-17",
+   "committedDate": "2026-10-17",
+   "forecastDate": "2026-10-17",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-040",
+   "title": "Front Grill Assy 4 Ton (with existing facia)",
+   "teamId": "structure",
+   "projectId": "prj-structure-01",
+   "ownerIds": [
+    "p-mohd-adnan",
+    "p-abhishek-kumar-structure"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-17",
+   "committedDate": "2026-10-17",
+   "forecastDate": "2026-10-17",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-041",
+   "title": "Inlet Assembly (2 Ton & 4 Ton)",
+   "teamId": "structure",
+   "projectId": "prj-structure-01",
+   "ownerIds": [
+    "p-saurav-jha",
+    "p-amit"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-17",
+   "committedDate": "2026-10-17",
+   "forecastDate": "2026-10-17",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-042",
+   "title": "Vane-angle change requirement",
+   "teamId": "electronics",
+   "projectId": null,
+   "ownerIds": [
+    "p-dhiraj-gupta"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "DEPT",
+    "id": "cycle",
+    "note": "Cycle team"
+   },
+   "baselineDate": "2026-04-22",
+   "committedDate": "2026-04-22",
+   "forecastDate": "2026-04-22",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-043",
+   "title": "Increased-limit software",
+   "teamId": "electronics",
+   "projectId": null,
+   "ownerIds": [
+    "p-dhiraj-gupta"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "HEAD"
+   },
+   "baselineDate": "2026-05-29",
+   "committedDate": "2026-05-29",
+   "forecastDate": "2026-05-29",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-044",
+   "title": "Display PCB salt-spray test",
+   "teamId": "electronics",
+   "projectId": null,
+   "ownerIds": [
+    "p-dhiraj-gupta"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "TEAM",
+    "id": "lab",
+    "note": "Lab"
+   },
+   "baselineDate": "2026-07-03",
+   "committedDate": "2026-07-03",
+   "forecastDate": "2026-07-03",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-045",
+   "title": "Software release after Megmeet reliability validation",
+   "teamId": "electronics",
+   "projectId": "prj-electronics-02",
+   "ownerIds": [
+    "p-dhiraj-gupta"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-07-16",
+   "committedDate": "2026-07-16",
+   "forecastDate": "2026-07-16",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-046",
+   "title": "Marathon motor performance failure: conclusion",
+   "teamId": "electronics",
+   "projectId": null,
+   "ownerIds": [
+    "p-anil-pal"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-09-22",
+   "committedDate": "2026-09-22",
+   "forecastDate": "2026-09-22",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-047",
+   "title": "Megmeet data pack: CCL, test report, FFR, CTI, OLCD drawing",
+   "teamId": "electronics",
+   "projectId": "prj-electronics-03",
+   "ownerIds": [
+    "p-neha-pal"
+   ],
+   "size": "M",
+   "status": "BLOCKED",
+   "waitingOn": {
+    "kind": "DEPT",
+    "id": "supplier",
+    "note": "Supplier"
+   },
+   "baselineDate": "2026-10-13",
+   "committedDate": "2026-10-13",
+   "forecastDate": "2026-10-13",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-048",
+   "title": "All electrical parts drawing finalisation",
+   "teamId": "electronics",
+   "projectId": "prj-electronics-03",
+   "ownerIds": [
+    "p-neha-pal"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-13",
+   "committedDate": "2026-10-13",
+   "forecastDate": "2026-10-13",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-049",
+   "title": "IDU/ODU software (MHI 15K5S INV: DV closure)",
+   "teamId": "electronics",
+   "projectId": "prj-electronics-01",
+   "ownerIds": [
+    "p-dhiraj-gupta"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-14",
+   "committedDate": "2026-10-14",
+   "forecastDate": "2026-10-14",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-050",
+   "title": "MKM outdoor PCB for BLDC motor",
+   "teamId": "electronics",
+   "projectId": null,
+   "ownerIds": [
+    "p-irfan-qayoom"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-15",
+   "committedDate": "2026-10-15",
+   "forecastDate": "2026-10-15",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-051",
+   "title": "New display PCB software",
+   "teamId": "electronics",
+   "projectId": "prj-electronics-07",
+   "ownerIds": [
+    "p-harshul-sambyal"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-15",
+   "committedDate": "2026-10-15",
+   "forecastDate": "2026-10-15",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-052",
+   "title": "Re-validation (IDU/ODU)",
+   "teamId": "electronics",
+   "projectId": null,
+   "ownerIds": [
+    "p-jashanpreet-singh"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-15",
+   "committedDate": "2026-10-15",
+   "forecastDate": "2026-10-15",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-053",
+   "title": "NABL MEI 18K 1S & 22K 1S fix speed (Psy Lab 4)",
+   "teamId": "lab",
+   "projectId": null,
+   "ownerIds": [
+    "p-rohit-kumar"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-13",
+   "committedDate": "2026-10-13",
+   "forecastDate": "2026-10-13",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-054",
+   "title": "DV One-way Cassette 1.5Tr 3S INV H&C #1 & #2 (Psy Lab 4)",
+   "teamId": "lab",
+   "projectId": null,
+   "ownerIds": [
+    "p-pardeep-kumar"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-14",
+   "committedDate": "2026-10-14",
+   "forecastDate": "2026-10-14",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-055",
+   "title": "Proto MHI SAC 18K 5S INV (Psy Lab 5)",
+   "teamId": "lab",
+   "projectId": null,
+   "ownerIds": [
+    "p-rohit-kumar"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-14",
+   "committedDate": "2026-10-14",
+   "forecastDate": "2026-10-14",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-056",
+   "title": "Benchmarking Voltas Duct 1.5Tr FS (Psy Lab 7)",
+   "teamId": "lab",
+   "projectId": null,
+   "ownerIds": [
+    "p-pardeep-kumar"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-14",
+   "committedDate": "2026-10-14",
+   "forecastDate": "2026-10-14",
+   "source": "deck-13-oct"
+  },
+  {
+   "id": "tsk-057",
+   "title": "DV Amber Duct 5.5Tr INV B (Psy Lab 3)",
+   "teamId": "lab",
+   "projectId": null,
+   "ownerIds": [
+    "p-pardeep-kumar"
+   ],
+   "size": "M",
+   "status": "OPEN",
+   "waitingOn": null,
+   "baselineDate": "2026-10-15",
+   "committedDate": "2026-10-15",
+   "forecastDate": "2026-10-15",
+   "source": "deck-13-oct"
+  }
+ ],
+ "requests": [
+  {
+   "id": "req-001",
+   "fromTeamId": "rac",
+   "toId": "dqa",
+   "toKind": "DEPT",
+   "title": "MHI 15K3S software validation",
+   "blocks": "DV closure 16-19 Oct",
+   "projectId": "prj-rac-01",
+   "raisedById": "p-jatin-sharma",
+   "status": "OPEN",
+   "committedDate": null,
+   "requestedDate": "2026-10-15",
+   "plannedTatDays": 5,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-12",
+   "taskId": "tsk-011",
+   "demoHero": true
+  },
+  {
+   "id": "req-002",
+   "fromTeamId": "rac",
+   "toId": "electronics",
+   "toKind": "TEAM",
+   "title": "MHI 12K5S software change",
+   "blocks": "DV closure 20 Oct",
+   "projectId": "prj-rac-01",
+   "raisedById": "p-satbir-singh",
+   "status": "COMMITTED",
+   "committedDate": "2026-10-20",
+   "requestedDate": "2026-10-20",
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-10",
+   "taskId": null
+  },
+  {
+   "id": "req-003",
+   "fromTeamId": "rac",
+   "toId": "electronics",
+   "toKind": "TEAM",
+   "title": "Hitachi WAC E5 software + final SMPS PCBA",
+   "blocks": "Hitachi WAC release",
+   "projectId": "prj-rac-06",
+   "raisedById": "p-satbir-singh",
+   "status": "COMMITTED",
+   "committedDate": "2026-10-18",
+   "requestedDate": "2026-10-18",
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-08",
+   "taskId": null
+  },
+  {
+   "id": "req-004",
+   "fromTeamId": "rac",
+   "toId": "structure",
+   "toKind": "TEAM",
+   "title": "MEI ODM5 Wi-Fi module on inlet facia",
+   "blocks": "MEI ODM5 facia tool",
+   "projectId": null,
+   "raisedById": "p-satbir-singh",
+   "status": "ACKNOWLEDGED",
+   "committedDate": null,
+   "requestedDate": null,
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-01",
+   "taskId": null
+  },
+  {
+   "id": "req-005",
+   "fromTeamId": "rac",
+   "toId": "sourcing",
+   "toKind": "DEPT",
+   "title": "A32 EPS tooling schedule",
+   "blocks": "A32 packaging",
+   "projectId": null,
+   "raisedById": "p-satbir-singh",
+   "status": "COMMITTED",
+   "committedDate": "2026-10-01",
+   "requestedDate": "2026-10-01",
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-09-21",
+   "taskId": null
+  },
+  {
+   "id": "req-006",
+   "fromTeamId": "cac",
+   "toId": "electronics",
+   "toKind": "TEAM",
+   "title": "22K H&C Tower proto software: full-load frequency correction (Megmeet)",
+   "blocks": "22K Tower proto closure (overdue since 8 Oct)",
+   "projectId": "prj-cac-01",
+   "raisedById": "p-harvinder-singh",
+   "status": "COMMITTED",
+   "committedDate": "2026-10-08",
+   "requestedDate": "2026-10-08",
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-09-28",
+   "taskId": null
+  },
+  {
+   "id": "req-007",
+   "fromTeamId": "cac",
+   "toId": "electronics",
+   "toKind": "TEAM",
+   "title": "Havells Tower drain pump - electronics testing/software",
+   "blocks": "Havells drain pump requirement (target 5 Oct)",
+   "projectId": null,
+   "raisedById": "p-harvinder-singh",
+   "status": "COMMITTED",
+   "committedDate": "2026-10-05",
+   "requestedDate": "2026-10-05",
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-09-25",
+   "taskId": null
+  },
+  {
+   "id": "req-008",
+   "fromTeamId": "cac",
+   "toId": "electronics",
+   "toKind": "TEAM",
+   "title": "Akabishi Tower 4Tr 3S INV software validation",
+   "blocks": "Akabishi Tower MP documentation",
+   "projectId": "prj-cac-07",
+   "raisedById": "p-harvinder-singh",
+   "status": "COMMITTED",
+   "committedDate": "2026-10-22",
+   "requestedDate": "2026-10-22",
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-12",
+   "taskId": null
+  },
+  {
+   "id": "req-009",
+   "fromTeamId": "cac",
+   "toId": "lab",
+   "toKind": "TEAM",
+   "title": "Akabishi Tower 4Tr 3S INV stress test at RJP",
+   "blocks": "Akabishi Tower MP documentation",
+   "projectId": "prj-cac-07",
+   "raisedById": "p-harvinder-singh",
+   "status": "COMMITTED",
+   "committedDate": "2026-10-17",
+   "requestedDate": "2026-10-17",
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-07",
+   "taskId": null
+  },
+  {
+   "id": "req-010",
+   "fromTeamId": "cac",
+   "toId": "plant-ppc",
+   "toKind": "DEPT",
+   "title": "Voltas Tower CI test sample (re-sampling required)",
+   "blocks": "Voltas Tower CI implementation",
+   "projectId": null,
+   "raisedById": "p-harvinder-singh",
+   "status": "COMMITTED",
+   "committedDate": "2026-09-21",
+   "requestedDate": "2026-09-21",
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-09-11",
+   "taskId": null
+  },
+  {
+   "id": "req-011",
+   "fromTeamId": "duct",
+   "toId": "electronics",
+   "toKind": "TEAM",
+   "title": "11TR Inv duct controller - cycle balancing pending",
+   "blocks": "11TR Inv proto closure (on hold)",
+   "projectId": "prj-duct-04",
+   "raisedById": "p-iftekhar-ahmad",
+   "status": "COMMITTED",
+   "committedDate": "2026-10-25",
+   "requestedDate": "2026-10-25",
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-15",
+   "taskId": null
+  },
+  {
+   "id": "req-012",
+   "fromTeamId": "duct",
+   "toId": "electronics",
+   "toKind": "TEAM",
+   "title": "22TR FS duct proto software finalisation (promised 30 Sep, not confirmed)",
+   "blocks": "22TR FS duct proto",
+   "projectId": "prj-duct-08",
+   "raisedById": "p-iftekhar-ahmad",
+   "status": "COMMITTED",
+   "committedDate": "2026-09-30",
+   "requestedDate": "2026-09-30",
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-09-20",
+   "taskId": null
+  },
+  {
+   "id": "req-013",
+   "fromTeamId": "duct",
+   "toId": "electronics",
+   "toKind": "TEAM",
+   "title": "8.5TR Inv duct proto software finalisation (MOM: by 30 Sep)",
+   "blocks": "8.5TR Inv DV closure (26 Oct)",
+   "projectId": "prj-duct-01",
+   "raisedById": "p-iftekhar-ahmad",
+   "status": "COMMITTED",
+   "committedDate": "2026-09-30",
+   "requestedDate": "2026-09-30",
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-09-20",
+   "taskId": null
+  },
+  {
+   "id": "req-014",
+   "fromTeamId": "duct",
+   "toId": "electronics",
+   "toKind": "TEAM",
+   "title": "Havells duct drain pump - electronics marked not in priority",
+   "blocks": "Havells 8.5/11TR drain pump fitment check",
+   "projectId": null,
+   "raisedById": "p-iftekhar-ahmad",
+   "status": "COMMITTED",
+   "committedDate": "2026-10-14",
+   "requestedDate": "2026-10-14",
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-04",
+   "taskId": null
+  },
+  {
+   "id": "req-015",
+   "fromTeamId": "duct",
+   "toId": "cycle",
+   "toKind": "DEPT",
+   "title": "Akabishi duct wireless remote SW - electronics waiting for machine from cycle team",
+   "blocks": "Akabishi Inv duct PP",
+   "projectId": "prj-duct-09",
+   "raisedById": "p-iftekhar-ahmad",
+   "status": "COMMITTED",
+   "committedDate": "2026-09-30",
+   "requestedDate": "2026-09-30",
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-09-20",
+   "taskId": null
+  },
+  {
+   "id": "req-016",
+   "fromTeamId": "apwd",
+   "toId": "supplier",
+   "toKind": "DEPT",
+   "title": "Sharp AP electronics part specs",
+   "blocks": "Sharp air purifier mass production",
+   "projectId": "prj-apwd-01",
+   "raisedById": "p-akhilesh-kumar",
+   "status": "ACKNOWLEDGED",
+   "committedDate": null,
+   "requestedDate": null,
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-01",
+   "taskId": null
+  },
+  {
+   "id": "req-017",
+   "fromTeamId": "apwd",
+   "toId": "electronics",
+   "toKind": "TEAM",
+   "title": "Megmeet data pack for Amber CBU AP (CCL, test report, FFR, CTI, OLCD drawing)",
+   "blocks": "Amber CBU air purifier mass production",
+   "projectId": "prj-apwd-02",
+   "raisedById": "p-akhilesh-kumar",
+   "status": "ACKNOWLEDGED",
+   "committedDate": null,
+   "requestedDate": null,
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-01",
+   "taskId": null
+  },
+  {
+   "id": "req-018",
+   "fromTeamId": "apwd",
+   "toId": "electronics",
+   "toKind": "TEAM",
+   "title": "Air purifier motor salt-spray test failed again (rust near circlip pin)",
+   "blocks": "Amber CBU air purifier mass production",
+   "projectId": "prj-apwd-02",
+   "raisedById": "p-akhilesh-kumar",
+   "status": "ACKNOWLEDGED",
+   "committedDate": null,
+   "requestedDate": null,
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-01",
+   "taskId": null
+  },
+  {
+   "id": "req-019",
+   "fromTeamId": "apwd",
+   "toId": "electronics",
+   "toKind": "TEAM",
+   "title": "Wi-Fi + mobile app integration (app store payment pending with Sourcing)",
+   "blocks": "Wi-Fi + app integration 20 Oct",
+   "projectId": "prj-apwd-05",
+   "raisedById": "p-akhilesh-kumar",
+   "status": "COMMITTED",
+   "committedDate": "2026-10-20",
+   "requestedDate": "2026-10-20",
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-10",
+   "taskId": null
+  },
+  {
+   "id": "req-020",
+   "fromTeamId": "apwd",
+   "toId": "electronics",
+   "toKind": "TEAM",
+   "title": "Water dispenser PCB surge/EFT/spike tests running",
+   "blocks": "Water dispenser hardware parts development",
+   "projectId": "prj-apwd-03",
+   "raisedById": "p-akhilesh-kumar",
+   "status": "ACKNOWLEDGED",
+   "committedDate": null,
+   "requestedDate": null,
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-01",
+   "taskId": null
+  },
+  {
+   "id": "req-021",
+   "fromTeamId": "structure",
+   "toId": "plant-ppc",
+   "toKind": "DEPT",
+   "title": "MHI I4 Front Grill & Facia 4M trial (tools at Jhajjar)",
+   "blocks": "Oct target 4M trial (05 Oct), now overdue",
+   "projectId": "prj-structure-02",
+   "raisedById": "p-t-krishna-rao",
+   "status": "COMMITTED",
+   "committedDate": "2026-10-05",
+   "requestedDate": "2026-10-05",
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-09-25",
+   "taskId": null
+  },
+  {
+   "id": "req-022",
+   "fromTeamId": "structure",
+   "toId": "plant-ppc",
+   "toKind": "DEPT",
+   "title": "4-Way Cassette (Akabishi) 4M trial (tools at DDN)",
+   "blocks": "Sep target 4M trial, still pending",
+   "projectId": "prj-structure-05",
+   "raisedById": "p-t-krishna-rao",
+   "status": "COMMITTED",
+   "committedDate": "2026-09-18",
+   "requestedDate": "2026-09-18",
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-09-08",
+   "taskId": null
+  },
+  {
+   "id": "req-023",
+   "fromTeamId": "structure",
+   "toId": "supplier",
+   "toKind": "DEPT",
+   "title": "C3 Facia + Side Corners T1 trial dates",
+   "blocks": "T1 trial; project marked Delay",
+   "projectId": "prj-structure-04",
+   "raisedById": "p-t-krishna-rao",
+   "status": "ACKNOWLEDGED",
+   "committedDate": null,
+   "requestedDate": null,
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-01",
+   "taskId": null
+  },
+  {
+   "id": "req-024",
+   "fromTeamId": "structure",
+   "toId": "electronics",
+   "toKind": "TEAM",
+   "title": "Remote_New final drawing with Electronics; schedule per LIT team",
+   "blocks": "Remote_New DFM closure (Sep target, scope changed)",
+   "projectId": "prj-structure-08",
+   "raisedById": "p-t-krishna-rao",
+   "status": "ACKNOWLEDGED",
+   "committedDate": null,
+   "requestedDate": null,
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-01",
+   "taskId": null
+  },
+  {
+   "id": "req-025",
+   "fromTeamId": "structure",
+   "toId": "customer",
+   "toKind": "DEPT",
+   "title": "Blue Star WAC on hold by customer",
+   "blocks": "Blue Star WAC project restart",
+   "projectId": "prj-structure-09",
+   "raisedById": "p-t-krishna-rao",
+   "status": "ACKNOWLEDGED",
+   "committedDate": null,
+   "requestedDate": null,
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-01",
+   "taskId": null
+  },
+  {
+   "id": "req-026",
+   "fromTeamId": "electronics",
+   "toId": "supplier",
+   "toKind": "DEPT",
+   "title": "Megmeet software and data (12 items)",
+   "blocks": "MHI DV closures, air purifier MP, tower proto",
+   "projectId": "prj-electronics-02",
+   "raisedById": "p-neeraj-kumar-electronics",
+   "status": "ACKNOWLEDGED",
+   "committedDate": null,
+   "requestedDate": null,
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-01",
+   "taskId": null
+  },
+  {
+   "id": "req-027",
+   "fromTeamId": "electronics",
+   "toId": "cycle",
+   "toKind": "DEPT",
+   "title": "Machines / cycle balancing (Akabishi duct remote, 11TR duct, mini cassette)",
+   "blocks": "Software validation",
+   "projectId": null,
+   "raisedById": "p-neeraj-kumar-electronics",
+   "status": "COMMITTED",
+   "committedDate": "2026-09-30",
+   "requestedDate": "2026-09-30",
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-09-20",
+   "taskId": null
+  },
+  {
+   "id": "req-028",
+   "fromTeamId": "electronics",
+   "toId": "lab",
+   "toKind": "TEAM",
+   "title": "MHI display salt-spray test",
+   "blocks": "MHI display approval",
+   "projectId": null,
+   "raisedById": "p-neeraj-kumar-electronics",
+   "status": "COMMITTED",
+   "committedDate": "2026-07-03",
+   "requestedDate": "2026-07-03",
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-06-23",
+   "taskId": null
+  },
+  {
+   "id": "req-029",
+   "fromTeamId": "electronics",
+   "toId": "dqa",
+   "toKind": "DEPT",
+   "title": "MHI 15K3S software validation",
+   "blocks": "DV closure 19 Oct",
+   "projectId": "prj-electronics-01",
+   "raisedById": "p-neeraj-kumar-electronics",
+   "status": "COMMITTED",
+   "committedDate": "2026-10-19",
+   "requestedDate": "2026-10-19",
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-09",
+   "taskId": null
+  },
+  {
+   "id": "req-030",
+   "fromTeamId": "electronics",
+   "toId": "sourcing",
+   "toKind": "DEPT",
+   "title": "App store payments (Apple, Google)",
+   "blocks": "Amber CBU app launch",
+   "projectId": null,
+   "raisedById": "p-neeraj-kumar-electronics",
+   "status": "COMMITTED",
+   "committedDate": "2026-10-15",
+   "requestedDate": "2026-10-15",
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-05",
+   "taskId": null
+  },
+  {
+   "id": "req-031",
+   "fromTeamId": "lab",
+   "toId": "cycle",
+   "toKind": "DEPT",
+   "title": "Lab test schedules depend on model teams machine/DV unit readiness",
+   "blocks": "Psy Lab 4/5 October test plan",
+   "projectId": null,
+   "raisedById": "p-deepak-kumar",
+   "status": "ACKNOWLEDGED",
+   "committedDate": null,
+   "requestedDate": null,
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-01",
+   "taskId": null
+  },
+  {
+   "id": "req-032",
+   "fromTeamId": "lab",
+   "toId": "sourcing",
+   "toKind": "DEPT",
+   "title": "Infra project quotations, negotiation and PO process",
+   "blocks": "Infra projects incl. Psy Lab 6 issues solution",
+   "projectId": "prj-lab-05",
+   "raisedById": "p-deepak-kumar",
+   "status": "ACKNOWLEDGED",
+   "committedDate": null,
+   "requestedDate": null,
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-01",
+   "taskId": null
+  },
+  {
+   "id": "req-033",
+   "fromTeamId": "lab",
+   "toId": "dqa",
+   "toKind": "DEPT",
+   "title": "Re-vacuum/re-gas in lab only after DQA approval (Sept loss events)",
+   "blocks": "Lab loss hours (Labs 4, 5)",
+   "projectId": null,
+   "raisedById": "p-deepak-kumar",
+   "status": "ACKNOWLEDGED",
+   "committedDate": null,
+   "requestedDate": null,
+   "plannedTatDays": null,
+   "history": [],
+   "comments": [],
+   "raisedAt": "2026-10-01",
+   "taskId": null
+  }
+ ],
+ "decisions": [
+  {
+   "id": "dec-001",
+   "teamId": "rac",
+   "title": "K-series CFF development",
+   "ask": "Go-ahead pending from R&D side since 7 Oct",
+   "raisedById": "p-abhishek-sharma",
+   "kind": "DECISION",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  },
+  {
+   "id": "dec-002",
+   "teamId": "rac",
+   "title": "BSL WAC 18K 2S NABL failed 4x on ISEER",
+   "ask": "Decide redesign vs model change",
+   "raisedById": "p-jatin-sharma",
+   "kind": "DECISION",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  },
+  {
+   "id": "dec-003",
+   "teamId": "rac",
+   "title": "A18 Antartica tools rusted and unfit",
+   "ask": "Refurbish or new tools",
+   "raisedById": "p-jatin-sharma",
+   "kind": "DECISION",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  },
+  {
+   "id": "dec-004",
+   "teamId": "cac",
+   "title": "48K FS base plate tooled-up - tool go-ahead",
+   "ask": "Decision on tool go-ahead after structure design review",
+   "raisedById": "p-krishna-rawat",
+   "kind": "DECISION",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  },
+  {
+   "id": "dec-005",
+   "teamId": "cac",
+   "title": "24K 3S INV H&C 1-Way Cassette on hold",
+   "ask": "Confirm release or continued hold (DV closure was due 17 Sep)",
+   "raisedById": "p-nishu-kumar",
+   "kind": "DECISION",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  },
+  {
+   "id": "dec-006",
+   "teamId": "duct",
+   "title": "11TR Inv duct - October target on hold",
+   "ask": "Decide revised timeline and push Electronics on controller cycle balancing (proto closure 25 Oct)",
+   "raisedById": "p-shivani-sharma",
+   "kind": "DECISION",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  },
+  {
+   "id": "dec-007",
+   "teamId": "duct",
+   "title": "Havells duct drain pump",
+   "ask": "Set Electronics priority - marked not in priority while fitment check is 14 Oct",
+   "raisedById": "p-gurkirpal-singh",
+   "kind": "SUPPORT",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  },
+  {
+   "id": "dec-008",
+   "teamId": "duct",
+   "title": "APIN 11TR twin-ckt CI DV",
+   "ask": "Support to get Plant DV-making confirmation before tentative 16 Oct DV",
+   "raisedById": "p-gurkirpal-singh",
+   "kind": "SUPPORT",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  },
+  {
+   "id": "dec-009",
+   "teamId": "duct",
+   "title": "Large-duct PCB reliability testing",
+   "ask": "Decide on reliability testing infrastructure (not available)",
+   "raisedById": "p-iftekhar-ahmad",
+   "kind": "DECISION",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  },
+  {
+   "id": "dec-010",
+   "teamId": "apwd",
+   "title": "Megmeet refused to share Sharp AP part specs",
+   "ask": "Escalate with Megmeet for part specs",
+   "raisedById": "p-manoj-kainwal",
+   "kind": "ESCALATION",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  },
+  {
+   "id": "dec-011",
+   "teamId": "apwd",
+   "title": "Wi-Fi app store payment pending with Sourcing",
+   "ask": "Push Sourcing to release payment before 20 Oct",
+   "raisedById": "p-manoj-kainwal",
+   "kind": "SUPPORT",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  },
+  {
+   "id": "dec-012",
+   "teamId": "apwd",
+   "title": "Sharp and Amber CBU mass production dates TBD",
+   "ask": "Decide MP dates with customer/plant",
+   "raisedById": "p-akhilesh-kumar",
+   "kind": "DECISION",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  },
+  {
+   "id": "dec-013",
+   "teamId": "structure",
+   "title": "MHI I4 Front Grill & Facia 4M trial overdue since 05 Oct",
+   "ask": "Support with Jhajjar plant to run 4M trial this week",
+   "raisedById": "p-mohd-adnan",
+   "kind": "SUPPORT",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  },
+  {
+   "id": "dec-014",
+   "teamId": "structure",
+   "title": "Cassette facia 4M trials (4-Way Akabishi, One Way) pending since 18 Sep",
+   "ask": "Escalate with DDN plant for 4M trial dates",
+   "raisedById": "p-harshdeep-singh",
+   "kind": "ESCALATION",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  },
+  {
+   "id": "dec-015",
+   "teamId": "structure",
+   "title": "C3 Facia + Side Corners: tool maker has not given T1 trial dates",
+   "ask": "Escalate with tool maker",
+   "raisedById": "p-mohd-adnan",
+   "kind": "ESCALATION",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  },
+  {
+   "id": "dec-016",
+   "teamId": "structure",
+   "title": "1200mm IDU drawing release delayed (Jun and Sep targets missed)",
+   "ask": "Review recovery: Amber CBU symmetric release this week",
+   "raisedById": "p-harshdeep-singh",
+   "kind": "DECISION",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  },
+  {
+   "id": "dec-017",
+   "teamId": "electronics",
+   "title": "Megmeet: 12 stuck items",
+   "ask": "Management escalation + 7-day SLA",
+   "raisedById": "p-dhiraj-gupta",
+   "kind": "ESCALATION",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  },
+  {
+   "id": "dec-018",
+   "teamId": "electronics",
+   "title": "Large-duct reliability testing",
+   "ask": "External lab or in-house",
+   "raisedById": "p-akash-deep",
+   "kind": "DECISION",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  },
+  {
+   "id": "dec-019",
+   "teamId": "electronics",
+   "title": "Portable AC harmonic failure",
+   "ask": "Assign owner + supplier expert",
+   "raisedById": "p-neeraj-kumar-electronics",
+   "kind": "DECISION",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  },
+  {
+   "id": "dec-020",
+   "teamId": "lab",
+   "title": "Psy Lab 6 issues solution - quotation & timelines",
+   "ask": "Approval if A-grade/big capex (R&R: major capex needs approval)",
+   "raisedById": "p-deepak-kumar",
+   "kind": "DECISION",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  },
+  {
+   "id": "dec-021",
+   "teamId": "lab",
+   "title": "Reserved Saturday lab slots 17, 24, 31 Oct",
+   "ask": "Approve PIC test plans for reserved days",
+   "raisedById": "p-deepak-kumar",
+   "kind": "DECISION",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  },
+  {
+   "id": "dec-022",
+   "teamId": "lab",
+   "title": "Automation of lab scheduling, utilisation and loss tracking",
+   "ask": "Support: R&R lists these as automation ideas",
+   "raisedById": "p-deepak-kumar",
+   "kind": "SUPPORT",
+   "status": "PENDING",
+   "raisedOn": "2026-10-10"
+  }
+ ],
+ "labs": [
+  {
+   "id": "psy-3",
+   "name": "Psy Lab 3",
+   "sepBookedPct": 100,
+   "sepLossHours": 3.5,
+   "octPlannedTests": 7
+  },
+  {
+   "id": "psy-45",
+   "name": "Psy Lab 4/5",
+   "sepBookedPct": 100,
+   "sepLossHours": 11.5,
+   "octPlannedTests": 25
+  },
+  {
+   "id": "psy-6",
+   "name": "Psy Lab 6",
+   "sepBookedPct": 100,
+   "sepLossHours": 2,
+   "octPlannedTests": 0,
+   "note": "not in plan"
+  },
+  {
+   "id": "psy-7",
+   "name": "Psy Lab 7",
+   "sepBookedPct": 100,
+   "sepLossHours": 0,
+   "octPlannedTests": 10
+  }
+ ],
+ "deckKpis": {
+  "rac": {
+   "openItems": 32,
+   "overdue": 9,
+   "dueThisWeek": 12,
+   "waitingOnOthers": 16,
+   "needsHead": 3,
+   "projectsAtRed": 3
+  },
+  "cac": {
+   "openItems": 30,
+   "overdue": 7,
+   "dueThisWeek": 2,
+   "waitingOnOthers": 18,
+   "needsHead": 2,
+   "projectsAtRed": 4
+  },
+  "duct": {
+   "openItems": 30,
+   "overdue": 7,
+   "dueThisWeek": 14,
+   "waitingOnOthers": 17,
+   "needsHead": 4,
+   "projectsAtRed": 2
+  },
+  "apwd": {
+   "openItems": 11,
+   "overdue": 1,
+   "dueThisWeek": 1,
+   "waitingOnOthers": 7,
+   "needsHead": 4,
+   "projectsAtRed": 0
+  },
+  "structure": {
+   "openItems": 19,
+   "overdue": 5,
+   "dueThisWeek": 10,
+   "waitingOnOthers": 7,
+   "needsHead": 5,
+   "projectsAtRed": 2
+  },
+  "electronics": {
+   "openItems": 55,
+   "overdue": 13,
+   "dueThisWeek": 12,
+   "waitingOnOthers": 25,
+   "needsHead": 4,
+   "projectsAtRed": 5
+  },
+  "lab": {
+   "openItems": 29,
+   "overdue": 0,
+   "dueThisWeek": 8,
+   "waitingOnOthers": 1,
+   "needsHead": 3,
+   "projectsAtRed": 0
+  }
+ },
+ "reasonCodes": [
+  {
+   "code": "SUPPLIER",
+   "label": "Supplier / material delay"
+  },
+  {
+   "code": "TEST_FAIL",
+   "label": "Test failure"
+  },
+  {
+   "code": "DESIGN_CHANGE",
+   "label": "Design change"
+  },
+  {
+   "code": "WAITING_DEPT",
+   "label": "Waiting on another department"
+  },
+  {
+   "code": "CUSTOMER",
+   "label": "Customer approval / change"
+  },
+  {
+   "code": "CAPACITY",
+   "label": "Capacity / resource"
+  },
+  {
+   "code": "SCOPE",
+   "label": "Scope change"
+  },
+  {
+   "code": "LAB_SLOT",
+   "label": "Lab slot not available"
+  }
+ ],
+ "escalationRules": [
+  {
+   "id": "R1",
+   "label": "Forecast slips more than 7 days past committed date",
+   "param": 7
+  },
+  {
+   "id": "R2",
+   "label": "Forecast later than mother project milestone"
+  },
+  {
+   "id": "R3",
+   "label": "Item marked Waiting on R&D head"
+  },
+  {
+   "id": "R4",
+   "label": "Item not updated for 14 days",
+   "param": 14
+  },
+  {
+   "id": "R5",
+   "label": "Person above 120% load for two weeks",
+   "param": 120
+  },
+  {
+   "id": "R6",
+   "label": "Request not acknowledged within 2 working days",
+   "param": 2
+  }
+ ]
+}
