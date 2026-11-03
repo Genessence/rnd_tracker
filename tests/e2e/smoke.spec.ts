@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const ROUTES = ['/styleguide'];
+const ROUTES = ['/styleguide', '/debug'];
 
 for (const route of ROUTES) {
   test(`renders #${route} without console errors`, async ({ page }) => {
