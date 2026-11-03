@@ -166,7 +166,7 @@ function ExceptionsInbox() {
             {cleared.map((l) => (
               <li key={l.id} className="flex items-center gap-2 text-table">
                 <Check size={12} className="text-ok" aria-hidden />
-                <span className="font-mono text-ink-2">{l.at}</span>
+                <span className="font-mono text-ink-2">{fmtShort(l.at)}</span>
                 <span className="font-medium">{l.action.replace('EXCEPTION_', '').replace('_', ' ').toLowerCase()}</span>
                 <span className="truncate text-ink-2">{titleOf(l.entityId.split(':')[1])}{l.note ? ` · “${l.note}”` : ''}</span>
                 <span className="ml-auto shrink-0 text-ink-2">{person(l.byId)}</span>

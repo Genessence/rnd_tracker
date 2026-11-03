@@ -4,6 +4,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { buildInitialState, template, type SeedState } from '../domain/seed';
 import { cascadePlan, headId, leaderOf, propagateRequestDate } from '../domain/rules';
 import { instantiatePlan } from '../domain/scheduler';
+import { fmtShort } from '../lib/dates';
 import type {
   ActionLogEntry,
   DateChange,
@@ -187,8 +188,8 @@ export const useStore = create<Store>()(
           for (const o of others) get().notify(o, 'ASSIGNMENT', `New task: ${task.title}`, id, '/my-day');
           if (others.length) get().sendEmail({
             kind: 'ASSIGNMENT', toIds: others, ccIds: [s.currentPersonId], relatedId: id,
-            subject: `New task: ${task.title} (due ${date})`,
-            html: `<p>You have a new task.</p><p><b>${task.title}</b><br/>Forecast: ${date}</p>`,
+            subject: `New task: ${task.title} (due ${fmtShort(date)})`,
+            html: `<p>You have a new task.</p><p><b>${task.title}</b><br/>Forecast: ${fmtShort(date)}</p>`,
           });
           log('TASK_CREATE', id);
           if (input.waitingOn) get().setWaitingOn(id, input.waitingOn);
@@ -215,7 +216,7 @@ export const useStore = create<Store>()(
             const c = change({ entity, entityId: id, field: 'forecast', from: t.forecastDate, to: newDate, reasonCode, note, attributedTo });
             patchTask(id, (x) => ({ ...x, forecastDate: newDate, lastUpdatedAt: s.demoToday }));
             set((st) => ({ dateChanges: [...st.dateChanges, c] }));
-            log('FORECAST_MOVE', id, `${t.forecastDate} -> ${newDate} (${reasonCode})`);
+            log('FORECAST_MOVE', id, `${fmtShort(t.forecastDate)} → ${fmtShort(newDate)} (${reasonCode})`);
             return true;
           }
           const [projectId, activityId] = id.split(':');
@@ -232,7 +233,7 @@ export const useStore = create<Store>()(
             projects: st.projects.map((x) => (x.id === projectId ? { ...x, plan: cascaded } : x)),
             dateChanges: [...st.dateChanges, ...changes],
           }));
-          log('FORECAST_MOVE', id, `${a.forecastEnd} -> ${newDate} (${reasonCode})`);
+          log('FORECAST_MOVE', id, `${fmtShort(a.forecastEnd)} → ${fmtShort(newDate)} (${reasonCode})`);
           return true;
         },
 
@@ -310,13 +311,13 @@ export const useStore = create<Store>()(
           }
           patchRequest(id, (x) => ({
             ...x, status: 'COMMITTED', committedDate: date,
-            history: [...x.history, { at: today(), byId: me(), type: 'COMMITTED', detail: recommit ? `${r.committedDate} -> ${date} (${reasonCode})` : date }],
+            history: [...x.history, { at: today(), byId: me(), type: 'COMMITTED', detail: recommit ? `${fmtShort(r.committedDate!)} → ${fmtShort(date)} (${reasonCode})` : fmtShort(date) }],
           }));
-          get().notify(r.raisedById, 'COMMITMENT', `${r.title}: committed ${date}`, id, `/requests?id=${id}`);
+          get().notify(r.raisedById, 'COMMITMENT', `${r.title}: committed ${fmtShort(date)}`, id, `/requests?id=${id}`);
           get().sendEmail({
             kind: 'COMMITMENT', toIds: [r.raisedById], ccIds: [me()], relatedId: id,
-            subject: `${recommit ? 'Re-committed' : 'Committed'}: ${r.title} by ${date}`,
-            html: `<p><b>${r.title}</b> is committed for <b>${date}</b>.</p>${recommit ? `<p>Moved from ${r.committedDate} (${reasonCode})${note ? `: ${note}` : ''}</p>` : ''}`,
+            subject: `${recommit ? 'Re-committed' : 'Committed'}: ${r.title} by ${fmtShort(date)}`,
+            html: `<p><b>${r.title}</b> is committed for <b>${fmtShort(date)}</b>.</p>${recommit ? `<p>Moved from ${fmtShort(r.committedDate!)} (${reasonCode})${note ? `: ${note}` : ''}</p>` : ''}`,
           });
           log('REQUEST_COMMIT', id, date);
           runPropagation(id);
@@ -333,7 +334,7 @@ export const useStore = create<Store>()(
           patchRequest(id, (r) => ({
             ...r, status: 'ACKNOWLEDGED', requestedDate: proposedDate,
             comments: [...r.comments, { id: cid, byId: me(), at: today(), text: note }],
-            history: [...r.history, { at: today(), byId: me(), type: 'COUNTERED', detail: `${proposedDate}: ${note}` }],
+            history: [...r.history, { at: today(), byId: me(), type: 'COUNTERED', detail: `${fmtShort(proposedDate)}: ${note}` }],
           }));
           log('REQUEST_COUNTER', id, proposedDate);
         },

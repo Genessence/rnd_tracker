@@ -447,7 +447,8 @@ function SidePanel() {
   const teams = useStore((s) => s.teams);
   const emails = useStore((s) => s.emails);
   const navigate = useNavigate();
-  const mine = useMemo(() => log.filter((l) => l.byId === me).slice(-8).reverse(), [log, me]);
+  // only the engineer's own taps; presenter actions (clock, digest runs) are not theirs
+  const mine = useMemo(() => log.filter((l) => l.byId === me && l.action in ACTION_TEXT).slice(-8).reverse(), [log, me]);
   const myReqs = useMemo(() => requests.filter((r) => r.raisedById === me).slice(-6).reverse(), [requests, me]);
   const myMail = emails.filter((e) => e.ccIds?.includes(me) || e.toIds.includes(me)).length;
   const titleOf = (id: string) => tasks.find((t) => t.id === id)?.title ?? requests.find((r) => r.id === id)?.title ?? id;
@@ -464,7 +465,7 @@ function SidePanel() {
           {mine.map((l) => (
             <li key={l.id} className="border-b border-line px-4 py-2 last:border-0">
               <div className="text-table"><span className="font-medium">{ACTION_TEXT[l.action] ?? l.action.toLowerCase().replace(/_/g, ' ')}</span> · {titleOf(l.entityId)}</div>
-              {l.note && <div className="font-mono text-[11px] text-ink-2">{l.note}</div>}
+              {l.note && <div className="font-mono text-[11px] text-ink-2">{l.action === 'WAITING_ON' ? (teams.find((t) => t.id === l.note)?.name ?? (l.note === 'HEAD' ? 'R&D head' : l.note)) : l.note}</div>}
             </li>
           ))}
         </ul>

@@ -1,5 +1,5 @@
 // Rules engine (plan section 8): evaluate(state, demoToday) -> Exception[], plus request-date propagation. Pure.
-import { addDays, addWorkingDays, daysBetween, weekStart, workingDaysBetween } from '../lib/dates';
+import { addDays, addWorkingDays, daysBetween, fmtShort, weekStart, workingDaysBetween } from '../lib/dates';
 import { isOpen, isWaitingOnHead, personLoad } from './metrics';
 import type { DateChange, DomainState, Exception, PlanActivity, Project, Request, Task } from './types';
 
@@ -41,7 +41,7 @@ export function evaluate(state: RuleState, demoToday: string): Exception[] {
     const slip = daysBetween(it.committed, it.forecast);
     if (slip > cfg.r1SlipDays) {
       const base = { ruleId: 'R1' as const, entityId: it.id, teamId: it.teamId, title: it.title,
-        detail: `Forecast ${it.forecast} is ${slip}d past committed ${it.committed}`, since: addDays(it.committed, cfg.r1SlipDays + 1) };
+        detail: `Forecast ${fmtShort(it.forecast)} is ${slip}d past committed ${fmtShort(it.committed)}`, since: addDays(it.committed, cfg.r1SlipDays + 1) };
       add({ ...base, id: `R1:${it.id}:${it.forecast}`, routedToId: leaderOf(state, it.teamId) });
       if (it.project?.rag === 'red') add({ ...base, id: `R1:${it.id}:${it.forecast}:head`, routedToId: head });
     }
@@ -50,7 +50,7 @@ export function evaluate(state: RuleState, demoToday: string): Exception[] {
     const isTask = !it.id.includes(':');
     if (p && !p.onHold && p.nextMilestoneDate && it.forecast > p.nextMilestoneDate && (isTask || r2Activities.has(it.id))) {
       const base = { ruleId: 'R2' as const, entityId: it.id, teamId: it.teamId, title: it.title,
-        detail: `Forecast ${it.forecast} lands after "${p.nextMilestone}" (${p.nextMilestoneDate})`, since: demoToday };
+        detail: `Forecast ${fmtShort(it.forecast)} lands after "${p.nextMilestone}" (${fmtShort(p.nextMilestoneDate)})`, since: demoToday };
       add({ ...base, id: `R2:${it.id}:${it.forecast}`, routedToId: p.ownerId });
       add({ ...base, id: `R2:${it.id}:${it.forecast}:head`, routedToId: head });
     }
@@ -144,7 +144,7 @@ export function propagateRequestDate(state: PropState, request: Request, ctx: Pr
   const to = addWorkingDays(date, 1);
   const blame = requestBlame(request, state.dateChanges);
   const changes: DateChange[] = [];
-  const note = `${request.id} committed ${date}`;
+  const note = `${request.id} committed ${fmtShort(date)}`;
 
   const tasks = state.tasks.map((t): Task => {
     if (t.id !== request.taskId || t.status === 'DONE' || date <= t.forecastDate) return t;

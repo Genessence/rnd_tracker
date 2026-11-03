@@ -208,7 +208,7 @@ function Plan({ project, plan }: { project: Project; plan: PlanActivity[] }) {
                               {req && (
                                 <div className="mt-1 flex items-center gap-2 text-[11px] text-ink-2">
                                   <span className="num">{req.id}</span> <StatusPill status={req.status} />
-                                  {req.committedDate && <span>committed <b className="num text-ink">{fmtShort(req.committedDate)}</b></span>}
+                                  {req.committedDate && <b className="num text-ink">{fmtShort(req.committedDate)}</b>}
                                 </div>
                               )}
                             </td>
