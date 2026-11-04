@@ -6,7 +6,6 @@ import { TeamPage } from '../features/team/TeamPage';
 import { MyDayPage } from '../features/myday/MyDayPage';
 import { ProjectsPage } from '../features/project/ProjectsPage';
 import { ProjectPage } from '../features/project/ProjectPage';
-import { RequestsPage } from '../features/requests/RequestsPage';
 import { MeetingsPage } from '../features/meetings/MeetingsPage';
 import { MeetingPage } from '../features/meetings/MeetingPage';
 import { OutboxPage } from '../features/outbox/OutboxPage';
@@ -32,7 +31,6 @@ export function App() {
           <Route path="/my-day" element={<MyDayPage />} />
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/projects/:id" element={<ProjectPage />} />
-          <Route path="/requests" element={<RequestsPage />} />
           <Route path="/meetings" element={<MeetingsPage />} />
           <Route path="/meetings/:id" element={<MeetingPage />} />
           <Route path="/outbox" element={<OutboxPage />} />

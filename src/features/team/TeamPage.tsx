@@ -10,7 +10,7 @@ import { daysBetween, fmtLong, fmtShort, weekStart } from '../../lib/dates';
 import { blockerHeatmap, isRequestLive, useKpis } from '../../store/selectors';
 import { useStore } from '../../store/store';
 import { requestIdOf, unitLabel, waitingLabel } from '../myday/labels';
-import { AddTaskButton, NewProjectButton, RaiseRequestButton, useLeadTeam } from '../project/LeadActions';
+import { AddTaskButton, NewProjectButton, useLeadTeam } from '../project/LeadActions';
 
 /** Shown to the team's own leader: start a project, give an engineer a task, raise a request to another department. */
 function TeamLeadBar({ teamId }: { teamId: string }) {
@@ -18,9 +18,8 @@ function TeamLeadBar({ teamId }: { teamId: string }) {
   if (!lead) return null;
   return (
     <div className="card mb-4 flex items-center gap-3 px-4 py-2.5">
-      <p className="mr-auto text-table text-ink-2"><b className="text-ink">Team leader actions.</b> Start a project's stage-gate workflow, give an engineer a task, or raise a request to another department.</p>
+      <p className="mr-auto text-table text-ink-2"><b className="text-ink">Team leader actions.</b> Start a project's stage-gate workflow, or give a task to an engineer or another department.</p>
       <AddTaskButton teamId={lead} />
-      <RaiseRequestButton teamId={lead} />
       <NewProjectButton teamId={lead} />
     </div>
   );

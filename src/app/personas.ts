@@ -3,9 +3,9 @@ export const PERSONAS = [
   { id: 'p-mahender', label: 'R&D head', home: '/tower' },
   { id: 'p-satbir-singh', label: 'RAC team leader', home: '/team/rac' },
   { id: 'p-jatin-sharma', label: 'RAC engineer', home: '/my-day' },
-  { id: 'p-dhiraj-gupta', label: 'Electronics software lead', home: '/requests' },
-  { id: 'p-dqa-lead', label: 'DQA', home: '/requests' },
-  { id: 'p-sourcing-lead', label: 'Sourcing', home: '/requests' },
+  { id: 'p-dhiraj-gupta', label: 'Electronics software lead', home: '/my-day' },
+  { id: 'p-dqa-lead', label: 'DQA', home: '/my-day' },
+  { id: 'p-sourcing-lead', label: 'Sourcing', home: '/my-day' },
 ] as const;
 
 export const homeOf = (personId: string) => PERSONAS.find((p) => p.id === personId)?.home ?? '/tower';

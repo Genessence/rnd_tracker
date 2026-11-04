@@ -11,7 +11,7 @@ import { fmtDay, fmtShort, workingDaysBetween } from '../../lib/dates';
 import { isRequestLive, shortTeam } from '../../store/selectors';
 import { useStore } from '../../store/store';
 import { StatusPill } from '../requests/RequestsPage';
-import { AddTaskButton, RaiseRequestButton, useLeadTeam } from './LeadActions';
+import { AddTaskButton, useLeadTeam } from './LeadActions';
 
 const btn = 'inline-flex h-8 items-center gap-1.5 rounded-input border border-line bg-surface px-3 text-[12px] font-medium text-ink hover:border-accent hover:text-accent';
 
@@ -21,7 +21,6 @@ export function ProjectPage() {
   const project = useStore((s) => s.projects.find((p) => p.id === id));
   const teams = useStore((s) => s.teams);
   const people = useStore((s) => s.people);
-  const requests = useStore((s) => s.requests);
   const meetings = useStore((s) => s.meetings);
   if (!project) {
     return (
@@ -35,7 +34,6 @@ export function ProjectPage() {
   const started = params.get('started') === '1';
   const owner = people.find((p) => p.id === project.ownerId);
   const teamName = shortTeam(teams.find((t) => t.id === project.teamId)?.name ?? project.teamId);
-  const reqCount = requests.filter((r) => r.projectId === id && isRequestLive(r)).length;
   const mtgCount = meetings.filter((m) => m.scope.projectId === id).length;
 
   return (
@@ -50,7 +48,7 @@ export function ProjectPage() {
         <div className="card mb-4 border-accent bg-accent-soft px-5 py-3 text-table">
           <b>Workflow started.</b> {project.plan.length} activities scheduled from the R&amp;D cycle template: CE is in progress until{' '}
           <span className="num">{fmtShort(project.nextMilestoneDate ?? '')}</span>, then Proto, DV, PP and MP.
-          Assign engineers in the Plan below, add tasks, or raise a request when an activity needs another department.
+          Assign engineers in the Plan below, and add tasks for engineers or other departments.
         </div>
       )}
       <section className="card mb-5 grid grid-cols-[auto_1fr_1fr_1fr] items-center gap-6 px-5 py-4">
@@ -66,7 +64,7 @@ export function ProjectPage() {
 
       <Tabs.Root value={tab} onValueChange={(v) => setParams({ tab: v }, { replace: true })}>
         <Tabs.List className="mb-4 flex gap-1 border-b border-line">
-          {[['plan', 'Plan', null], ['requests', 'Requests', reqCount], ['meetings', 'Meetings & MOM', mtgCount]].map(([v, label, n]) => (
+          {[['plan', 'Plan', null], ['meetings', 'Meetings & MOM', mtgCount]].map(([v, label, n]) => (
             <Tabs.Trigger
               key={v as string}
               value={v as string}
@@ -77,7 +75,6 @@ export function ProjectPage() {
           ))}
         </Tabs.List>
         <Tabs.Content value="plan">{project.plan ? <Plan project={project} plan={project.plan} /> : <TaskPlan project={project} />}</Tabs.Content>
-        <Tabs.Content value="requests"><ProjectRequests projectId={id} /></Tabs.Content>
         <Tabs.Content value="meetings"><ProjectMeetings project={project} /></Tabs.Content>
       </Tabs.Root>
     </>
@@ -124,7 +121,6 @@ function LeadHeaderActions({ project }: { project: Project }) {
   return (
     <>
       <AddTaskButton teamId={lead} projectId={project.id} stage={project.stage} />
-      <RaiseRequestButton teamId={lead} projectId={project.id} stage={project.stage} />
     </>
   );
 }
@@ -269,7 +265,6 @@ function Plan({ project, plan }: { project: Project; plan: PlanActivity[] }) {
                                 {a.status !== 'DONE' && (
                                   <span className="flex gap-3">
                                     <AddTaskButton small teamId={lead} projectId={project.id} stage={a.stage} title={`${a.sNo} ${a.name}`} />
-                                    {!live && <RaiseRequestButton small teamId={lead} projectId={project.id} stage={a.stage} activityId={a.activityId} title={a.name} />}
                                   </span>
                                 )}
                               </td>
@@ -351,45 +346,6 @@ function TaskPlan({ project }: { project: Project }) {
               </tr>
             );
           })}
-        </tbody>
-      </table>
-    </section>
-  );
-}
-
-// ---- Requests tab ------------------------------------------------------------------------------------------------
-
-function ProjectRequests({ projectId }: { projectId: string }) {
-  const navigate = useNavigate();
-  const all = useStore((s) => s.requests);
-  const teams = useStore((s) => s.teams);
-  const reqs = all.filter((r) => r.projectId === projectId);
-  const team = (id: string) => shortTeam(teams.find((t) => t.id === id)?.name ?? id);
-  return (
-    <section className="card overflow-hidden">
-      <table className="w-full text-table">
-        <thead className="border-b border-line bg-canvas text-left text-[11px] uppercase tracking-wide text-ink-2">
-          <tr>
-            <th className="px-4 py-2 font-medium">ID</th>
-            <th className="px-2 py-2 font-medium">Request</th>
-            <th className="px-2 py-2 font-medium">Waiting on</th>
-            <th className="px-2 py-2 font-medium">Needed by</th>
-            <th className="px-2 py-2 font-medium">Committed</th>
-            <th className="px-4 py-2 font-medium">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {reqs.length === 0 && <tr><td colSpan={6} className="px-4 py-8 text-center text-ink-2">No requests raised from this project.</td></tr>}
-          {reqs.map((r) => (
-            <tr key={r.id} onClick={() => navigate(`/requests?id=${r.id}`)} className="cursor-pointer border-b border-line last:border-0 hover:bg-canvas">
-              <td className="num px-4 py-2 text-ink-2">{r.id}</td>
-              <td className="px-2 py-2"><div className="font-medium">{r.title}</div><div className="text-[11px] text-ink-2">Blocks: {r.blocks}</div></td>
-              <td className="px-2 py-2"><WaitingChip to={team(r.toId)} /></td>
-              <td className="num px-2 py-2">{r.requestedDate ? fmtShort(r.requestedDate) : '–'}</td>
-              <td className="num px-2 py-2">{r.committedDate ? fmtShort(r.committedDate) : '–'}</td>
-              <td className="px-4 py-2"><StatusPill status={r.status} /></td>
-            </tr>
-          ))}
         </tbody>
       </table>
     </section>

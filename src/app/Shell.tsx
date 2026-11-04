@@ -3,7 +3,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import amberLogo from './amber-logo.png';
 import * as Popover from '@radix-ui/react-popover';
 import {
-  Bell, BookOpen, CalendarDays, Check, ChevronDown, ClipboardList, FolderKanban, Inbox, LayoutDashboard, Mail, RotateCcw, Scale,
+  Bell, BookOpen, CalendarDays, Check, ChevronDown, ClipboardList, FolderKanban, LayoutDashboard, Mail, RotateCcw, Scale,
   Sun, Users,
 } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
@@ -203,7 +203,6 @@ function Rail() {
     { to: `/team/${teamId}`, label: 'Team', icon: <Users size={18} /> },
     { to: '/my-day', label: 'My Day', icon: <ClipboardList size={18} /> },
     { to: '/projects', label: 'Projects', icon: <FolderKanban size={18} /> },
-    { to: '/requests', label: 'Requests', icon: <Inbox size={18} /> },
     { to: '/meetings', label: 'Meetings', icon: <CalendarDays size={18} /> },
     { to: '/ledger', label: 'Delay ledger', short: 'Ledger', icon: <Scale size={18} /> },
     { to: '/outbox', label: 'Outbox', icon: <Mail size={18} /> },

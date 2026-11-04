@@ -138,7 +138,7 @@ export function AddTaskButton({ teamId, projectId, stage, title, small }: { team
       <button type="button" className={small ? 'text-[11px] font-medium text-accent hover:underline' : btn} onClick={() => setOpen(true)}>
         {!small && <ListPlus size={14} />} {small ? '+ Task' : 'Add task'}
       </button>
-      <Modal open={open} onOpenChange={setOpen} title="Add a task for an engineer" icon={<ListPlus size={16} className="text-accent" />}>
+      <Modal open={open} onOpenChange={setOpen} title="Add a task" icon={<ListPlus size={16} className="text-accent" />}>
         {open && <AddTaskForm teamId={teamId} projectId={projectId} stage={stage} title={title} onDone={() => setOpen(false)} />}
       </Modal>
     </>
@@ -151,6 +151,8 @@ function AddTaskForm({ teamId, projectId, stage, title: t0, onDone }: { teamId: 
   const createTask = useStore((s) => s.createTask);
   const people = useStore((s) => s.people);
   const engineers = useEngineers(teamId);
+  const teams = useStore((s) => s.teams);
+  const otherTeams = teams.filter((t) => t.id !== teamId && t.id !== 'rnd-head' && people.some((p) => p.teamId === t.id));
   const projects = useMemo(() => allProjects.filter((p) => p.teamId === teamId), [allProjects, teamId]);
   const [title, setTitle] = useState(t0 ?? '');
   const [owner, setOwner] = useState(engineers[0]?.id ?? '');
@@ -183,9 +185,14 @@ function AddTaskForm({ teamId, projectId, stage, title: t0, onDone }: { teamId: 
         <label className="col-span-2"><span className={label}>Task</span>
           <input className={field} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Proto testing balancing, Psy lab" autoFocus />
         </label>
-        <label><span className={label}>Assign to engineer</span>
+        <label><span className={label}>Assign to</span>
           <select className={field} value={owner} onChange={(e) => setOwner(e.target.value)}>
-            {engineers.map((p) => <option key={p.id} value={p.id}>{p.name}{p.deckNoTasksLogged ? ' (no tasks logged)' : ''}</option>)}
+            <optgroup label="My team">{engineers.map((p) => <option key={p.id} value={p.id}>{p.name}{p.deckNoTasksLogged ? ' (no tasks logged)' : ''}</option>)}</optgroup>
+            {otherTeams.map((t) => (
+              <optgroup key={t.id} label={unitLabel(teams, t.id)}>
+                {people.filter((p) => p.teamId === t.id).map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+              </optgroup>
+            ))}
           </select>
         </label>
         <label><span className={label}>Due date</span>
@@ -211,7 +218,7 @@ function AddTaskForm({ teamId, projectId, stage, title: t0, onDone }: { teamId: 
           </label>
         </div>
       </div>
-      <Footer submit="Assign task" disabled={!title.trim() || !owner} note="The engineer is emailed and sees it on My Day." />
+      <Footer submit="Assign task" disabled={!title.trim() || !owner} note="The assignee is emailed and sees it on their My Day." />
     </form>
   );
 }
