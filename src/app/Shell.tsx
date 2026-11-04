@@ -1,5 +1,6 @@
 // App shell (plan section 4): slim top bar + left icon rail. Content max 1440 px.
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import amberLogo from './amber-logo.png';
 import * as Popover from '@radix-ui/react-popover';
 import {
   Bell, BookOpen, CalendarDays, Check, ChevronDown, ClipboardList, FolderKanban, Inbox, LayoutDashboard, Mail, RotateCcw, Scale,
@@ -41,9 +42,8 @@ function TopBar({ script, onScript }: { script: boolean; onScript: () => void })
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b border-line bg-surface px-4">
       <NavLink to="/tower" className="flex items-center gap-2.5 pr-2">
-        <span aria-hidden className="grid h-7 w-7 place-items-center rounded-[6px] bg-ink">
-          <span className="block h-2.5 w-2.5 rotate-45 bg-accent" />
-        </span>
+        <img src={amberLogo} alt="Amber" className="h-7 w-auto" />
+        <span aria-hidden className="h-7 w-px bg-line" />
         <span className="leading-tight">
           <span className="block text-[14px] font-semibold tracking-tight">R&amp;D Control Tower</span>
           <span className="block text-[11px] text-ink-2">Amber · R&amp;D</span>
