@@ -108,6 +108,7 @@ function KpiStrip({ teamId }: { teamId: string }) {
 // ---- Projects ----------------------------------------------------------------------------------------------
 
 function ProjectTable({ teamId }: { teamId: string }) {
+  const navigate = useNavigate();
   const allProjects = useStore((s) => s.projects);
   const tasks = useStore((s) => s.tasks);
   const people = useStore((s) => s.people);
@@ -135,7 +136,7 @@ function ProjectTable({ teamId }: { teamId: string }) {
         </thead>
         <tbody>
           {rows.map(({ p, open, waiting }) => (
-            <tr key={p.id} className="border-b border-line last:border-0 hover:bg-canvas">
+            <tr key={p.id} onClick={() => navigate(`/projects/${p.id}`)} className="cursor-pointer border-b border-line last:border-0 hover:bg-canvas">
               <td className="px-4 py-2.5">
                 <Link to={`/projects/${p.id}`} className="flex items-center gap-2 font-medium hover:text-accent">
                   <RagDot rag={p.rag} />
