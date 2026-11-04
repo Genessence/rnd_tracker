@@ -32,7 +32,7 @@ export function run0830() {
     sendEmail({
       kind: 'DIGEST', toIds: [p.id], at, relatedId: p.id,
       subject: `Your 08:30 digest: ${overdue.length} overdue, ${dueToday.length} due today, ${week.length} later this week`,
-      html: `<p>Good morning ${p.name.split(' ')[0]},</p><p>Here is what is on your plate today. Reply <b>Done</b> or reply with a new date (and a reason) to update the tracker without logging in.</p>${section('Overdue', overdue)}${section('Due today', dueToday)}${section('Later this week', week)}`,
+      html: `<p>Good morning ${p.name.split(' ')[0]},</p><p>Here is what is on your plate today.</p>${section('Overdue', overdue)}${section('Due today', dueToday)}${section('Later this week', week)}`,
     });
     n++;
   }

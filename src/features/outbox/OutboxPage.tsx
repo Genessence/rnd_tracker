@@ -1,13 +1,13 @@
 // Simulated Outlook: every email the tower sent, as a mail client. Digest and assignment mails can be replied to.
-import { Check, CalendarClock, Mail, Reply, Sun } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { Mail } from 'lucide-react';
+import { useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { PageHeader } from '../../app/Shell';
-import { cx, DatePair, SimulatedTag } from '../../design';
-import type { Email, Person, Task } from '../../domain/types';
+import { cx, SimulatedTag } from '../../design';
+import type { Email, Person } from '../../domain/types';
 import { fmtDay, fmtLong } from '../../lib/dates';
-import { replyableTasks, replyDone, replyKey, replyNewDate, run0830 } from '../../sim/jobs';
-import { shortTeam } from '../../store/selectors';
+import { HERO_TASK_ID } from '../../domain/seed';
+import { addWorkingDays, fmtShort } from '../../lib/dates';
 import { useStore } from '../../store/store';
 
 const KINDS: Email['kind'][] = ['DIGEST', 'ASSIGNMENT', 'REQUEST', 'COMMITMENT', 'ESCALATION', 'MOM', 'INVITE', 'REMINDER', 'WEEKLY'];
@@ -22,7 +22,6 @@ const KIND_TONE: Record<Email['kind'], string> = {
   INVITE: 'border-wait text-wait bg-surface', REMINDER: 'border-risk text-risk bg-risk-soft', WEEKLY: 'border-ink-2 text-ink-2 bg-surface',
 };
 const SENDER = { name: 'R&D Control Tower', email: 'control-tower.demo@example.com' };
-const btn = 'inline-flex h-8 items-center gap-1.5 rounded-input border border-line bg-surface px-2.5 text-[12px] font-medium text-ink hover:border-accent hover:text-accent disabled:pointer-events-none disabled:opacity-50';
 
 const when = (at: string) => {
   const [d, t] = at.split(' ');
@@ -58,18 +57,14 @@ export function OutboxPage() {
       .slice().reverse(),
     [emails, kind, person],
   );
-  const selected = list.find((e) => e.id === params.get('id')) ?? list[0];
+  const catalogue = useCatalogue();
+  const selected = [...catalogue, ...list].find((e) => e.id === params.get('id')) ?? catalogue[0];
 
   return (
     <>
       <PageHeader
         title="Outbox"
-        subtitle={<>Every email the tower sent. Nothing leaves the browser. <SimulatedTag label="Simulated Outlook" className="ml-1 align-middle" /></>}
-        actions={
-          <button type="button" className={btn} onClick={run0830} title="Send today's 08:30 digest (once per person per day)">
-            <Sun size={14} aria-hidden /> Run 08:30
-          </button>
-        }
+        subtitle={<>One sample of every email the tower sends, with when it goes and who gets it, followed by the emails sent during this demo. <SimulatedTag label="Simulated Outlook" className="ml-1 align-middle" /></>}
       />
 
       <div className="mb-3 flex flex-wrap items-center gap-1.5">
@@ -92,10 +87,21 @@ export function OutboxPage() {
 
       <div className="card grid h-[calc(100vh-13rem)] min-h-[520px] grid-cols-[380px_1fr] overflow-hidden">
         <ul className="overflow-y-auto border-r border-line" aria-label="Emails">
+          <li className="border-b border-line bg-canvas px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-ink-2">Email types · {catalogue.length}</li>
+          {catalogue.map((e) => (
+            <li key={e.id}>
+              <button type="button" onClick={() => set('id', e.id)}
+                className={cx('flex w-full flex-col gap-1 border-b border-l-2 border-b-line px-4 py-2.5 text-left', e.id === selected?.id ? 'border-l-accent bg-accent-soft' : 'border-l-transparent hover:bg-canvas')}>
+                <span className="flex items-center gap-2"><KindTag kind={e.kind} /><span className="min-w-0 flex-1 truncate text-[13px] font-semibold">{e.label}</span></span>
+                <span className="truncate text-[12px] text-ink-2">{e.trigger}</span>
+              </button>
+            </li>
+          ))}
+          <li className="border-b border-line bg-canvas px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-ink-2">Sent in this demo · {list.length}</li>
           {list.length === 0 && (
             <li className="px-6 py-16 text-center text-ink-2">
               <Mail size={22} className="mx-auto mb-2" aria-hidden />
-              {emails.length ? 'No email matches these filters.' : 'No email yet. Press Run 08:30 or move the demo clock.'}
+              {emails.length ? 'No email matches these filters.' : 'Actions in the demo (assigning a task, publishing a MOM, moving the clock) add emails here.'}
             </li>
           )}
           {list.map((e) => (
@@ -114,7 +120,6 @@ export function OutboxPage() {
                   <span className="num shrink-0 text-[11px] text-ink-2">{when(e.at)}</span>
                 </span>
                 <span className="flex items-center gap-1.5">
-                  {e.replied && <Reply size={12} className="shrink-0 text-ok" aria-label="Replied" />}
                   <span className="truncate text-[13px]">{e.subject}</span>
                 </span>
               </button>
@@ -152,12 +157,10 @@ function KindTag({ kind }: { kind: Email['kind'] }) {
 }
 
 function EmailView({ email, byId }: { email: Email; byId: Map<string, Person> }) {
-  const taskIds = replyableTasks(email);
   const addr = (ids: string[]) => ids.map((id) => {
     const p = byId.get(id);
     return p ? `${p.name} <${p.email}>` : id;
   }).join('; ');
-  const to = byId.get(email.toIds[0]);
   return (
     <article className="mx-auto max-w-[760px] p-6">
       <div className="mb-4 flex items-start justify-between gap-4">
@@ -181,105 +184,55 @@ function EmailView({ email, byId }: { email: Email; byId: Map<string, Person> })
         // Self-generated by src/sim and the store, never user HTML from outside the demo.
         dangerouslySetInnerHTML={{ __html: email.html }}
       />
-      {taskIds.length > 0 && <ReplyPanel email={email} taskIds={taskIds} name={to?.name.split(' ')[0] ?? 'Recipient'} />}
+      {'trigger' in email && <p className="mt-3 rounded-input border border-line bg-surface px-3 py-2 text-table text-ink-2"><b className="text-ink">When it is sent:</b> {(email as Sample).trigger}</p>}
     </article>
   );
 }
 
-function ReplyPanel({ email, taskIds, name }: { email: Email; taskIds: string[]; name: string }) {
-  const tasks = useStore((s) => s.tasks);
-  const log = useStore((s) => s.actionLog);
-  const replies = useMemo(() => {
-    const m = new Map<string, string>();
-    for (const a of log) if (a.action === 'EMAIL_REPLY' && a.entityId.startsWith(`${email.id}:`)) m.set(a.entityId, a.note ?? '');
-    return m;
-  }, [log, email.id]);
-  return (
-    <section className="mt-4 rounded-card border border-accent bg-surface">
-      <header className="flex items-center gap-2 border-b border-line px-4 py-2.5">
-        <Reply size={15} className="text-accent" aria-hidden />
-        <span className="text-[13px] font-semibold">Reply as {name} to update the tracker</span>
-        <SimulatedTag className="ml-auto" />
-      </header>
-      <ul>
-        {taskIds.map((id) => {
-          const t = tasks.find((x) => x.id === id);
-          return t ? <ReplyRow key={id} emailId={email.id} task={t} reply={replies.get(replyKey(email.id, id))} /> : null;
-        })}
-      </ul>
-    </section>
-  );
-}
+type Sample = Email & { label: string; trigger: string };
 
-function ReplyRow({ emailId, task, reply }: { emailId: string; task: Task; reply?: string }) {
-  const reasonCodes = useStore((s) => s.reasonCodes);
-  const teams = useStore((s) => s.teams);
-  const [open, setOpen] = useState(false);
-  const [date, setDate] = useState(task.forecastDate);
-  const [reason, setReason] = useState('');
-  const [dept, setDept] = useState('');
-  const [note, setNote] = useState('');
-  const done = task.status === 'DONE';
-  const canSend = !!reason && !!date && date !== task.forecastDate && (reason !== 'WAITING_DEPT' || !!dept);
-  const send = () => {
-    if (replyNewDate(emailId, task.id, date, reason, note || undefined, dept || undefined)) setOpen(false);
-  };
-  const field = 'h-8 rounded-input border border-line bg-surface px-2 text-[12px]';
-  return (
-    <li className="border-b border-line px-4 py-3 last:border-0">
-      <div className="flex items-center gap-3">
-        <div className="min-w-0 flex-1">
-          <div className={cx('truncate text-[13px] font-medium', done && 'text-ink-2 line-through')}>{task.title}</div>
-          <div className="mt-0.5 flex items-center gap-2">
-            <span className="num text-[11px] text-ink-2">{task.id}</span>
-            <DatePair committed={task.committedDate} forecast={task.forecastDate} />
-          </div>
-        </div>
-        {reply ? (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-ok-soft px-2.5 py-1 text-[12px] font-medium text-ok">
-            <Check size={13} aria-hidden /> Replied: {reply}
-          </span>
-        ) : done ? (
-          <span className="text-[12px] text-ink-2">Already done</span>
-        ) : (
-          <>
-            <button type="button" className={btn} onClick={() => replyDone(emailId, task.id)}>
-              <Check size={14} aria-hidden /> Reply “Done”
-            </button>
-            <button type="button" className={cx(btn, open && 'border-accent text-accent')} onClick={() => setOpen(!open)} aria-expanded={open}>
-              <CalendarClock size={14} aria-hidden /> Reply with new date
-            </button>
-          </>
-        )}
-      </div>
-      {open && !reply && !done && (
-        <div className="mt-3 flex flex-wrap items-end gap-2 rounded-input bg-canvas p-3">
-          <label className="flex flex-col gap-1 text-[11px] text-ink-2">New date
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={cx(field, 'num')} />
-          </label>
-          <label className="flex flex-col gap-1 text-[11px] text-ink-2">Reason (required)
-            <select value={reason} onChange={(e) => setReason(e.target.value)} className={field}>
-              <option value="">Pick a reason…</option>
-              {reasonCodes.map((r) => <option key={r.code} value={r.code}>{r.label}</option>)}
-            </select>
-          </label>
-          {reason === 'WAITING_DEPT' && (
-            <label className="flex flex-col gap-1 text-[11px] text-ink-2">Which department
-              <select value={dept} onChange={(e) => setDept(e.target.value)} className={field}>
-                <option value="">Pick…</option>
-                {teams.filter((t) => t.id !== task.teamId).map((t) => <option key={t.id} value={t.id}>{shortTeam(t.name)}</option>)}
-              </select>
-            </label>
-          )}
-          <label className="flex min-w-[160px] flex-1 flex-col gap-1 text-[11px] text-ink-2">Note
-            <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Optional" className={field} />
-          </label>
-          <button type="button" className={cx(btn, 'border-accent bg-accent text-surface hover:text-surface')} disabled={!canSend} onClick={send}>
-            <Reply size={14} aria-hidden /> Send reply
-          </button>
-        </div>
-      )}
-    </li>
-  );
+/** One sample of every email type, built from the live demo data so the client sees real names and dates. */
+function useCatalogue(): Sample[] {
+  const st = useStore();
+  return useMemo(() => {
+    const today = st.demoToday, P = (id: string) => st.people.find((p) => p.id === id);
+    const head = 'p-mahender', lead = 'p-satbir-singh', eng = 'p-jatin-sharma';
+    const t = st.tasks.find((x) => x.id === HERO_TASK_ID) ?? st.tasks[0];
+    const proj = st.projects.find((p) => p.id === t.projectId) ?? st.projects[0];
+    const mine = st.tasks.filter((x) => x.status !== 'DONE' && x.ownerIds.includes(eng)).slice(0, 4);
+    const first = (id: string) => P(id)?.name.split(' ')[0] ?? '';
+    const row = (k: string, v: string) => `<tr><th>${k}</th><td>${v}</td></tr>`;
+    const at = (time: string) => `${today} ${time}`;
+    const mk = (id: string, kind: Email['kind'], label: string, trigger: string, toIds: string[], ccIds: string[], subject: string, html: string, time = '09:00'): Sample =>
+      ({ id: `sample-${id}`, kind, label, trigger, toIds, ccIds, subject, html, at: at(time) });
+    return [
+      mk('assign', 'ASSIGNMENT', 'Task assigned', 'As soon as a team leader submits a new task for someone. To the assignee, copy to the leader.', [eng], [lead],
+        `New task: ${t.title} (due ${fmtShort(t.forecastDate)})`,
+        `<p>Hi ${first(eng)},</p><p>${P(lead)?.name} has assigned you a task.</p><table>${row('Task', t.title)}${row('Project', proj.name)}${row('Stage', t.stage ?? proj.stage)}${row('Due', fmtShort(t.forecastDate))}</table><p>It is on your My Day now.</p>`),
+      mk('project', 'ASSIGNMENT', 'Added to a new project', 'When a team leader starts a project. To every engineer picked for it.', [eng], [lead],
+        `New project: ${proj.name}`,
+        `<p>Hi ${first(eng)},</p><p>You have been added to <b>${proj.name}</b>${proj.customer ? ` for ${proj.customer}` : ''}.</p><p>The stage-gate plan (CE → Proto → DV → PP → MP) is set up and your activities are on My Day.</p>`),
+      mk('reminder', 'REMINDER', 'Due-date reminder', 'Two working days before a task is due, if it is still open. To the owner.', [eng], [],
+        `Reminder: ${t.title} is due ${fmtShort(addWorkingDays(today, 2))}`,
+        `<p>Hi ${first(eng)},</p><p>This task is due in 2 working days.</p><table>${row('Task', t.title)}${row('Due', fmtShort(addWorkingDays(today, 2)))}</table><p>If the date will move, update it on My Day with a reason.</p>`, '08:00'),
+      mk('digest', 'DIGEST', 'Daily 08:30 digest', 'Every working day at 08:30. To each person with open tasks.', [eng], [],
+        `Your 08:30 digest: ${mine.length} open tasks`,
+        `<p>Good morning ${first(eng)},</p><p>Here is what is on your plate today.</p><ul>${mine.map((x) => `<li>${x.title} · due ${fmtShort(x.forecastDate)}</li>`).join('')}</ul>`, '08:30'),
+      mk('moved', 'REMINDER', 'Date moved', 'When someone moves a task date. Always with the reason and the department the delay is booked to. To the team leader.', [lead], [],
+        `Date moved: ${t.title} ${fmtShort(t.committedDate)} → ${fmtShort(addWorkingDays(t.committedDate, 3))}`,
+        `<p>Hi ${first(lead)},</p><p>${P(eng)?.name} moved a date.</p><table>${row('Task', t.title)}${row('From → to', `${fmtShort(t.committedDate)} → ${fmtShort(addWorkingDays(t.committedDate, 3))}`)}${row('Reason', 'Waiting on another department')}${row('Booked to', 'DQA')}</table>`),
+      mk('escalation', 'ESCALATION', 'Escalation', 'When a rule fires, e.g. a date slips more than 7 days or lands after the project milestone. To the team leader, and the head for red projects.', [head], [lead],
+        `Needs you: ${t.title} lands after ${proj.nextMilestone ?? 'the milestone'}`,
+        `<p>Hi ${first(head)},</p><p>A forecast now lands after the project's milestone.</p><table>${row('Task', t.title)}${row('Project', proj.name)}${row('Milestone', `${proj.nextMilestone ?? ''} ${proj.nextMilestoneDate ? fmtShort(proj.nextMilestoneDate) : ''}`)}${row('Owner', P(eng)?.name ?? '')}</table><p>Open the Control Tower to decide, push back or accept the new date.</p>`),
+      mk('invite', 'INVITE', 'Meeting invite', 'When a meeting is scheduled from a project stage. To every attendee, with the agenda and the Teams link.', [eng, lead], [],
+        `Invitation: Weekly review · ${proj.name}`,
+        `<p>You are invited to the weekly review for <b>${proj.name}</b>.</p><p>Agenda: overdue and blocked items for the current stage.</p><p><a href="#">Join Microsoft Teams meeting</a> (simulated)</p>`, '10:00'),
+      mk('mom', 'MOM', 'Minutes of meeting', 'When the organiser publishes the MOM. To every attendee, with decisions and the tasks created.', [eng, lead, head], [],
+        `MOM: Weekly review · ${proj.name}`,
+        `<p>The minutes are published.</p><h4>Decisions</h4><ul><li>Electronics releases the final 15K3S build to DQA by Monday the 19th</li></ul><h4>Actions (now tasks)</h4><ul><li>R&amp;D Head: Megmeet escalation</li><li>Sourcing: PO terms by 20 Oct</li><li>RAC: Thailand dispatch date by Monday</li></ul>`, '16:00'),
+      mk('weekly', 'WEEKLY', 'Weekly summary', 'Every Monday at 09:00. To the head of R&D, copy to all team leaders.', [head], [lead],
+        'R&D weekly summary',
+        `<p>Hi ${first(head)},</p><p>The week in numbers.</p><table>${row('Open tasks', String(st.tasks.filter((x) => x.status !== 'DONE').length))}${row('Projects', String(st.projects.length))}${row('Projects at red', String(st.projects.filter((p) => p.rag === 'red').length))}</table>`),
+    ];
+  }, [st]);
 }
-
