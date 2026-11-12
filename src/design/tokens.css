@@ -1,0 +1,21 @@
+/* "Drawing office" design tokens (POC_BUILD_PLAN.md section 4). Light theme only. */
+:root {
+  --canvas: #f6f5f1;
+  --surface: #ffffff;
+  --line: #e4e1d8;
+  --ink: #1b2230;
+  --ink-2: #5b6472;
+  --accent: #0e7c7b;
+  --accent-soft: #e3f1f0;
+  --ok: #2e7d4f;
+  --risk: #b7791f;
+  --late: #b42318;
+  --wait: #6e56cf;
+  --hold: #8a8f98;
+  /* soft tints for chips and badges */
+  --ok-soft: #e6f2ea;
+  --risk-soft: #f8efdf;
+  --late-soft: #f9e5e3;
+  --wait-soft: #eeeafb;
+  --hold-soft: #eeeff1;
+}
