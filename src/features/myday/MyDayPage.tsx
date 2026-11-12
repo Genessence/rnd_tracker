@@ -1,16 +1,17 @@
 // #/my-day: an engineer's whole update in three taps. ✓ Done · ↷ Move forecast (reason required) · ⚑ Waiting on…
 // `?phone=1` renders it inside a 390 px device frame for presenting on a laptop.
-import { Check, CornerUpRight, Flag, Mail, Plus, Smartphone, Undo2, X } from 'lucide-react';
+import { CalendarCheck, CalendarDays, CalendarX, Check, CornerUpRight, Flag, Gavel, Inbox, Mail, MessageSquarePlus, Plus, Smartphone, Undo2, X } from 'lucide-react';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Avatar, PageHeader } from '../../app/Shell';
-import { cx, DatePair, WaitingChip } from '../../design';
+import { ActionCard, cx, DatePair, WaitingChip } from '../../design';
 import { isDueThisWeek, isOverdue } from '../../domain/metrics';
-import type { Task, WaitingOn } from '../../domain/types';
+import { ASK_LABEL, type AskKind, type Task, type WaitingOn } from '../../domain/types';
 import { addDays, daysBetween, fmtDay, fmtLong, fmtShort } from '../../lib/dates';
 import { headId } from '../../domain/rules';
-import { selectExceptions, selectMyTasks } from '../../store/selectors';
+import { isRequestLive, selectExceptions, selectMyActivities, selectMyTasks } from '../../store/selectors';
 import { useStore } from '../../store/store';
+import { ExceptionRow } from '../tower/TowerPage';
 import { requestIdOf, unitLabel, waitingLabel } from './labels';
 
 interface Flash { lines: ReactNode[]; link?: { to: string; label: string }; undo?: () => void }
@@ -62,19 +63,21 @@ export function MyDayPage() {
 
 function MyDayApp({ phone }: { phone: boolean }) {
   const s = useStore();
-  const { tasks, demoToday: today, currentPersonId } = s;
+  const { tasks, projects, requests, demoToday: today, currentPersonId } = s;
   const mine = useMemo(
-    () => selectMyTasks(useStore.getState(), currentPersonId).sort((a, b) => a.forecastDate.localeCompare(b.forecastDate)),
-    [tasks, currentPersonId], // eslint-disable-line react-hooks/exhaustive-deps
+    () => [...selectMyTasks(useStore.getState(), currentPersonId), ...selectMyActivities(useStore.getState(), currentPersonId)]
+      .sort((a, b) => a.forecastDate.localeCompare(b.forecastDate)),
+    [tasks, projects, requests, currentPersonId], // eslint-disable-line react-hooks/exhaustive-deps
   );
-  const doneToday = tasks.filter((t) => t.status === 'DONE' && t.doneDate === today && t.ownerIds.includes(currentPersonId));
+  const doneToday = [...tasks, ...selectMyActivities(s, currentPersonId, true)]
+    .filter((t) => t.status === 'DONE' && t.doneDate === today && t.ownerIds.includes(currentPersonId));
   const groups: { id: string; label: string; tone: string; items: Task[] }[] = [
     { id: 'overdue', label: 'Overdue', tone: 'text-late', items: mine.filter((t) => isOverdue(t, today)) },
     { id: 'today', label: 'Today', tone: 'text-ink', items: mine.filter((t) => t.forecastDate === today) },
     { id: 'week', label: 'This week', tone: 'text-ink', items: mine.filter((t) => isDueThisWeek(t, today) && t.forecastDate > today) },
     { id: 'later', label: 'Later', tone: 'text-ink-2', items: mine.filter((t) => t.forecastDate > today && !isDueThisWeek(t, today)) },
   ];
-  const [sheet, setSheet] = useState<{ kind: 'move' | 'wait'; task: Task } | null>(null);
+  const [sheet, setSheet] = useState<{ kind: 'move' | 'wait'; task: Task } | { kind: 'ask'; task?: Task } | null>(null);
   const [flash, setFlash] = useState<Flash | null>(null);
   useEffect(() => {
     if (!flash) return;
@@ -91,7 +94,22 @@ function MyDayApp({ phone }: { phone: boolean }) {
   };
 
   const me = s.people.find((p) => p.id === currentPersonId);
-  const counts = groups.slice(0, 3);
+  // Team/department leads: requests to their team are their to-do (acknowledge, commit a date, deliver).
+  const myTeam = s.teams.find((x) => x.leaderId === currentPersonId);
+  const incoming = useMemo(() => (myTeam ? requests.filter((r) => r.toId === myTeam.id && isRequestLive(r)) : [])
+    .sort((a, b) => Number(b.status === 'OPEN') - Number(a.status === 'OPEN') || (a.committedDate ?? a.requestedDate ?? '9').localeCompare(b.committedDate ?? b.requestedDate ?? '9')),
+  [requests, myTeam]);
+  // Exceptions the rules engine routed to me (the head's decisions, a leader's slips): same actions as the Tower.
+  const routed = useMemo(() => selectExceptions(s).filter((e) => e.routedToId === currentPersonId).sort((a, b) => a.ruleId.localeCompare(b.ruleId) || a.since.localeCompare(b.since)),
+    [s, currentPersonId]);
+  const person = (id: string) => s.people.find((p) => p.id === id)?.name ?? id;
+  const counts = [
+    ...(routed.length ? [{ id: 'input', label: 'Needs your input', sub: 'Decide, approve, accept or push back', n: routed.length, tone: 'accent' as const, icon: Gavel }] : []),
+    ...(incoming.length ? [{ id: 'req', label: 'Requests to your team', sub: `${incoming.filter((r) => r.status === 'OPEN').length} to acknowledge`, n: incoming.length, tone: 'wait' as const, icon: Inbox }] : []),
+    { id: 'overdue', label: 'Overdue', sub: 'Close it or move the date', n: groups[0].items.length, tone: 'late' as const, icon: CalendarX },
+    { id: 'today', label: 'Due today', sub: 'On your plate today', n: groups[1].items.length, tone: 'accent' as const, icon: CalendarCheck },
+    { id: 'week', label: 'This week', sub: 'Coming up', n: groups[2].items.length, tone: 'ok' as const, icon: CalendarDays },
+  ].slice(0, 3);
 
   return (
     <div className={cx('flex flex-col', phone && 'h-full')}>
@@ -107,15 +125,59 @@ function MyDayApp({ phone }: { phone: boolean }) {
       <div className={cx('flex flex-col gap-4', phone ? 'flex-1 overflow-y-auto px-3 pb-24 pt-3' : '')}>
         <div className={cx('grid grid-cols-3 gap-2')}>
           {counts.map((g) => (
-            <a key={g.id} href={`#mdg-${g.id}`} onClick={(e) => { e.preventDefault(); document.getElementById(`mdg-${g.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
-              className="card px-3 py-2 hover:border-accent">
-              <div className="text-[11px] font-medium uppercase tracking-wide text-ink-2">{g.label}</div>
-              <div className={cx('num font-medium', phone ? 'text-[22px]' : 'text-kpi', g.items.length && g.id === 'overdue' ? 'text-late' : 'text-ink')}>{g.items.length}</div>
-            </a>
+            <ActionCard key={g.id} compact={phone} n={g.n} title={g.label} sub={g.sub} icon={g.icon} tone={g.tone}
+              onClick={() => document.getElementById(`mdg-${g.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })} />
           ))}
         </div>
         <QuickAdd onAdded={(title, date) => setFlash({ lines: [<><b>Added:</b> {title}</>, `Forecast ${fmtShort(date)}. Shows on your team's to-do.`] })} />
-        {mine.length === 0 && (
+        {me?.role !== 'HEAD' && (
+          <button type="button" onClick={() => setSheet({ kind: 'ask' })}
+            className="card flex items-center justify-center gap-2 border-dashed px-3 py-2.5 text-[13px] font-medium text-accent hover:border-accent">
+            <MessageSquarePlus size={15} aria-hidden /> {phone ? 'Ask R&D head' : 'Ask R&D head: decision, input, approval, date extension or people'}
+          </button>
+        )}
+        {routed.length > 0 && (
+          <section id="mdg-input" aria-label="Needs your input" className="card scroll-mt-4 border-l-4 border-l-accent">
+            <h2 className="flex items-center gap-2 border-b border-line px-4 py-2.5 text-[12px] font-semibold uppercase tracking-wide text-accent">
+              Needs your input<span className="num rounded bg-accent-soft px-1.5 font-normal">{routed.length}</span>
+            </h2>
+            <ul>
+              {routed.map((e) => (
+                <ExceptionRow key={e.id} compact={phone} ex={e} person={person} team={unitLabel(s.teams, e.teamId)} raisedBy={s.decisions.find((d) => d.id === e.entityId)?.raisedById} />
+              ))}
+            </ul>
+          </section>
+        )}
+        {incoming.length > 0 && (
+          <section id="mdg-req" aria-label="Requests to your team" className="scroll-mt-4">
+            <h2 className="mb-2 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wide text-wait">
+              Requests to {unitLabel(s.teams, myTeam!.id)}<span className="num rounded bg-surface px-1.5 font-normal text-ink-2">{incoming.length}</span>
+            </h2>
+            <ul className="flex flex-col gap-2">
+              {incoming.map((r) => {
+                const due = r.committedDate ?? r.requestedDate;
+                const late = !!due && due < today;
+                return (
+                  <li key={r.id}>
+                    <Link to={`/requests?id=${r.id}`} className={cx('card flex items-start justify-between gap-3 px-3 py-2.5 hover:border-accent', late && 'border-l-[3px] border-l-late')}>
+                      <span className="min-w-0">
+                        <span className="block text-[14px] font-medium leading-snug">{r.title}</span>
+                        <span className="block truncate text-[11px] text-ink-2">from {unitLabel(s.teams, r.fromTeamId)} · <span className="font-mono">{r.id}</span></span>
+                      </span>
+                      <span className="flex shrink-0 flex-col items-end gap-0.5 text-[11px]">
+                        <span className={cx('rounded px-1.5 py-px font-medium', r.status === 'OPEN' ? 'bg-wait-soft text-wait' : 'bg-canvas text-ink-2')}>
+                          {r.status === 'OPEN' ? 'Acknowledge' : r.committedDate ? 'Committed' : r.status[0] + r.status.slice(1).toLowerCase().replace('_', ' ')}
+                        </span>
+                        {due && <span className={cx('font-mono', late ? 'text-late' : 'text-ink-2')}>{r.committedDate ? '' : 'needed '}{fmtShort(due)}</span>}
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
+        {mine.length === 0 && incoming.length === 0 && routed.length === 0 && (
           <div className="card px-4 py-10 text-center text-ink-2">No open tasks for you. Switch to Jatin Sharma to see an engineer's day.</div>
         )}
         {groups.filter((g) => g.items.length).map((g) => (
@@ -125,7 +187,7 @@ function MyDayApp({ phone }: { phone: boolean }) {
             </h2>
             <ul className="flex flex-col gap-2">
               {g.items.map((t) => (
-                <TaskCard key={t.id} task={t} phone={phone} onDone={() => done(t)} onMove={() => setSheet({ kind: 'move', task: t })} onWait={() => setSheet({ kind: 'wait', task: t })} />
+                <TaskCard key={t.id} task={t} phone={phone} onDone={() => done(t)} onMove={() => setSheet({ kind: 'move', task: t })} onWait={t.id.includes(':') ? undefined : () => setSheet({ kind: 'wait', task: t })} />
               ))}
             </ul>
           </section>
@@ -143,6 +205,11 @@ function MyDayApp({ phone }: { phone: boolean }) {
           </section>
         )}
       </div>
+      {sheet?.kind === 'ask' && (
+        <Sheet phone={phone} title="Ask R&D head" onClose={() => setSheet(null)}>
+          <AskForm task={sheet.task} onDone={(f) => { setSheet(null); setFlash(f); }} />
+        </Sheet>
+      )}
       {sheet?.kind === 'move' && <MoveSheet phone={phone} task={sheet.task} onClose={() => setSheet(null)} onDone={(f) => { setSheet(null); setFlash(f); }} />}
       {sheet?.kind === 'wait' && <WaitSheet phone={phone} task={sheet.task} onClose={() => setSheet(null)} onDone={(f) => { setSheet(null); setFlash(f); }} />}
       {flash && <Toast phone={phone} flash={flash} onClose={() => setFlash(null)} />}
@@ -150,7 +217,7 @@ function MyDayApp({ phone }: { phone: boolean }) {
   );
 }
 
-function TaskCard({ task: t, phone, onDone, onMove, onWait }: { task: Task; phone: boolean; onDone: () => void; onMove: () => void; onWait: () => void }) {
+function TaskCard({ task: t, phone, onDone, onMove, onWait }: { task: Task; phone: boolean; onDone: () => void; onMove: () => void; onWait?: () => void }) {
   const teams = useStore((s) => s.teams);
   const project = useStore((s) => s.projects.find((p) => p.id === t.projectId));
   const today = useStore((s) => s.demoToday);
@@ -165,7 +232,7 @@ function TaskCard({ task: t, phone, onDone, onMove, onWait }: { task: Task; phon
       <div className={cx('flex gap-3 px-3 pt-3', phone ? 'flex-col gap-1.5' : 'items-start justify-between')}>
         <div className="min-w-0">
           <div className="text-[14px] font-medium leading-snug">{t.title}</div>
-          <div className="mt-0.5 truncate text-[11px] text-ink-2">{project?.name ?? 'No project'}</div>
+          <div className="mt-0.5 truncate text-[11px] text-ink-2">{project?.name ?? 'No project'}{t.id.includes(':') && <> · <span className="font-medium">plan activity · {t.stage === 'PROTO' ? 'Proto' : t.stage}</span></>}</div>
         </div>
         <div className={cx('flex shrink-0 flex-col gap-1', phone ? 'items-start' : 'items-end')}>
           <DatePair committed={t.committedDate} forecast={t.forecastDate} />
@@ -189,9 +256,11 @@ function TaskCard({ task: t, phone, onDone, onMove, onWait }: { task: Task; phon
         <button type="button" onClick={onMove} className={cx(act, 'border-line bg-surface text-ink hover:border-accent hover:text-accent')}>
           <CornerUpRight size={14} aria-hidden /> Move
         </button>
-        <button type="button" onClick={onWait} className={cx(act, 'border-line bg-surface text-wait hover:border-wait')}>
-          <Flag size={14} aria-hidden /> Waiting on…
-        </button>
+        {onWait && (
+          <button type="button" onClick={onWait} className={cx(act, 'border-line bg-surface text-wait hover:border-wait')}>
+            <Flag size={14} aria-hidden /> Waiting on…
+          </button>
+        )}
       </div>
     </li>
   );
@@ -264,12 +333,13 @@ function MoveSheet({ phone, task: t, onClose, onDone }: { phone: boolean; task: 
   const [reason, setReason] = useState('');
   const [blame, setBlame] = useState(w && (w.kind === 'TEAM' || w.kind === 'DEPT') ? w.id : t.teamId);
   const [note, setNote] = useState('');
-  const ok = !!reason && !!date && date !== t.forecastDate;
+  const loop = reason === 'TEST_FAIL' || reason === 'DESIGN_CHANGE';
+  const ok = !!reason && !!date && date !== t.forecastDate && (!loop || !!note.trim());
 
   const submit = () => {
     if (!ok) return;
     const before = new Set(selectExceptions(useStore.getState()).map((e) => e.id));
-    if (!moveForecast('task', t.id, date, reason, note.trim() || undefined, blame)) return;
+    if (!moveForecast(t.id.includes(':') ? 'activity' : 'task', t.id, date, reason, note.trim() || undefined, blame)) return;
     const s = useStore.getState();
     const fresh = selectExceptions(s).filter((e) => !before.has(e.id) && e.entityId === t.id);
     const name = (id: string) => s.people.find((p) => p.id === id)?.name ?? id;
@@ -324,7 +394,7 @@ function MoveSheet({ phone, task: t, onClose, onDone }: { phone: boolean; task: 
         {units.map((u) => <option key={u.id} value={u.id}>{unitLabel(teams, u.id)}</option>)}
       </select>
 
-      <label className={label} htmlFor="md-note">Note (optional)</label>
+      <label className={label} htmlFor="md-note">{loop ? (reason === 'TEST_FAIL' ? 'Failure mode (required): goes to the R&D head for re-test approval' : 'What changes (required): goes to the R&D head for approval') : 'Note (optional)'}</label>
       <input id="md-note" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Final 15K3S build not released"
         className="mb-4 w-full rounded-input border border-line px-2 py-1.5 text-[12px]" />
 
@@ -396,11 +466,7 @@ function WaitSheet({ phone, task: t, onClose, onDone }: { phone: boolean; task: 
             <span className="flex items-center gap-2"><Avatar name={p.name} />{p.name}</span><span className="text-[11px] text-ink-2">{p.title}</span>
           </button>
         ))}
-        {tab === 'HEAD' && (
-          <button type="button" className={row(curId === 'HEAD')} onClick={() => pick({ kind: 'HEAD' }, 'R&D head')}>
-            R&amp;D head<span className="text-[11px] text-ink-2">goes to the exceptions inbox</span>
-          </button>
-        )}
+        {tab === 'HEAD' && <AskForm task={t} onDone={onDone} />}
       </div>
       {cur && (
         <button type="button" onClick={() => { setWaitingOn(t.id, null); onDone({ lines: [<><b>{t.title}</b> is no longer waiting.</>] }); }}
@@ -409,6 +475,66 @@ function WaitSheet({ phone, task: t, onClose, onDone }: { phone: boolean; task: 
         </button>
       )}
     </Sheet>
+  );
+}
+
+const ASK_KINDS: { kind: AskKind; hint: string }[] = [
+  { kind: 'DECISION', hint: 'Choose between options' },
+  { kind: 'INPUT', hint: 'Need guidance or information' },
+  { kind: 'APPROVAL', hint: 'Permission to go ahead / spend' },
+  { kind: 'DATE_EXTENSION', hint: 'Move a committed date' },
+  { kind: 'INVOLVE', hint: 'Get someone else on this' },
+];
+
+/** Ask the head for something. Tied to a task, the task shows ⟶ R&D head until answered. */
+function AskForm({ task, onDone }: { task?: Task; onDone: (f: Flash) => void }) {
+  const raiseAsk = useStore((s) => s.raiseAsk);
+  const today = useStore((s) => s.demoToday);
+  const [kind, setKind] = useState<AskKind>('DECISION');
+  const [title, setTitle] = useState(task?.title ?? '');
+  const [ask, setAsk] = useState('');
+  const [date, setDate] = useState(addDays(task?.committedDate && task.committedDate > today ? task.committedDate : today, 7));
+  const needsDate = kind === 'DATE_EXTENSION';
+  const ok = title.trim() && (ask.trim() || kind === 'APPROVAL') && (!needsDate || (task && date));
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!ok) return;
+    raiseAsk({ kind, title: title.trim(), ask: ask.trim(), taskId: task?.id, proposedDate: needsDate ? date : undefined });
+    onDone({
+      lines: [<><b>{ASK_LABEL[kind]}</b> asked from the R&amp;D head: {title.trim()}</>, task ? 'The task shows ⟶ R&D head until it is answered. You will be notified.' : 'It is in his inbox now. You will be notified.'],
+    });
+  };
+  return (
+    <form onSubmit={submit} className="flex flex-col gap-3">
+      <div>
+        <span className={label}>What do you need</span>
+        <div className="grid grid-cols-2 gap-1.5">
+          {ASK_KINDS.map((k) => (
+            <button key={k.kind} type="button" onClick={() => setKind(k.kind)} aria-pressed={kind === k.kind}
+              className={cx('rounded-input border px-2.5 py-1.5 text-left', kind === k.kind ? 'border-accent bg-accent-soft' : 'border-line hover:border-accent')}>
+              <span className={cx('block text-[13px] font-medium', kind === k.kind && 'text-accent')}>{ASK_LABEL[k.kind]}</span>
+              <span className="block text-[11px] text-ink-2">{k.hint}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+      {!task && (
+        <label><span className={label}>Subject</span>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Second source for BLDC motor" className="h-9 w-full rounded-input border border-line px-2.5 text-[13px] outline-none focus:border-accent" />
+        </label>
+      )}
+      {needsDate && (task ? (
+        <label><span className={label}>New date (committed {fmtShort(task.committedDate)})</span>
+          <input type="date" value={date} min={today} onChange={(e) => e.target.value && setDate(e.target.value)} className="h-9 w-full rounded-input border border-line px-2.5 text-[13px] outline-none focus:border-accent" />
+        </label>
+      ) : <p className="text-table text-late">Raise a date extension from the task: Waiting on… → Head.</p>)}
+      <label><span className={label}>{kind === 'INVOLVE' ? 'Who / which team, and why' : kind === 'APPROVAL' ? 'Details (optional)' : 'Details'}</span>
+        <textarea value={ask} onChange={(e) => setAsk(e.target.value)} rows={3}
+          placeholder={kind === 'DATE_EXTENSION' ? 'Why the extra days are needed' : kind === 'INVOLVE' ? 'e.g. Need Electronics to join the DV review' : 'One or two lines the head can act on'}
+          className="w-full rounded-input border border-line px-2.5 py-2 text-[13px] outline-none focus:border-accent" />
+      </label>
+      <button type="submit" disabled={!ok} className="h-10 rounded-input bg-accent text-[13px] font-medium text-surface disabled:opacity-40">Send to R&amp;D head</button>
+    </form>
   );
 }
 

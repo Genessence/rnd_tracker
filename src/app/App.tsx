@@ -10,6 +10,7 @@ import { MeetingsPage } from '../features/meetings/MeetingsPage';
 import { MeetingPage } from '../features/meetings/MeetingPage';
 import { OutboxPage } from '../features/outbox/OutboxPage';
 import { LedgerPage } from '../features/ledger/LedgerPage';
+import { RequestsPage } from '../features/requests/RequestsPage';
 import { useStore } from '../store/store';
 import { homeOf } from './personas';
 import { Shell } from './Shell';
@@ -35,6 +36,7 @@ export function App() {
           <Route path="/meetings/:id" element={<MeetingPage />} />
           <Route path="/outbox" element={<OutboxPage />} />
           <Route path="/ledger" element={<LedgerPage />} />
+          <Route path="/requests" element={<RequestsPage />} />
           <Route path="*" element={<Home />} />
         </Route>
       </Routes>

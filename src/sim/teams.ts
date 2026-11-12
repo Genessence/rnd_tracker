@@ -2,6 +2,7 @@
 import transcriptVtt from '../../seed/demo-meeting-transcript.vtt?raw';
 import { extractMom, ownerFromText, parseVtt, resolveDate } from '../domain/mom-extractor';
 import { isOpen, isOverdue } from '../domain/metrics';
+import { parseMom } from '../domain/mom-upload';
 import type { AgendaItem, Meeting, Mom, StageCode } from '../domain/types';
 import { fmtDay, fmtShort } from '../lib/dates';
 import { isRequestLive, shortTeam } from '../store/selectors';
@@ -92,6 +93,27 @@ export function draftMom(meetingId: string): string {
   useStore.setState((st) => ({ moms: [...st.moms, mom] }));
   patchMeeting(meetingId, { momId: id });
   return id;
+}
+
+/** An ended meeting's MOM from an uploaded file (domain/mom-upload format) -> a draft to review and publish. */
+export function uploadMom(meetingId: string, text: string, fileName = 'MOM.txt'): string[] {
+  const s = useStore.getState();
+  const m = s.meetings.find((x) => x.id === meetingId)!;
+  const p = parseMom(s, text);
+  if (!p.actions.length && !p.decisions.length) return p.errors.length ? p.errors : ['Nothing to import.'];
+  const id = `mom-${s.moms.length + 1}`;
+  const date = meetingDate(m);
+  const mom: Mom = {
+    id, meetingId, status: 'DRAFT',
+    points: p.points.length ? p.points : m.agenda.map((a) => a.text),
+    decisions: p.decisions.map((text) => ({ text })),
+    actions: p.actions.map((a) => ({ text: a.text, ownerId: a.ownerId, dueDate: a.dueDate && a.dueDate >= date ? a.dueDate : undefined })),
+    upload: { fileName, text, at: s.demoToday, byId: s.currentPersonId },
+  };
+  useStore.setState((st) => ({ moms: [...st.moms, mom] }));
+  patchMeeting(meetingId, { momId: id });
+  s.logAction('MOM_UPLOADED', id, fileName);
+  return [];
 }
 
 export const updateMom = patchMom;

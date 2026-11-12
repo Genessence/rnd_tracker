@@ -45,6 +45,21 @@ export const selectHeadInbox = (s: AppData) => {
 export const selectMyTasks = (s: AppData, personId = s.currentPersonId) =>
   s.tasks.filter((t) => isOpen(t) && t.ownerIds.includes(personId));
 
+/** Stage-gate plan activities a person owns, shaped as tasks (id `${projectId}:${activityId}`) for My Day. */
+export const selectMyActivities = (s: AppData, personId = s.currentPersonId, includeDone = false): Task[] =>
+  s.projects.flatMap((p) => (p.plan ?? [])
+    .filter((a) => a.ownerId === personId && (includeDone || a.status !== 'DONE'))
+    .map((a) => {
+      const req = a.requestId ? s.requests.find((r) => r.id === a.requestId) : undefined;
+      return {
+        id: `${p.id}:${a.activityId}`, title: `${a.sNo} ${a.name}`, teamId: p.teamId, projectId: p.id, stage: a.stage,
+        ownerIds: [personId], size: 'M', status: a.status,
+        waitingOn: req && isRequestLive(req) ? { kind: req.toKind, id: req.toId, requestId: req.id } : null,
+        baselineDate: a.baselineEnd, committedDate: a.committedEnd, forecastDate: a.forecastEnd, doneDate: a.actualEnd,
+        lastUpdatedAt: s.demoToday, source: 'generated',
+      } satisfies Task;
+    }));
+
 // ---- hooks -----------------------------------------------------------------------------------------------
 
 export function useKpis(teamId?: string): Kpis {
@@ -90,11 +105,11 @@ export function blockerHeatmap(requests: Request[], today: string, fromTeamId?: 
 }
 
 /** This week's load points per person (capacity in settings), highest first. */
-export function topLoad(s: Pick<AppData, 'tasks' | 'people' | 'demoToday'>, limit = 10, teamId?: string) {
+export function topLoad(s: Pick<AppData, 'tasks' | 'people' | 'demoToday' | 'projects'>, limit = 10, teamId?: string) {
   const ws = weekStart(s.demoToday);
   return s.people
     .filter((p) => p.role !== 'HEAD' && (!teamId || p.teamId === teamId))
-    .map((p) => ({ person: p, load: personLoad(s.tasks, p.id, ws) }))
+    .map((p) => ({ person: p, load: personLoad(s.tasks, p.id, ws, s.projects) }))
     .filter((x) => x.load > 0)
     .sort((a, b) => b.load - a.load)
     .slice(0, limit);

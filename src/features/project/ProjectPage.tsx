@@ -1,11 +1,13 @@
 // #/projects/:id: header (StageRail, customer, milestone, owner) + tabs Plan / Requests / Meetings & MOM.
 import * as Tabs from '@radix-ui/react-tabs';
-import { ArrowLeft, CalendarPlus, ChevronDown, ChevronRight, ExternalLink, FileText } from 'lucide-react';
+import { ArrowLeft, CalendarPlus, Check, ChevronDown, ChevronRight, ExternalLink, FileText } from 'lucide-react';
 import { Fragment, useMemo, useState, type ReactNode } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Avatar, PageHeader } from '../../app/Shell';
 import { cx, DatePair, RagDot, StageRail, WaitingChip } from '../../design';
 import { template } from '../../domain/seed';
+import { gateChecklist, nextStage, readiness } from '../../domain/gate';
+import { daysLostByReason } from '../../domain/ledger';
 import type { PlanActivity, Project, StageCode, TaskStatus } from '../../domain/types';
 import { fmtDay, fmtShort, workingDaysBetween } from '../../lib/dates';
 import { isRequestLive, shortTeam } from '../../store/selectors';
@@ -35,6 +37,7 @@ export function ProjectPage() {
   const owner = people.find((p) => p.id === project.ownerId);
   const teamName = shortTeam(teams.find((t) => t.id === project.teamId)?.name ?? project.teamId);
   const mtgCount = meetings.filter((m) => m.scope.projectId === id).length;
+  const gate = gateChecklist(project);
 
   return (
     <>
@@ -60,11 +63,12 @@ export function ProjectPage() {
         </Meta>
         <Meta label="Owner"><span className="flex items-center gap-2"><Avatar name={owner?.name ?? '?'} className="h-6 w-6 text-[10px]" />{owner?.name ?? '–'}</span></Meta>
         {project.note && <p className="col-span-4 -mt-2 border-t border-line pt-3 text-table text-ink-2">{project.note}</p>}
+        <ReadinessChips project={project} />
       </section>
 
       <Tabs.Root value={tab} onValueChange={(v) => setParams({ tab: v }, { replace: true })}>
         <Tabs.List className="mb-4 flex gap-1 border-b border-line">
-          {[['plan', 'Plan', null], ['meetings', 'Meetings & MOM', mtgCount]].map(([v, label, n]) => (
+          {[['plan', 'Plan', null], ['gate', `${STAGE_NAME[project.stage] ?? project.stage} gate`, project.plan ? `${gate.done}/${gate.total}` : null], ['meetings', 'Meetings & MOM', mtgCount]].map(([v, label, n]) => (
             <Tabs.Trigger
               key={v as string}
               value={v as string}
@@ -75,6 +79,7 @@ export function ProjectPage() {
           ))}
         </Tabs.List>
         <Tabs.Content value="plan">{project.plan ? <Plan project={project} plan={project.plan} /> : <TaskPlan project={project} />}</Tabs.Content>
+        <Tabs.Content value="gate"><GatePanel project={project} /></Tabs.Content>
         <Tabs.Content value="meetings"><ProjectMeetings project={project} /></Tabs.Content>
       </Tabs.Root>
     </>
@@ -297,6 +302,129 @@ function Progress({ done, total }: { done: number; total: number }) {
 }
 
 // ---- Plan fallback: projects without an instantiated template show their tasks ---------------------------------
+
+function ReadinessChips({ project }: { project: Project }) {
+  const today = useStore((s) => s.demoToday);
+  const rows = readiness(project, today);
+  if (!rows.length) return null;
+  return (
+    <div className="col-span-4 -mt-2 flex flex-wrap items-center gap-2 border-t border-line pt-3">
+      <span className="text-[11px] font-medium uppercase tracking-wide text-ink-2">Readiness</span>
+      {rows.map((r) => (
+        <span key={r.key} title={r.next ? `Next: ${r.next.name}, due ${fmtShort(r.next.forecastEnd)}` : 'All done'}
+          className={cx('inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[12px]',
+            r.status === 'ready' ? 'border-ok bg-ok-soft text-ok' : r.status === 'late' ? 'border-late bg-late-soft text-late' : 'border-line bg-surface text-ink-2')}>
+          {r.status === 'ready' ? <Check size={12} aria-hidden /> : null}{r.key}<span className="num">{r.done}/{r.total}</span>
+          {r.status === 'late' && <span className="font-medium">late</span>}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+// ---- Stage gate: deliverables checklist -> gate review ask to the head -> Go / Conditional go / Hold ---------------
+
+const STAGE_NAME: Record<string, string> = { CE: 'CE', PROTO: 'Proto', DV: 'DV', PP: 'PP', MP: 'MP' };
+
+function GatePanel({ project: p }: { project: Project }) {
+  const s = useStore();
+  const g = gateChecklist(p);
+  const me = s.people.find((x) => x.id === s.currentPersonId);
+  const canAct = me?.role === 'HEAD' || s.teams.find((t) => t.id === p.teamId)?.leaderId === me?.id;
+  const history = s.decisions.filter((d) => d.kind === 'GATE' && d.projectId === p.id);
+  const pending = history.find((d) => d.status === 'PENDING');
+  const name = (id?: string) => s.people.find((x) => x.id === id)?.name ?? 'Unassigned';
+  const stage = STAGE_NAME[p.stage] ?? p.stage;
+  const next = nextStage(p.stage);
+  const closed = p.nextMilestone === 'Project closed';
+  // Lessons learned: pre-filled with this stage's top delay reasons from the ledger.
+  const top = useMemo(() => {
+    const inStage = new Set((p.plan ?? []).filter((a) => a.stage === p.stage).map((a) => `${p.id}:${a.activityId}`));
+    const mine = s.dateChanges.filter((c) => inStage.has(c.entityId) || (c.entity === 'task' && s.tasks.find((t) => t.id === c.entityId)?.projectId === p.id));
+    return daysLostByReason(mine).slice(0, 3).map((b) => `- ${s.reasonCodes.find((r) => r.code === b.key)?.label ?? b.key}: ${b.days}d over ${b.count} move${b.count === 1 ? '' : 's'}`).join('\n');
+  }, [s.dateChanges, s.tasks, s.reasonCodes, p]);
+  const [edited, setLessons] = useState<string | null>(null);
+  const lessons = edited ?? (top ? `Top delays:\n${top}\nWhat we change next stage: ` : 'What we change next stage: ');
+
+  if (!p.plan) return (
+    <section className="card px-6 py-10 text-center">
+      <p className="text-[15px] font-semibold">No stage-gate plan on this project yet</p>
+      <p className="mt-1 text-ink-2">The gate checklist comes from the R&amp;D cycle template: each stage's sign-offs and documents.</p>
+      {canAct && <button type="button" className={cx(btn, 'mt-4')} onClick={() => s.instantiateProjectPlan(p.id)}>Build plan from template</button>}
+    </section>
+  );
+
+  return (
+    <div className="grid grid-cols-[minmax(0,1fr)_340px] gap-6">
+      <section className="card overflow-hidden">
+        <div className="border-b border-line px-4 py-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-[15px] font-semibold">{stage} gate deliverables</h2>
+            <span className="num text-[13px]"><b className={g.ready ? 'text-ok' : 'text-ink'}>{g.done}</b> / {g.total} done</span>
+          </div>
+          <div className="mt-2 h-2 overflow-hidden rounded-full bg-canvas"><div className={cx('h-full rounded-full', g.ready ? 'bg-ok' : 'bg-accent')} style={{ width: `${g.total ? (g.done / g.total) * 100 : 0}%` }} /></div>
+          <p className="mt-1.5 text-table text-ink-2">Sign-offs and documents from the template for this stage. All must be done before the gate review.</p>
+        </div>
+        <ul>
+          {g.items.map((a) => {
+            const done = a.status === 'DONE';
+            const late = !done && a.forecastEnd < s.demoToday;
+            return (
+              <li key={a.activityId} className="flex items-center gap-3 border-b border-line px-4 py-2.5 last:border-0">
+                <span className={cx('grid h-5 w-5 shrink-0 place-items-center rounded-full border', done ? 'border-ok bg-ok text-surface' : 'border-line')}>{done && <Check size={12} aria-hidden />}</span>
+                <span className="min-w-0 flex-1">
+                  <span className={cx('block text-[13px] font-medium', done && 'text-ink-2 line-through')}>{a.sNo} {a.name}</span>
+                  <span className="block text-[11px] text-ink-2">{name(a.ownerId)} · {a.kind}{a.dependencyTeam ? ` · with ${shortTeam(s.teams.find((t) => t.id === a.dependencyTeam)?.name ?? a.dependencyTeam)}` : ''}</span>
+                </span>
+                <span className={cx('num shrink-0 text-[12px]', late ? 'text-late' : 'text-ink-2')}>{done ? `done ${fmtShort(a.actualEnd ?? a.forecastEnd)}` : `due ${fmtShort(a.forecastEnd)}`}</span>
+                {canAct && !done && <button type="button" className="shrink-0 text-[12px] font-medium text-ok hover:underline" onClick={() => s.completeTask(`${p.id}:${a.activityId}`)}>Mark done</button>}
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+      <div className="flex flex-col gap-4">
+        <section className={cx('card border-l-4 px-4 py-4', p.onHold ? 'border-l-late' : pending ? 'border-l-risk' : g.ready ? 'border-l-ok' : 'border-l-line')}>
+          <h3 className="text-[14px] font-semibold">Gate review</h3>
+          {closed ? <p className="mt-1 text-table text-ok">MP gate passed. Project closed.</p>
+            : p.onHold ? <p className="mt-1 text-table text-late">On hold after the last gate review. A new review can be asked once the issues are fixed.</p>
+            : pending ? <p className="mt-1 text-table">Waiting for the R&amp;D head's decision since <span className="num">{fmtShort(pending.raisedOn)}</span>: Go, Conditional go or Hold.</p>
+            : g.ready ? <p className="mt-1 text-table">All {stage} deliverables are done. Ask the R&amp;D head for a Go to {next ? STAGE_NAME[next] : 'close the project'}.</p>
+            : <p className="mt-1 text-table text-ink-2">{g.total - g.done} deliverable{g.total - g.done === 1 ? '' : 's'} still open. The review unlocks when all are done.</p>}
+          {canAct && !closed && !pending && g.ready && (
+            <label className="mt-3 block">
+              <span className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-ink-2">Lessons learned this stage</span>
+              <textarea rows={4} value={lessons} onChange={(e) => setLessons(e.target.value)}
+                className="w-full rounded-input border border-line px-2.5 py-2 font-mono text-[11px] leading-4 outline-none focus:border-accent" />
+            </label>
+          )}
+          {canAct && !closed && !pending && (
+            <button type="button" disabled={!g.ready} className={cx('mt-3 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-input text-[13px] font-medium', 'bg-accent text-surface disabled:opacity-40')}
+              onClick={() => s.requestGate(p.id, lessons.replace(/\nWhat we change next stage: $/, ''))}>
+              {p.onHold ? 'Fixed: ask for review again' : 'Request gate review'}
+            </button>
+          )}
+        </section>
+        <section className="card px-4 py-3">
+          <h3 className="mb-1.5 text-[13px] font-semibold">Gate history</h3>
+          {history.length === 0 && <p className="text-table text-ink-2">No gate reviews yet.</p>}
+          <ul className="flex flex-col gap-1.5">
+            {[...history].reverse().map((d) => (
+              <li key={d.id} className="text-table">
+                <span className="font-medium">{STAGE_NAME[d.stage ?? ''] ?? d.stage} gate</span> · <span className="num text-ink-2">{fmtShort(d.raisedOn)}</span>
+                <span className={cx('ml-1.5 rounded px-1.5 py-px text-[11px] font-medium', d.status === 'PENDING' ? 'bg-risk-soft text-risk' : d.status === 'DECIDED' ? 'bg-ok-soft text-ok' : 'bg-late-soft text-late')}>
+                  {d.status === 'PENDING' ? 'Pending' : d.status === 'DECIDED' ? 'Go' : 'Hold'}
+                </span>
+                {d.outcome && <div className="text-[11px] text-ink-2">“{d.outcome}”</div>}
+                {d.lessons && <pre className="mt-0.5 whitespace-pre-wrap font-mono text-[10px] leading-4 text-ink-2">{d.lessons}</pre>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+    </div>
+  );
+}
 
 function TaskPlan({ project }: { project: Project }) {
   const navigate = useNavigate();

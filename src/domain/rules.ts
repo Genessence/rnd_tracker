@@ -37,6 +37,13 @@ export function evaluate(state: RuleState, demoToday: string): Exception[] {
   }
 
   for (const it of items) {
+    // R7: past its date and nobody re-forecast (forecast = committed, both in the past) -> leader. R1 never sees these.
+    // ponytail: fixed 2-day grace; make it a setting if leaders want to tune it.
+    if (it.forecast === it.committed && it.forecast < addDays(demoToday, -2)) {
+      add({ id: `R7:${it.id}:${it.forecast}`, ruleId: 'R7', entityId: it.id, teamId: it.teamId, title: it.title,
+        detail: `Was due ${fmtShort(it.forecast)}, ${daysBetween(it.forecast, demoToday)}d ago; not done and not re-forecast`,
+        since: addDays(it.forecast, 3), routedToId: leaderOf(state, it.teamId) });
+    }
     // R1: forecast beyond committed by more than N calendar days -> leader; red project also -> head.
     const slip = daysBetween(it.committed, it.forecast);
     if (slip > cfg.r1SlipDays) {
@@ -57,12 +64,13 @@ export function evaluate(state: RuleState, demoToday: string): Exception[] {
   }
 
   // R3: waiting on the head, or a pending decision.
-  for (const t of tasks.filter(isWaitingOnHead))
+  const asked = new Set(state.decisions.filter((d) => d.status === 'PENDING' && d.taskId).map((d) => d.taskId));
+  for (const t of tasks.filter((t) => isWaitingOnHead(t) && !asked.has(t.id)))
     add({ id: `R3:${t.id}`, ruleId: 'R3', entityId: t.id, teamId: t.teamId, title: t.title,
       detail: 'Waiting on R&D head', since: t.lastUpdatedAt, routedToId: head });
   for (const d of state.decisions.filter((d) => d.status === 'PENDING'))
     add({ id: `R3:${d.id}`, ruleId: 'R3', entityId: d.id, teamId: d.teamId, title: d.title,
-      detail: d.ask, since: d.raisedOn, routedToId: head });
+      detail: d.ask || d.title, since: d.raisedOn, routedToId: head });
 
   // R4: not updated for N days -> owner; after N+3 days -> team leader.
   for (const t of tasks.filter(isOpen)) {
@@ -78,10 +86,10 @@ export function evaluate(state: RuleState, demoToday: string): Exception[] {
   const limit = (cfg.r5WeeklyCapacity * cfg.r5LoadPct) / 100;
   const thisWeek = weekStart(demoToday);
   const weeks = [addDays(thisWeek, -14), addDays(thisWeek, -7)];
-  const owners = new Set(tasks.flatMap((t) => t.ownerIds));
+  const owners = new Set([...tasks.flatMap((t) => t.ownerIds), ...projects.flatMap((p) => (p.plan ?? []).map((a) => a.ownerId ?? ''))]);
   for (const person of state.people) {
     if (!owners.has(person.id)) continue;
-    const loads = weeks.map((w) => personLoad(tasks, person.id, w));
+    const loads = weeks.map((w) => personLoad(tasks, person.id, w, projects));
     if (!loads.every((l) => l > limit)) continue;
     const leader = leaderOf(state, person.teamId);
     add({ id: `R5:${person.id}:${thisWeek}`, ruleId: 'R5', entityId: person.id, teamId: person.teamId,

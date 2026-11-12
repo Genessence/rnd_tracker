@@ -122,6 +122,8 @@ export interface Request {
   requestedDate?: string | null;
   committedDate?: string | null;
   plannedTatDays?: number | null;
+  deliveredAt?: string; // receiving team marked it delivered (status DONE)
+  receivedAt?: string; // requester confirmed receipt
   comments: RequestComment[];
   history: HistoryEvent[];
 }
@@ -140,6 +142,7 @@ export interface DateChange {
   attributedTo?: string; // team / dept id
   byId: string;
   at: string;
+  dispute?: { askId: string; status: 'OPEN' | 'UPHELD' | 'REJECTED' }; // the booked department contested it
 }
 
 export interface Decision {
@@ -148,11 +151,24 @@ export interface Decision {
   title: string;
   ask: string;
   raisedById: string;
-  kind: 'DECISION' | 'SUPPORT' | 'ESCALATION';
+  kind: AskKind;
   status: 'PENDING' | 'DECIDED' | 'PUSHED_BACK';
   raisedOn: string;
   outcome?: string;
+  taskId?: string; // the task this ask holds up (it shows ⟶ R&D head until answered)
+  proposedDate?: string; // DATE_EXTENSION: the new date asked for
+  projectId?: string; // GATE: the project whose current stage is up for review
+  stage?: StageCode; // GATE: the stage being closed
+  changeId?: string; // dispute of a date change's booking
+  lessons?: string; // GATE: lessons learned in the stage being closed
 }
+
+/** What the person needs from the head. Seed uses DECISION / SUPPORT / ESCALATION. */
+export type AskKind = 'DECISION' | 'INPUT' | 'APPROVAL' | 'DATE_EXTENSION' | 'INVOLVE' | 'SUPPORT' | 'ESCALATION' | 'GATE';
+export const ASK_LABEL: Record<AskKind, string> = {
+  DECISION: 'Decision', INPUT: 'Input', APPROVAL: 'Approval', DATE_EXTENSION: 'Date extension',
+  INVOLVE: 'Involve people', SUPPORT: 'Support', ESCALATION: 'Escalation', GATE: 'Gate review',
+};
 
 export interface AgendaItem {
   text: string;
@@ -190,6 +206,7 @@ export interface Mom {
   decisions: { text: string; sourceLine?: number }[];
   actions: { text: string; ownerId?: string; dueDate?: string; sourceLine?: number; taskId?: string }[];
   publishedAt?: string;
+  upload?: { fileName: string; text: string; at: string; byId: string }; // set when the MOM came from an uploaded file
 }
 
 export interface Email {
@@ -204,7 +221,7 @@ export interface Email {
   replied?: 'DONE' | 'NEW_DATE';
 }
 
-export type RuleId = 'R1' | 'R2' | 'R3' | 'R4' | 'R5' | 'R6';
+export type RuleId = 'R1' | 'R2' | 'R3' | 'R4' | 'R5' | 'R6' | 'R7';
 
 export interface Exception {
   id: string;

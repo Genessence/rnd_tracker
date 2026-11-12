@@ -35,7 +35,7 @@ export function MeetingsPage() {
       <PageHeader
         title="Meetings"
         subtitle={<>Reviews scheduled from a project stage. Transcripts become a draft MOM, and its actions become tasks. <SimulatedTag label="Simulated Teams" /></>}
-        actions={<button type="button" className={btnPrimary} onClick={() => setOpen(true)}><CalendarPlus size={14} /> Schedule meeting</button>}
+        actions={<><button type="button" className={btnPrimary} onClick={() => setOpen(true)}><CalendarPlus size={14} /> Schedule meeting</button></>}
       />
       <WeekView />
       <MeetingList />
@@ -140,7 +140,7 @@ function MeetingList() {
                     </div>
                   </td>
                   <td className="py-2.5"><StatusBadge m={m} /></td>
-                  <td className="px-4 py-2.5">{mom ? <span className={mom.status === 'PUBLISHED' ? 'text-ok' : 'text-risk'}>{mom.status === 'PUBLISHED' ? 'Published' : 'Draft'}</span> : <span className="text-ink-2">-</span>}</td>
+                  <td className="px-4 py-2.5">{mom ? <span className={mom.status === 'PUBLISHED' ? 'text-ok' : 'text-risk'}>{mom.status === 'PUBLISHED' ? 'Published' : 'Draft'}{mom.upload ? <span className="text-ink-2"> · uploaded</span> : null}</span> : <span className="text-ink-2">-</span>}</td>
                 </tr>
               );
             })}

@@ -1,6 +1,6 @@
 // Signature components (plan section 4). Use these everywhere; no stock component kit.
 import clsx from 'clsx';
-import type { ReactNode } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 import { daysBetween, fmtShort } from '../lib/dates';
 import type { Rag, StageCode } from '../domain/types';
 
@@ -207,4 +207,32 @@ export function SimulatedTag({ label = 'Simulated', className }: { label?: strin
       {label}
     </span>
   );
+}
+
+// ---- ActionCard --------------------------------------------------------------------------------------------
+/** Big, coloured "do this" card: count, title, one-line hint. Click jumps to the work (onClick) or a route (href, "#/..."). */
+const ACTION_TONE = {
+  accent: { edge: 'border-l-accent', chip: 'bg-accent-soft text-accent', num: 'text-accent' },
+  late: { edge: 'border-l-late', chip: 'bg-late-soft text-late', num: 'text-late' },
+  risk: { edge: 'border-l-risk', chip: 'bg-risk-soft text-risk', num: 'text-risk' },
+  wait: { edge: 'border-l-wait', chip: 'bg-wait-soft text-wait', num: 'text-wait' },
+  ok: { edge: 'border-l-ok', chip: 'bg-ok-soft text-ok', num: 'text-ok' },
+} as const;
+export function ActionCard({ n, title, sub, icon: Icon, tone, onClick, href, compact }: {
+  n: number; title: string; sub: ReactNode; icon: ComponentType<{ size?: string | number; 'aria-hidden'?: boolean | 'true' | 'false' }>; tone: keyof typeof ACTION_TONE;
+  onClick?: () => void; href?: string; compact?: boolean;
+}) {
+  const t = ACTION_TONE[tone];
+  const cls = clsx('card flex min-w-0 items-start gap-3 border-l-4 text-left transition hover:-translate-y-px hover:shadow-popover', compact ? 'px-3 py-2.5' : 'px-4 py-3.5', t.edge, !n && 'opacity-55');
+  const body = (
+    <>
+      {!compact && <span className={clsx('grid h-10 w-10 shrink-0 place-items-center rounded-full', t.chip)}><Icon size={20} aria-hidden /></span>}
+      <span className="min-w-0 flex-1">
+        <span className={clsx('block font-mono font-semibold', compact ? 'text-[22px] leading-7' : 'text-[30px] leading-8', n ? t.num : 'text-ink-2')}>{n}</span>
+        <span className={clsx('block font-semibold', compact ? 'text-[12px] leading-4' : 'text-[14px]')}>{title}</span>
+        {!compact && <span className="block truncate text-table text-ink-2">{n ? sub : 'All clear'}</span>}
+      </span>
+    </>
+  );
+  return href ? <a href={href} className={cls}>{body}</a> : <button type="button" onClick={onClick} disabled={!n && !href} className={cls}>{body}</button>;
 }

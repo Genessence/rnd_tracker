@@ -1,6 +1,6 @@
 // Delay ledger aggregations (plan sections 8-9). Pure.
 import { addDays, daysBetween, weekStart, workingDaysBetween } from '../lib/dates';
-import type { DateChange, Project, Task } from './types';
+import type { DateChange, Project, Request, Task } from './types';
 
 export interface Bucket {
   key: string;
@@ -76,4 +76,24 @@ export function onTimeTrend(tasks: Task[], today: string, weeks = 8, teamId?: st
   }
   for (const p of pts) p.pct = p.done ? Math.round((100 * p.onTime) / p.done) : null;
   return pts;
+}
+
+export interface DeliveryRow { dept: string; delivered: number; onTime: number; avgDaysLate: number; open: number }
+
+/** Per receiving department: delivered requests, how many by the committed date, average days late; plus still open. */
+export function deliveryScorecard(requests: Request[]): DeliveryRow[] {
+  const m = new Map<string, DeliveryRow & { lateDays: number }>();
+  for (const r of requests) {
+    if (r.status === 'REJECTED') continue;
+    const row = m.get(r.toId) ?? { dept: r.toId, delivered: 0, onTime: 0, avgDaysLate: 0, open: 0, lateDays: 0 };
+    if (r.status === 'DONE' && r.deliveredAt) {
+      row.delivered++;
+      const late = r.committedDate ? Math.max(0, daysBetween(r.committedDate, r.deliveredAt)) : 0;
+      if (!late) row.onTime++;
+      row.lateDays += late;
+    } else if (r.status !== 'ACCEPTED' && r.status !== 'DONE') row.open++;
+    m.set(r.toId, row);
+  }
+  return [...m.values()].map(({ lateDays, ...r }) => ({ ...r, avgDaysLate: r.delivered ? Math.round((lateDays / r.delivered) * 10) / 10 : 0 }))
+    .sort((a, b) => b.open + b.delivered - (a.open + a.delivered));
 }

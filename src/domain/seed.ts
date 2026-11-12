@@ -178,7 +178,7 @@ export function buildInitialState(today: string = DEFAULT_DEMO_TODAY): SeedState
     requests: [...requests, ...filler.requests],
     decisions: s.decisions,
     dateChanges: [...showcase.dateChanges, ...filler.dateChanges],
-    reasonCodes: s.reasonCodes,
+    reasonCodes: [...s.reasonCodes, { code: 'ACCEPTED_NEW_DATE', label: 'New date accepted by R&D head' }, { code: 'HEAD_APPROVED_EXTENSION', label: 'Extension approved by R&D head' }],
     escalationRules: s.escalationRules,
     labs: s.labs,
     deckKpis: s.deckKpis,

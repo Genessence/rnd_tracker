@@ -1,13 +1,13 @@
 // #/team/:teamId: the team leader's page. Same building blocks as the deck's team page, live.
-import { ArrowRight, UserX } from 'lucide-react';
+import { ArrowRight, Ban, CalendarX, Gavel, Hourglass, UserX } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { Avatar, PageHeader } from '../../app/Shell';
-import { cx, DatePair, KpiTile, RagDot, StageRail, WaitingChip, type KpiTileProps } from '../../design';
+import { ActionCard, cx, DatePair, RagDot, StageRail, WaitingChip } from '../../design';
 import { isDueThisWeek, isOpen, isOverdue, isWaitingOnHead, personLoad } from '../../domain/metrics';
-import type { DeckKpi, Task } from '../../domain/types';
+import type { Task } from '../../domain/types';
 import { daysBetween, fmtLong, fmtShort, weekStart } from '../../lib/dates';
-import { blockerHeatmap, isRequestLive, useKpis } from '../../store/selectors';
+import { blockerHeatmap, isRequestLive, selectExceptions, useKpis } from '../../store/selectors';
 import { useStore } from '../../store/store';
 import { requestIdOf, unitLabel, waitingLabel } from '../myday/labels';
 import { AddTaskButton, NewProjectButton, useLeadTeam } from '../project/LeadActions';
@@ -55,7 +55,7 @@ export function TeamPage() {
         }
       />
       <TeamLeadBar teamId={teamId} />
-      <KpiStrip teamId={teamId} />
+      <TeamActions teamId={teamId} />
       <div className="mt-6 grid grid-cols-[minmax(0,1fr)_400px] gap-6">
         <div className="flex min-w-0 flex-col gap-6">
           <ProjectTable teamId={teamId} />
@@ -71,36 +71,25 @@ export function TeamPage() {
   );
 }
 
-// ---- KPI strip ---------------------------------------------------------------------------------------------
+// ---- Action cards: what needs doing on this team, one click to the list ------------------------------------
 
-const KPIS: { key: keyof ReturnType<typeof useKpis>; deck: keyof DeckKpi; label: string; tone: KpiTileProps['tone'] }[] = [
-  { key: 'open', deck: 'openItems', label: 'Open items', tone: 'default' },
-  { key: 'overdue', deck: 'overdue', label: 'Overdue', tone: 'late' },
-  { key: 'dueThisWeek', deck: 'dueThisWeek', label: 'Due this week', tone: 'default' },
-  { key: 'waiting', deck: 'waitingOnOthers', label: 'Waiting on others', tone: 'wait' },
-  { key: 'needsHead', deck: 'needsHead', label: 'Goes to head', tone: 'accent' },
-  { key: 'projectsAtRed', deck: 'projectsAtRed', label: 'Projects at red', tone: 'late' },
-];
+const jump = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-function KpiStrip({ teamId }: { teamId: string }) {
+function TeamActions({ teamId }: { teamId: string }) {
+  const s = useStore();
+  const team = s.teams.find((t) => t.id === teamId)!;
+  const leader = s.people.find((p) => p.id === team.leaderId);
+  const isMe = s.currentPersonId === team.leaderId;
   const k = useKpis(teamId);
-  const deck = useStore((s) => (s.deckKpis as Record<string, DeckKpi | undefined>)[teamId]);
+  const routed = useMemo(() => selectExceptions(s).filter((e) => e.routedToId === team.leaderId).length, [s, team.leaderId]);
+  const toHead = s.decisions.filter((d) => d.teamId === teamId && d.status === 'PENDING').length
+    + s.tasks.filter((t) => t.teamId === teamId && isWaitingOnHead(t)).length;
   return (
-    <section aria-label="Team numbers" className="grid grid-cols-6 gap-3">
-      {KPIS.map(({ key, deck: dk, label, tone }) => {
-        const ref = deck?.[dk] as number | undefined;
-        return (
-          <KpiTile
-            key={key}
-            label={label}
-            value={k[key]}
-            tone={tone}
-            delta={ref === undefined ? undefined : k[key] - ref}
-            hint={ref === undefined ? undefined : <span>vs 13 Oct deck <span className="num">{ref}</span></span>}
-            className="w-full"
-          />
-        );
-      })}
+    <section aria-label="Needs attention" className="grid grid-cols-4 gap-3">
+      <ActionCard n={routed} title={isMe ? 'Needs your input' : `Needs ${leader?.name.split(' ')[0] ?? 'the leader'}`} sub="Slips, stale and unacknowledged items" icon={Gavel} tone="accent" href={isMe ? '#/my-day' : undefined} />
+      <ActionCard n={k.overdue} title="Overdue" sub="Past forecast: close or move" icon={CalendarX} tone="late" onClick={() => jump('team-todo')} />
+      <ActionCard n={k.waiting} title="Waiting on other teams" sub="Chase the requests" icon={Ban} tone="wait" onClick={() => jump('team-waiting')} />
+      <ActionCard n={toHead} title="With R&D head" sub="Decisions and asks pending" icon={Hourglass} tone="risk" onClick={() => jump('team-head')} />
     </section>
   );
 }
@@ -197,7 +186,7 @@ function TeamTodo({ teamId }: { teamId: string }) {
   const name = (id: string) => people.find((p) => p.id === id)?.name ?? id;
 
   return (
-    <section className="card" aria-label="Team to-do">
+    <section id="team-todo" className="card scroll-mt-4" aria-label="Team to-do">
       <div className="flex items-center justify-between border-b border-line px-4 py-3">
         <div>
           <h2 className="text-[15px] font-semibold">Team to-do</h2>
@@ -258,15 +247,16 @@ function TeamTodo({ teamId }: { teamId: string }) {
 function TeamLoad({ teamId }: { teamId: string }) {
   const allPeople = useStore((s) => s.people);
   const tasks = useStore((s) => s.tasks);
+  const projects = useStore((s) => s.projects);
   const today = useStore((s) => s.demoToday);
   const cap = useStore((s) => s.settings.r5WeeklyCapacity);
   const rows = useMemo(() => {
     const ws = weekStart(today);
     return allPeople
       .filter((p) => p.teamId === teamId && p.role !== 'HEAD')
-      .map((p) => ({ p, load: personLoad(tasks, p.id, ws), owns: tasks.some((t) => t.ownerIds.includes(p.id)) }))
+      .map((p) => ({ p, load: personLoad(tasks, p.id, ws, projects), owns: tasks.some((t) => t.ownerIds.includes(p.id)) || projects.some((pr) => pr.plan?.some((a) => a.ownerId === p.id)) }))
       .sort((a, b) => Number(b.owns) - Number(a.owns) || b.load - a.load);
-  }, [allPeople, tasks, today, teamId]);
+  }, [allPeople, tasks, projects, today, teamId]);
   const none = rows.filter((r) => !r.owns).length;
 
   return (
@@ -324,7 +314,7 @@ function WaitingOnOthers({ teamId }: { teamId: string }) {
   );
   const max = Math.max(1, ...rows.map((r) => r.total));
   return (
-    <section className="card" aria-label="Waiting on other teams">
+    <section id="team-waiting" className="card scroll-mt-4" aria-label="Waiting on other teams">
       <SectionHead title="Waiting on other teams" count={live.length} hint="Live requests this team raised, by receiver" />
       <ul className="flex flex-col gap-1.5 px-4 py-3">
         {rows.length === 0 && <li className="py-4 text-center text-ink-2">Nobody is holding this team up.</li>}
@@ -369,7 +359,7 @@ function GoesToHead({ teamId }: { teamId: string }) {
   ], [decisions, tasks, teamId]);
   const pending = items.filter((i) => i.status === 'PENDING').length;
   return (
-    <section className="card" aria-label="Goes to head">
+    <section id="team-head" className="card scroll-mt-4" aria-label="Goes to head">
       <SectionHead title="Goes to head" count={pending} hint="Decisions and support asked of the R&D head" />
       <ul>
         {items.length === 0 && <li className="px-4 py-6 text-center text-ink-2">Nothing waiting on the head.</li>}

@@ -1,7 +1,7 @@
 // #/requests: Incoming queue (departments / support teams) and Outgoing (model teams), with a detail drawer.
 // Flow: raised -> acknowledged -> committed -> accepted (or countered). Moving a commitment needs a reason + blame.
 import * as Dialog from '@radix-ui/react-dialog';
-import { ArrowRight, Check, CornerUpLeft, MessageSquare, X } from 'lucide-react';
+import { PackageCheck, ArrowRight, Check, CornerUpLeft, MessageSquare, X } from 'lucide-react';
 import { useMemo, useState, type ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Avatar, PageHeader } from '../../app/Shell';
@@ -369,7 +369,10 @@ function Actions({ r, isReceiver, isRequester, today, reasonCodes }: {
             Committed for <b className="num text-ink">{fmtDay(r.committedDate!)}</b>
             {r.status === 'ACCEPTED' ? ', accepted by the requester.' : ', waiting for the requester to accept.'}
           </p>
-          <button className={btn} onClick={() => { setMode('move'); setDate(addWorkingDays(r.committedDate!, 3)); }}>Move commitment…</button>
+          <div className="flex shrink-0 gap-2">
+            <button className={btn} onClick={() => { setMode('move'); setDate(addWorkingDays(r.committedDate!, 3)); }}>Move commitment…</button>
+            <button className={primary} onClick={() => st.deliverRequest(r.id)}><PackageCheck size={14} /> Mark delivered</button>
+          </div>
         </div>, 'border-line')
         : card('Move commitment · a reason is required', <div className="space-y-2">
           <div className="grid grid-cols-2 gap-2">
@@ -408,6 +411,29 @@ function Actions({ r, isReceiver, isRequester, today, reasonCodes }: {
           </div>
         </div>, 'border-late');
     }
+  }
+
+  if (r.status === 'DONE') {
+    const late = r.committedDate && r.deliveredAt && r.deliveredAt > r.committedDate ? daysBetween(r.committedDate, r.deliveredAt) : 0;
+    const summary = <>Delivered <b className="num text-ink">{r.deliveredAt ? fmtDay(r.deliveredAt) : ''}</b>{late ? <span className="text-late"> · {late}d after the commitment</span> : r.committedDate ? <span className="text-ok"> · on time</span> : null}</>;
+    if (isRequester && !r.receivedAt) {
+      return mode !== 'counter'
+        ? card('Your move · confirm you received it', <div className="flex items-center justify-between gap-3">
+          <p className="text-table text-ink-2">{summary}.</p>
+          <div className="flex shrink-0 gap-2">
+            <button className={btn} onClick={() => setMode('counter')}><CornerUpLeft size={14} /> Not received</button>
+            <button className={primary} onClick={() => st.confirmDelivery(r.id, true)}><Check size={14} /> Confirm received</button>
+          </div>
+        </div>)
+        : card('Not received', <div className="flex items-end gap-2">
+          <label className="flex flex-1 flex-col gap-1 text-[11px] text-ink-2">What is missing
+            <input className={field} value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. report received but software build missing" />
+          </label>
+          <button className={btn} onClick={() => setMode('none')}>Cancel</button>
+          <button className={primary} disabled={!note.trim()} onClick={() => { st.confirmDelivery(r.id, false, note.trim()); setMode('none'); setNote(''); }}>Send back</button>
+        </div>, 'border-late');
+    }
+    return card('Closed', <p className="text-table text-ink-2">{summary}{r.receivedAt ? <>, receipt confirmed {fmtShort(r.receivedAt)}.</> : ', waiting for the requester to confirm receipt.'}</p>, 'border-ok');
   }
 
   // Requester (R&D owner)

@@ -1,11 +1,11 @@
 // Delay ledger (plan section 9): where the lost days went, by reason and by department, plus every date change.
 import { X } from 'lucide-react';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { PageHeader } from '../../app/Shell';
 import { cx, KpiTile } from '../../design';
-import { daysLostByDepartment, daysLostByReason, type Bucket } from '../../domain/ledger';
+import { daysLostByDepartment, daysLostByReason, deliveryScorecard, type Bucket } from '../../domain/ledger';
 import type { DateChange } from '../../domain/types';
 import { DEFAULT_DEMO_TODAY, daysBetween, fmtShort } from '../../lib/dates';
 import { shortTeam } from '../../store/selectors';
@@ -115,6 +115,9 @@ export function LedgerPage() {
         <ChartCard title="Days lost by department" data={byDept} label={deptLabel} active={dept} onPick={(k) => set('dept', dept === k ? '' : k)} />
       </div>
 
+      <BookedToMyTeam />
+      <Scorecard />
+
       <section className="card">
         <div className="flex flex-wrap items-center gap-2 border-b border-line px-4 py-3">
           <h2 className="mr-2 text-[14px] font-semibold">Every date change</h2>
@@ -187,6 +190,89 @@ export function LedgerPage() {
         </p>
       </section>
     </>
+  );
+}
+
+// ---- Booked to my team: the lead sees every day booked to their department and can dispute it once ----------------
+
+function BookedToMyTeam() {
+  const s = useStore();
+  const myTeam = s.teams.find((t) => t.leaderId === s.currentPersonId);
+  const [open, setOpen] = useState<string | null>(null);
+  const [note, setNote] = useState('');
+  if (!myTeam) return null;
+  const rows = s.dateChanges.filter((c) => (c.attributedTo === myTeam.id || c.dispute) && c.field === 'forecast' && c.entity !== 'request' && daysBetween(c.from, c.to) > 0)
+    .filter((c) => c.attributedTo === myTeam.id || s.decisions.find((d) => d.id === c.dispute?.askId)?.raisedById === s.currentPersonId)
+    .reverse();
+  const what = (c: DateChange) => {
+    if (c.entity === 'task') return s.tasks.find((t) => t.id === c.entityId)?.title ?? c.entityId;
+    const [pid, aid] = c.entityId.split(':');
+    const p = s.projects.find((x) => x.id === pid);
+    const a = p?.plan?.find((x) => x.activityId === aid);
+    return a ? `${a.name} · ${p!.name}` : c.entityId;
+  };
+  const reason = (code: string) => s.reasonCodes.find((r) => r.code === code)?.label ?? code;
+  const by = (id: string) => s.people.find((p) => p.id === id)?.name ?? id;
+  return (
+    <section className="card mb-4">
+      <div className="border-b border-line px-4 py-3">
+        <h2 className="text-[14px] font-semibold">Booked to {shortTeam(myTeam.name)} <span className="num font-normal text-ink-2">{rows.length}</span></h2>
+        <p className="text-table text-ink-2">Days other teams booked to you. Wrong? Dispute it once: the R&amp;D head decides.</p>
+      </div>
+      <ul className="max-h-[280px] overflow-y-auto">
+        {rows.length === 0 && <li className="px-4 py-6 text-center text-table text-ink-2">Nothing booked to your team.</li>}
+        {rows.map((c) => (
+          <li key={c.id} className="border-b border-line px-4 py-2 last:border-0">
+            <div className="flex items-center gap-3 text-table">
+              <span className="num w-12 shrink-0 font-medium text-late">+{daysBetween(c.from, c.to)}d</span>
+              <span className="min-w-0 flex-1 truncate">{what(c)} <span className="text-ink-2">· {reason(c.reasonCode)} · by {by(c.byId)} · {fmtShort(c.at)}</span></span>
+              {c.dispute ? (
+                <span className={cx('shrink-0 rounded px-1.5 py-px text-[11px] font-medium', c.dispute.status === 'OPEN' ? 'bg-risk-soft text-risk' : c.dispute.status === 'UPHELD' ? 'bg-ok-soft text-ok' : 'bg-late-soft text-late')}>
+                  {c.dispute.status === 'OPEN' ? 'Disputed · with head' : c.dispute.status === 'UPHELD' ? 'Dispute upheld' : 'Dispute rejected'}
+                </span>
+              ) : open !== c.id && <button type="button" className="shrink-0 text-[12px] font-medium text-accent hover:underline" onClick={() => { setOpen(c.id); setNote(''); }}>Dispute</button>}
+            </div>
+            {open === c.id && !c.dispute && (
+              <form className="mt-1.5 flex gap-1.5 pl-[60px]" onSubmit={(e) => { e.preventDefault(); if (s.disputeChange(c.id, note)) setOpen(null); }}>
+                <input autoFocus value={note} onChange={(e) => setNote(e.target.value)} placeholder="Why this is not on your team (required)" className={cx(field, 'flex-1')} />
+                <button type="submit" disabled={!note.trim()} className="h-8 rounded-input bg-accent px-3 text-[12px] font-medium text-surface disabled:opacity-40">Send to head</button>
+                <button type="button" onClick={() => setOpen(null)} className="h-8 px-2 text-[12px] text-ink-2">Cancel</button>
+              </form>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+// ---- Delivery scorecard: did departments deliver what they committed? ----------------------------------------------
+
+function Scorecard() {
+  const requests = useStore((s) => s.requests);
+  const teams = useStore((s) => s.teams);
+  const rows = useMemo(() => deliveryScorecard(requests), [requests]);
+  return (
+    <section className="card mb-4">
+      <div className="border-b border-line px-4 py-3">
+        <h2 className="text-[14px] font-semibold">Delivery scorecard</h2>
+        <p className="text-table text-ink-2">Requests each department marked delivered, against the date it committed. Fills as requests are closed.</p>
+      </div>
+      <table className="w-full text-table">
+        <thead><tr className="text-left text-[11px] text-ink-2"><th className="px-4 py-1.5 font-medium">Department</th><th className="py-1.5 text-right font-medium">Open</th><th className="py-1.5 text-right font-medium">Delivered</th><th className="py-1.5 text-right font-medium">On time</th><th className="px-4 py-1.5 text-right font-medium">Avg days late</th></tr></thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr key={r.dept} className="border-t border-line">
+              <td className="px-4 py-1.5">{shortTeam(teams.find((t) => t.id === r.dept)?.name ?? r.dept)}</td>
+              <td className="num py-1.5 text-right">{r.open}</td>
+              <td className="num py-1.5 text-right">{r.delivered}</td>
+              <td className={cx('num py-1.5 text-right', r.delivered && r.onTime < r.delivered ? 'text-late' : r.delivered ? 'text-ok' : 'text-ink-2')}>{r.delivered ? `${Math.round((100 * r.onTime) / r.delivered)}%` : '–'}</td>
+              <td className="num px-4 py-1.5 text-right">{r.delivered ? r.avgDaysLate : '–'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
   );
 }
 

@@ -2,12 +2,13 @@
 // the engineer who follows it up. Used on the Team page, the Projects list and the project page.
 import * as Dialog from '@radix-ui/react-dialog';
 import { FolderPlus, ListPlus, Send, X } from 'lucide-react';
-import { useMemo, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { cx } from '../../design';
 import type { StageCode } from '../../domain/types';
 import { template } from '../../domain/seed';
-import { addWorkingDays, fmtShort } from '../../lib/dates';
+import { addWorkingDays, fmtShort, weekStart } from '../../lib/dates';
+import { personLoad } from '../../domain/metrics';
 import { useStore } from '../../store/store';
 import { btn, btnPrimary } from '../meetings/MeetingsPage';
 import { unitLabel } from '../myday/labels';
@@ -23,6 +24,22 @@ export function useLeadTeam(teamId?: string) {
     if (!me || me.role !== 'TEAM_LEADER') return null;
     return !teamId || me.teamId === teamId ? me.teamId : null;
   });
+}
+
+/** Head has no team: pick which R&D team the project/task belongs to. */
+function useTeamPick(teamId?: string) {
+  const teams = useStore((s) => s.teams);
+  const people = useStore((s) => s.people);
+  const options = useMemo(() => teams.filter((t) => (t.kind === 'model' || t.kind === 'support-rnd') && people.some((p) => p.teamId === t.id && p.role === 'ENGINEER')), [teams, people]);
+  const [team, setTeam] = useState(teamId ?? options[0]?.id ?? '');
+  const picker = teamId ? null : (
+    <label className="col-span-2"><span className={label}>Team</span>
+      <select className={field} value={team} onChange={(e) => setTeam(e.target.value)}>
+        {options.map((t) => <option key={t.id} value={t.id}>{unitLabel(teams, t.id)}</option>)}
+      </select>
+    </label>
+  );
+  return [team, picker] as const;
 }
 
 function useEngineers(teamId: string) {
@@ -59,7 +76,7 @@ function Footer({ note, submit, disabled }: { note?: ReactNode; submit: string; 
 
 // ---- New project: the start of the workflow ---------------------------------------------------------------------
 
-export function NewProjectButton({ teamId }: { teamId: string }) {
+export function NewProjectButton({ teamId }: { teamId?: string }) {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -71,7 +88,8 @@ export function NewProjectButton({ teamId }: { teamId: string }) {
   );
 }
 
-function NewProjectForm({ teamId, onDone }: { teamId: string; onDone: () => void }) {
+function NewProjectForm({ teamId: fixedTeam, onDone }: { teamId?: string; onDone: () => void }) {
+  const [teamId, teamPicker] = useTeamPick(fixedTeam);
   const today = useStore((s) => s.demoToday);
   const teams = useStore((s) => s.teams);
   const createProject = useStore((s) => s.createProject);
@@ -81,6 +99,11 @@ function NewProjectForm({ teamId, onDone }: { teamId: string; onDone: () => void
   const [customer, setCustomer] = useState('');
   const [start, setStart] = useState(today);
   const [picked, setPicked] = useState<string[]>([]);
+  useEffect(() => setPicked([]), [teamId]);
+  const allTasks = useStore((s) => s.tasks);
+  const allProjects = useStore((s) => s.projects);
+  const cap = useStore((s) => s.settings.r5WeeklyCapacity);
+  const loadOf = (id: string) => personLoad(allTasks, id, weekStart(today), allProjects);
   const ceEnd = addWorkingDays(start, template.stages[0].plannedDays - 1);
   const total = template.stages.reduce((n, s) => n + s.subStages.reduce((m, ss) => m + ss.activities.length, 0), 0);
   const toggle = (id: string) => setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
@@ -95,6 +118,7 @@ function NewProjectForm({ teamId, onDone }: { teamId: string; onDone: () => void
   return (
     <form onSubmit={submit}>
       <div className="grid grid-cols-2 gap-4 px-5 py-4">
+        {teamPicker}
         <label className="col-span-2"><span className={label}>Project / model name</span>
           <input className={field} value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. SAC 18K 5S Inverter (2027)" autoFocus />
         </label>
@@ -105,12 +129,13 @@ function NewProjectForm({ teamId, onDone }: { teamId: string; onDone: () => void
           <input type="date" className={field} value={start} min={today} onChange={(e) => setStart(e.target.value || today)} />
         </label>
         <fieldset className="col-span-2">
-          <legend className={label}>Engineers on the project ({unitLabel(teams, teamId)})</legend>
+          <legend className={label}>Engineers on the project ({unitLabel(teams, teamId)}) · load this week / capacity</legend>
           <div className="grid grid-cols-3 gap-1.5">
             {engineers.map((p) => (
               <label key={p.id} className={cx('flex cursor-pointer items-center gap-2 rounded-input border px-2 py-1.5 text-[12px]', picked.includes(p.id) ? 'border-accent bg-accent-soft' : 'border-line')}>
                 <input type="checkbox" checked={picked.includes(p.id)} onChange={() => toggle(p.id)} className="accent-[var(--accent)]" />
                 <span className="truncate">{p.name}</span>
+                <span className={cx('num ml-auto shrink-0 text-[11px]', loadOf(p.id) > cap ? 'font-medium text-late' : 'text-ink-2')} title={`Load this week: ${loadOf(p.id)} of ${cap} pts`}>{loadOf(p.id)}/{cap}</span>
               </label>
             ))}
           </div>
@@ -120,7 +145,7 @@ function NewProjectForm({ teamId, onDone }: { teamId: string; onDone: () => void
           <ul className="mt-1 list-disc pl-5 text-ink-2">
             <li>The R&amp;D stage-gate workflow is created: CE → Proto → DV → PP → MP, <span className="num text-ink">{total}</span> activities from the template.</li>
             <li>CE starts <span className="num text-ink">{fmtShort(start)}</span> and closes <span className="num text-ink">{fmtShort(ceEnd)}</span>; later stages follow the template's stage days.</li>
-            <li>Activities are assigned to you (team-leader steps) and the engineers you pick, who get an email.</li>
+            <li>Activities are assigned to {fixedTeam ? "you" : "the team leader"} (team-leader steps) and the engineers you pick, who get an email.</li>
           </ul>
         </div>
       </div>
@@ -131,7 +156,7 @@ function NewProjectForm({ teamId, onDone }: { teamId: string; onDone: () => void
 
 // ---- Add a task for an engineer ---------------------------------------------------------------------------------
 
-export function AddTaskButton({ teamId, projectId, stage, title, small }: { teamId: string; projectId?: string; stage?: StageCode; title?: string; small?: boolean }) {
+export function AddTaskButton({ teamId, projectId, stage, title, small }: { teamId?: string; projectId?: string; stage?: StageCode; title?: string; small?: boolean }) {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -145,7 +170,8 @@ export function AddTaskButton({ teamId, projectId, stage, title, small }: { team
   );
 }
 
-function AddTaskForm({ teamId, projectId, stage, title: t0, onDone }: { teamId: string; projectId?: string; stage?: StageCode; title?: string; onDone: () => void }) {
+function AddTaskForm({ teamId: fixedTeam, projectId, stage, title: t0, onDone }: { teamId?: string; projectId?: string; stage?: StageCode; title?: string; onDone: () => void }) {
+  const [teamId, teamPicker] = useTeamPick(fixedTeam);
   const today = useStore((s) => s.demoToday);
   const allProjects = useStore((s) => s.projects);
   const createTask = useStore((s) => s.createTask);
@@ -160,6 +186,7 @@ function AddTaskForm({ teamId, projectId, stage, title: t0, onDone }: { teamId: 
   const [st, setSt] = useState<StageCode | ''>(stage ?? (projectId ? projects.find((p) => p.id === projectId)?.stage ?? '' : ''));
   const [due, setDue] = useState(addWorkingDays(today, 3));
   const [size, setSize] = useState<'S' | 'M' | 'L'>('M');
+  useEffect(() => { if (!fixedTeam) { setOwner(engineers[0]?.id ?? ''); setPid(''); setSt(''); } }, [teamId]); // eslint-disable-line react-hooks/exhaustive-deps
   const [done, setDone] = useState<string | null>(null);
 
   const submit = (e: FormEvent) => {
@@ -182,12 +209,13 @@ function AddTaskForm({ teamId, projectId, stage, title: t0, onDone }: { teamId: 
   return (
     <form onSubmit={submit}>
       <div className="grid grid-cols-2 gap-4 px-5 py-4">
+        {teamPicker}
         <label className="col-span-2"><span className={label}>Task</span>
           <input className={field} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Proto testing balancing, Psy lab" autoFocus />
         </label>
         <label><span className={label}>Assign to</span>
           <select className={field} value={owner} onChange={(e) => setOwner(e.target.value)}>
-            <optgroup label="My team">{engineers.map((p) => <option key={p.id} value={p.id}>{p.name}{p.deckNoTasksLogged ? ' (no tasks logged)' : ''}</option>)}</optgroup>
+            <optgroup label={fixedTeam ? "My team" : unitLabel(teams, teamId)}>{engineers.map((p) => <option key={p.id} value={p.id}>{p.name}{p.deckNoTasksLogged ? ' (no tasks logged)' : ''}</option>)}</optgroup>
             {otherTeams.map((t) => (
               <optgroup key={t.id} label={unitLabel(teams, t.id)}>
                 {people.filter((p) => p.teamId === t.id).map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}

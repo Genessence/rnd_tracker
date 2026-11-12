@@ -189,3 +189,33 @@ describe('propagation', () => {
     expect(out.tasks.find((t) => t.id === 'tsk-011')!.forecastDate).toBe('2026-10-21');
   });
 });
+
+describe('uploaded MOM', () => {
+  it('parses the sample: header, decisions, actions with owners and dates', async () => {
+    const { parseMom, SAMPLE_MOM } = await import('../src/domain/mom-upload');
+    const { buildInitialState } = await import('../src/domain/seed');
+    const m = parseMom(buildInitialState(), SAMPLE_MOM);
+    expect(m.errors).toEqual([]);
+    expect(m).toMatchObject({ title: 'MHI 2028 DV review', date: '2026-10-16', projectId: 'prj-rac-01' });
+    expect(m.decisions).toHaveLength(2);
+    expect(m.actions).toHaveLength(6);
+    expect(m.actions[0]).toMatchObject({ ownerId: 'p-jatin-sharma', dueDate: '2026-10-19' });
+    expect(m.actions[1].ownerId).toBe('p-dqa-lead');       // team word -> its leader
+    expect(m.actions[3].dueDate).toBe('2026-10-19');       // "Monday" after 16 Oct
+    expect(m.actions[5].ownerId).toBeUndefined();          // TBD stays unassigned
+  });
+});
+
+describe('stage gate', () => {
+  it('checklist is the stage sign-off/doc activities; Go advances to the next stage and its closure date', async () => {
+    const { gateChecklist, advanceStage } = await import('../src/domain/gate');
+    const p = buildInitialState().projects.find((x) => x.id === SHOWCASE_PROJECT_ID)!;
+    const g = gateChecklist(p);
+    expect(g.total).toBeGreaterThan(0);
+    expect(g.items.every((a) => a.stage === p.stage && (a.kind === 'approval' || a.kind === 'documentation'))).toBe(true);
+    const n = advanceStage(p);
+    expect(n.stage).not.toBe(p.stage);
+    expect(n.nextMilestoneDate).toBe(p.plan!.filter((a) => a.stage === n.stage).map((a) => a.committedEnd).sort().at(-1));
+    expect(advanceStage({ ...p, stage: 'MP' }).nextMilestone).toBe('Project closed');
+  });
+});

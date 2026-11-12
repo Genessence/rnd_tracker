@@ -4,9 +4,12 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { buildInitialState, template, type SeedState } from '../domain/seed';
 import { cascadePlan, headId, leaderOf, propagateRequestDate } from '../domain/rules';
 import { applyProgress, instantiatePlan, scheduleTemplate } from '../domain/scheduler';
-import { addWorkingDays, fmtShort, nextWorkingDay } from '../lib/dates';
+import { advanceStage, gateChecklist, nextStage } from '../domain/gate';
+import { liveRag } from '../domain/metrics';
+import { addWorkingDays, daysBetween, fmtShort, nextWorkingDay } from '../lib/dates';
 import type {
   ActionLogEntry,
+  AskKind,
   DateChange,
   DateEntity,
   Decision,
@@ -16,6 +19,7 @@ import type {
   Meeting,
   Mom,
   Notification,
+  PlanActivity,
   Project,
   Request,
   Settings,
@@ -24,6 +28,7 @@ import type {
   Task,
   WaitingOn,
 } from '../domain/types';
+import { ASK_LABEL } from '../domain/types';
 
 export interface ClearedException {
   action: ExceptionAction;
@@ -98,12 +103,22 @@ export interface Actions {
   /** Commits (or re-commits) a date and runs propagation. A re-commit to a new date needs a reason code. */
   commitRequest: (id: string, date: string, reasonCode?: string, note?: string, attributedTo?: string) => boolean;
   acceptRequest: (id: string) => void;
+  /** Receiving team: done. The request stops blocking; the requester is asked to confirm receipt. */
+  deliverRequest: (id: string, note?: string) => void;
+  /** Requester: received (closes it) or not received (back to committed, the task waits again). */
+  confirmDelivery: (id: string, received: boolean, note?: string) => void;
+  /** Lead of the booked department contests a date change's booking; goes to the head as an ask. */
+  disputeChange: (changeId: string, note: string) => string | undefined;
   counterRequest: (id: string, proposedDate: string, note: string) => void;
   commentRequest: (id: string, text: string) => void;
 
+  /** Anyone asks the head for a decision, input, approval, date extension or people; optionally holds up a task. */
+  raiseAsk: (input: { kind: AskKind; title: string; ask: string; taskId?: string; proposedDate?: string; projectId?: string; stage?: StageCode }) => string;
+  /** Leader (or head) asks the head to review the current stage's gate. Refused until the checklist is complete or if one is pending. */
+  requestGate: (projectId: string, lessons?: string) => string | undefined;
   decideDecision: (id: string, status: Exclude<Decision['status'], 'PENDING'>, outcome: string) => void;
   /** Clears an exception with an action (always logged). PUSH_BACK needs a note; REASSIGN takes ownerId. */
-  decideException: (ex: Exception, action: ExceptionAction, note: string, opts?: { ownerId?: string }) => boolean;
+  decideException: (ex: Exception, action: ExceptionAction, note: string, opts?: { ownerId?: string; conditional?: boolean }) => boolean;
 
   instantiateProjectPlan: (projectId: string) => void;
   /** Starts the workflow: a new project at CE with the full template plan scheduled from startDate. Returns its id. */
@@ -151,12 +166,42 @@ export const useStore = create<Store>()(
       const log = (action: string, entityId: string, note?: string) => {
         const id = nextId('act');
         set((s) => ({ actionLog: [...s.actionLog, { id, at: s.demoToday, byId: s.currentPersonId, action, entityId, note }] }));
+        refreshRag(entityId);
+      };
+      /** Every change is logged, so this is the one place project RAG goes live: find the project the entity belongs to. */
+      const refreshRag = (entityId: string) => {
+        const s = get();
+        const pids = new Set<string>();
+        for (const part of entityId.split(':')) {
+          if (s.projects.some((p) => p.id === part)) pids.add(part);
+          const t = s.tasks.find((x) => x.id === part);
+          const r = s.requests.find((x) => x.id === part);
+          const d = s.decisions.find((x) => x.id === part);
+          const pid = t?.projectId ?? r?.projectId ?? d?.projectId ?? s.tasks.find((x) => x.id === (r?.taskId ?? d?.taskId))?.projectId;
+          if (pid) pids.add(pid);
+        }
+        if (!pids.size) return;
+        set((st) => ({ projects: st.projects.map((p) => (pids.has(p.id) ? { ...p, rag: liveRag(p, st.tasks, st.demoToday) } : p)) }));
       };
       const patchTask = (id: string, fn: (t: Task) => Task) =>
         set((s) => ({ tasks: s.tasks.map((t) => (t.id === id ? fn(t) : t)) }));
+      /** Activity ids are `${projectId}:${activityId}`. */
+      const patchActivity = (id: string, fn: (a: PlanActivity) => PlanActivity) => {
+        const [pid, aid] = id.split(':');
+        set((s) => ({ projects: s.projects.map((p) => (p.id !== pid || !p.plan ? p : { ...p, plan: p.plan.map((a) => (a.activityId === aid ? fn(a) : a)) })) }));
+      };
       const patchRequest = (id: string, fn: (r: Request) => Request) =>
         set((s) => ({ requests: s.requests.map((r) => (r.id === id ? fn(r) : r)) }));
-      const change = (c: Omit<DateChange, 'id' | 'byId' | 'at'>): DateChange => ({ ...c, id: nextId('dc'), byId: me(), at: today() });
+      const change = (c: Omit<DateChange, 'id' | 'byId' | 'at'>): DateChange => {
+        const dc = { ...c, id: nextId('dc'), byId: me(), at: today() };
+        // Days booked to another department: tell its lead (they can dispute on the ledger).
+        const s = get();
+        const days = daysBetween(c.from, c.to);
+        const lead = c.attributedTo ? leaderOf(s, c.attributedTo) : '';
+        if (lead && lead !== me() && c.field === 'forecast' && c.entity !== 'request' && days > 0)
+          get().notify(lead, 'INFO', `${days}d booked to your team (${c.reasonCode}). Dispute it on the delay ledger if it is wrong.`, dc.id, '/ledger');
+        return dc;
+      };
 
       const runPropagation = (requestId: string) => {
         const s = get();
@@ -210,12 +255,14 @@ export const useStore = create<Store>()(
         },
 
         updateTask: (id, patch) => {
-          patchTask(id, (t) => ({ ...t, ...patch, lastUpdatedAt: today() }));
+          if (id.includes(':')) { if (patch.status) patchActivity(id, (a) => ({ ...a, status: patch.status!, actualEnd: patch.status === 'DONE' ? a.actualEnd : undefined })); }
+          else patchTask(id, (t) => ({ ...t, ...patch, lastUpdatedAt: today() }));
           log('TASK_UPDATE', id, Object.keys(patch).join(','));
         },
 
         completeTask: (id) => {
-          patchTask(id, (t) => ({ ...t, status: 'DONE', doneDate: today(), lastUpdatedAt: today() }));
+          if (id.includes(':')) patchActivity(id, (a) => ({ ...a, status: 'DONE', actualEnd: today() }));
+          else patchTask(id, (t) => ({ ...t, status: 'DONE', doneDate: today(), lastUpdatedAt: today() }));
           log('TASK_COMPLETE', id);
         },
 
@@ -223,6 +270,16 @@ export const useStore = create<Store>()(
           if (!reasonCode?.trim() || !newDate) return false;
           const s = get();
           if (entity === 'request') return get().commitRequest(id, newDate, reasonCode, note, attributedTo);
+          // Test failure / design change: a note is required and it goes to the head for approval (re-test, or change after freeze).
+          const loop = reasonCode === 'TEST_FAIL' || reasonCode === 'DESIGN_CHANGE';
+          if (loop && !note?.trim()) return false;
+          const loopAsk = (title: string, projectId: string | undefined, from: string) => {
+            if (!loop) return;
+            const p = s.projects.find((x) => x.id === projectId);
+            const frozen = !!p && ['DV', 'PP', 'MP'].includes(p.stage); // Proto signed off = design freeze
+            const what = reasonCode === 'TEST_FAIL' ? 'Test failure: re-test plan' : frozen ? 'Design change after design freeze' : 'Design change';
+            get().raiseAsk({ kind: 'APPROVAL', title: `${what}: ${title}`, ask: `${note} (moved ${fmtShort(from)} → ${fmtShort(newDate)})`, projectId });
+          };
           if (entity === 'task') {
             const t = s.tasks.find((x) => x.id === id);
             if (!t || t.forecastDate === newDate) return false;
@@ -230,6 +287,7 @@ export const useStore = create<Store>()(
             patchTask(id, (x) => ({ ...x, forecastDate: newDate, lastUpdatedAt: s.demoToday }));
             set((st) => ({ dateChanges: [...st.dateChanges, c] }));
             log('FORECAST_MOVE', id, `${fmtShort(t.forecastDate)} → ${fmtShort(newDate)} (${reasonCode})`);
+            loopAsk(t.title, t.projectId ?? undefined, t.forecastDate);
             return true;
           }
           const [projectId, activityId] = id.split(':');
@@ -247,6 +305,7 @@ export const useStore = create<Store>()(
             dateChanges: [...st.dateChanges, ...changes],
           }));
           log('FORECAST_MOVE', id, `${fmtShort(a.forecastEnd)} → ${fmtShort(newDate)} (${reasonCode})`);
+          loopAsk(`${a.name} · ${p.name}`, projectId, a.forecastEnd);
           return true;
         },
 
@@ -334,12 +393,60 @@ export const useStore = create<Store>()(
           });
           log('REQUEST_COMMIT', id, date);
           runPropagation(id);
+          refreshRag(id);
           return true;
         },
 
         acceptRequest: (id) => {
           patchRequest(id, (r) => ({ ...r, status: 'ACCEPTED', history: [...r.history, { at: today(), byId: me(), type: 'ACCEPTED' }] }));
           log('REQUEST_ACCEPT', id);
+        },
+
+        deliverRequest: (id, note) => {
+          const s = get();
+          const r = s.requests.find((x) => x.id === id);
+          if (!r) return;
+          patchRequest(id, (x) => ({ ...x, status: 'DONE', deliveredAt: s.demoToday, history: [...x.history, { at: today(), byId: me(), type: 'DONE', detail: note }] }));
+          if (r.taskId) patchTask(r.taskId, (t) => ({ ...t, waitingOn: null, status: t.status === 'BLOCKED' ? 'IN_PROGRESS' : t.status, lastUpdatedAt: s.demoToday }));
+          if (r.projectId && r.activityId) patchActivity(`${r.projectId}:${r.activityId}`, (a) => ({ ...a, status: a.status === 'BLOCKED' ? 'IN_PROGRESS' : a.status }));
+          const late = r.committedDate && s.demoToday > r.committedDate ? ` (${daysBetween(r.committedDate, s.demoToday)}d after the commitment)` : '';
+          get().notify(r.raisedById, 'COMMITMENT', `Delivered: ${r.title}. Confirm you received it.`, id, `/requests?id=${id}`);
+          get().sendEmail({ kind: 'COMMITMENT', toIds: [r.raisedById], ccIds: [me()], relatedId: id, subject: `Delivered: ${r.title}`,
+            html: `<p><b>${r.title}</b> was marked delivered on ${fmtShort(s.demoToday)}${late}.</p>${note ? `<p>${note}</p>` : ''}<p>Please confirm you received it.</p>` });
+          log('REQUEST_DELIVERED', id, note);
+        },
+
+        confirmDelivery: (id, received, note) => {
+          const s = get();
+          const r = s.requests.find((x) => x.id === id);
+          if (!r || r.status !== 'DONE') return;
+          if (received) {
+            patchRequest(id, (x) => ({ ...x, receivedAt: s.demoToday, history: [...x.history, { at: today(), byId: me(), type: 'ACCEPTED', detail: 'Received' }] }));
+            log('REQUEST_RECEIVED', id);
+            return;
+          }
+          const cid = nextId('cmt');
+          patchRequest(id, (x) => ({ ...x, status: 'COMMITTED', deliveredAt: undefined,
+            comments: [...x.comments, { id: cid, byId: me(), at: today(), text: `Not received: ${note ?? ''}` }],
+            history: [...x.history, { at: today(), byId: me(), type: 'COUNTERED', detail: `Not received${note ? `: ${note}` : ''}` }] }));
+          if (r.taskId) patchTask(r.taskId, (t) => ({ ...t, waitingOn: { kind: r.toKind, id: r.toId, requestId: r.id }, status: 'BLOCKED' }));
+          const lead = leaderOf(s, r.toId);
+          if (lead) get().notify(lead, 'REQUEST', `Not received: ${r.title}${note ? ` (${note})` : ''}`, id, `/requests?id=${id}`);
+          log('REQUEST_NOT_RECEIVED', id, note);
+        },
+
+        disputeChange: (changeId, note) => {
+          const s = get();
+          const c = s.dateChanges.find((x) => x.id === changeId);
+          if (!c || !c.attributedTo || c.dispute || !note.trim()) return undefined;
+          const team = s.teams.find((t) => t.id === c.attributedTo)?.name ?? c.attributedTo;
+          const what = c.entity === 'task' ? s.tasks.find((t) => t.id === c.entityId)?.title : c.entityId;
+          const askId = get().raiseAsk({ kind: 'DECISION', title: `Dispute: ${daysBetween(c.from, c.to)}d booked to ${team}`, ask: `${what ?? c.entityId} (${c.reasonCode}). ${note}` });
+          set((st) => ({
+            decisions: st.decisions.map((d) => (d.id === askId ? { ...d, changeId } : d)),
+            dateChanges: st.dateChanges.map((x) => (x.id === changeId ? { ...x, dispute: { askId, status: 'OPEN' } } : x)),
+          }));
+          return askId;
         },
 
         counterRequest: (id, proposedDate, note) => {
@@ -361,6 +468,34 @@ export const useStore = create<Store>()(
           }));
         },
 
+        raiseAsk: ({ kind, title, ask, taskId, proposedDate, projectId, stage }) => {
+          const s = get();
+          const id = nextId('ask');
+          const me = s.people.find((p) => p.id === s.currentPersonId)!;
+          const task = taskId ? s.tasks.find((t) => t.id === taskId) : undefined;
+          set((st) => ({ decisions: [...st.decisions, { id, teamId: task?.teamId ?? me.teamId, title, ask, raisedById: me.id, kind, status: 'PENDING', raisedOn: st.demoToday, taskId, proposedDate, projectId, stage }] }));
+          if (task) patchTask(task.id, (t) => ({ ...t, waitingOn: { kind: 'HEAD' }, lastUpdatedAt: s.demoToday }));
+          const head = headId(s);
+          get().notify(head, 'ESCALATION', `${ASK_LABEL[kind]} needed: ${title}`, id, '/tower');
+          get().sendEmail({ kind: 'ESCALATION', toIds: [head], ccIds: [leaderOf(s, me.teamId)].filter((x) => x !== me.id), relatedId: id,
+            subject: `${ASK_LABEL[kind]} needed from you: ${title}`,
+            html: `<p><b>${me.name}</b> asks for ${ASK_LABEL[kind].toLowerCase()}: <b>${title}</b></p>${ask ? `<p>${ask}</p>` : ''}${proposedDate ? `<p>New date asked: ${proposedDate}</p>` : ''}` });
+          log('ASK_RAISED', id, ASK_LABEL[kind]);
+          return id;
+        },
+
+        requestGate: (projectId, lessons) => {
+          const s = get();
+          const p = s.projects.find((x) => x.id === projectId);
+          if (!p) return undefined; // on hold is fine: a re-review after fixes
+          const g = gateChecklist(p);
+          if (!g.ready || s.decisions.some((d) => d.kind === 'GATE' && d.projectId === projectId && d.status === 'PENDING')) return undefined;
+          const label = p.stage === 'PROTO' ? 'Proto' : p.stage;
+          const askId = get().raiseAsk({ kind: 'GATE', title: `${p.name}: ${label} gate`, ask: `All ${g.total} ${label} deliverables signed off. Go to ${nextStage(p.stage) ?? 'close'}?`, projectId, stage: p.stage });
+          if (lessons?.trim()) set((st) => ({ decisions: st.decisions.map((d) => (d.id === askId ? { ...d, lessons: lessons.trim() } : d)) }));
+          return askId;
+        },
+
         decideDecision: (id, status, outcome) => {
           set((s) => ({ decisions: s.decisions.map((d) => (d.id === id ? { ...d, status, outcome } : d)) }));
           log(`DECISION_${status}`, id, outcome);
@@ -373,10 +508,45 @@ export const useStore = create<Store>()(
           const entity = ex.entityId;
           const task = s.tasks.find((t) => t.id === entity);
           if (s.decisions.some((d) => d.id === entity)) {
+            const d0 = s.decisions.find((x) => x.id === entity)!;
+            if (d0.taskId && s.tasks.some((t) => t.id === d0.taskId)) {
+              // Answered either way: the task stops waiting on the head. An approved extension becomes the new commitment.
+              patchTask(d0.taskId, (t) => ({ ...t, waitingOn: t.waitingOn?.kind === 'HEAD' ? null : t.waitingOn, lastUpdatedAt: s.demoToday }));
+              const t = s.tasks.find((x) => x.id === d0.taskId)!;
+              if (action === 'DECIDE' && d0.kind === 'DATE_EXTENSION' && d0.proposedDate && d0.proposedDate !== t.committedDate) {
+                const c1 = change({ entity: 'task', entityId: t.id, field: 'forecast', from: t.forecastDate, to: d0.proposedDate, reasonCode: 'HEAD_APPROVED_EXTENSION', note });
+                const c2 = change({ entity: 'task', entityId: t.id, field: 'committed', from: t.committedDate, to: d0.proposedDate, reasonCode: 'HEAD_APPROVED_EXTENSION', note });
+                patchTask(t.id, (x) => ({ ...x, forecastDate: d0.proposedDate!, committedDate: d0.proposedDate! }));
+                set((st) => ({ dateChanges: [...st.dateChanges, c1, c2] }));
+              }
+            }
+            if (d0.changeId && (action === 'DECIDE' || action === 'PUSH_BACK')) {
+              // Dispute upheld: the days come off that department (unattributed). Rejected: the booking stands.
+              set((st) => ({ dateChanges: st.dateChanges.map((x) => (x.id !== d0.changeId ? x
+                : { ...x, attributedTo: action === 'DECIDE' ? undefined : x.attributedTo, dispute: { askId: d0.id, status: action === 'DECIDE' ? 'UPHELD' : 'REJECTED' } })) }));
+            }
+            if (d0.kind === 'GATE' && d0.projectId) {
+              const p = s.projects.find((x) => x.id === d0.projectId)!;
+              if (action === 'DECIDE') {
+                set((st) => ({ projects: st.projects.map((x) => (x.id === p.id ? advanceStage(x) : x)) }));
+                if (opts?.conditional && note) get().createTask({ title: `Gate conditions (${p.name}): ${note}`, ownerIds: [p.ownerId], teamId: p.teamId, projectId: p.id, forecastDate: addWorkingDays(s.demoToday, 5), size: 'M' });
+                log(opts?.conditional ? 'GATE_CONDITIONAL_GO' : 'GATE_GO', p.id, note);
+              } else if (action === 'PUSH_BACK') {
+                set((st) => ({ projects: st.projects.map((x) => (x.id === p.id ? { ...x, onHold: true } : x)) }));
+                log('GATE_HOLD', p.id, note);
+              }
+            }
+            if (action === 'REASSIGN') {
+              // "Bring someone in": they get a linked task; the ask is answered.
+              const who = s.people.find((p) => p.id === opts!.ownerId)!;
+              get().createTask({ title: `${d0.title} (support asked by R&D head)`, ownerIds: [who.id], teamId: who.teamId, projectId: d0.taskId ? s.tasks.find((t) => t.id === d0.taskId)?.projectId ?? null : null, forecastDate: addWorkingDays(s.demoToday, 3), size: 'M' });
+              get().decideDecision(entity, 'DECIDED', `Brought in ${who.name}${note ? `: ${note}` : ''}`);
+              get().notify(d0.raisedById, 'ESCALATION', `R&D head brought in ${who.name}: ${d0.title}`, d0.id, '/my-day');
+            }
             if (action === 'DECIDE' || action === 'PUSH_BACK') {
               get().decideDecision(entity, action === 'DECIDE' ? 'DECIDED' : 'PUSHED_BACK', note);
               const d = s.decisions.find((x) => x.id === entity)!;
-              const verb = action === 'DECIDE' ? 'Decided' : 'Pushed back';
+              const verb = d.kind === 'GATE' ? (action === 'DECIDE' ? (opts?.conditional ? 'Conditional go' : 'Go') : 'Hold') : d.kind === 'APPROVAL' || d.kind === 'DATE_EXTENSION' ? (action === 'DECIDE' ? 'Approved' : 'Rejected') : d.kind === 'INPUT' ? (action === 'DECIDE' ? 'Answered' : 'Pushed back') : action === 'DECIDE' ? 'Decided' : 'Pushed back';
               // ponytail: seed has no decision→task link; match same-team tasks waiting on the head by title prefix.
               if (action === 'DECIDE') for (const t of s.tasks) {
                 if (t.teamId === d.teamId && t.waitingOn?.kind === 'HEAD' && d.title.startsWith(t.title.split(':')[0])) get().setWaitingOn(t.id, null);
@@ -390,6 +560,7 @@ export const useStore = create<Store>()(
             }
           } else if (task) {
             if (ex.ruleId === 'R3' && (action === 'DECIDE' || action === 'PUSH_BACK')) get().setWaitingOn(task.id, null);
+            if (ex.ruleId === 'R7' && action === 'DECIDE') for (const o of task.ownerIds) get().notify(o, 'INFO', `Overdue: close or re-forecast "${task.title}"${note ? ` (${note})` : ''}`, task.id, '/my-day');
             if (action === 'REASSIGN') get().updateTask(task.id, { ownerIds: [opts!.ownerId!] });
             if (action === 'ACCEPT_DATE' && task.committedDate !== task.forecastDate) {
               const c = change({ entity: 'task', entityId: task.id, field: 'committed', from: task.committedDate, to: task.forecastDate, reasonCode: 'ACCEPTED_NEW_DATE', note });

@@ -9,6 +9,7 @@ import { fmtDay, fmtShort } from '../../lib/dates';
 import { decisionFollowUp, draftMom, endMeeting, meetingDate, meetingTime, publishMom, updateMom } from '../../sim/teams';
 import { useStore } from '../../store/store';
 import { btn, btnPrimary, STAGE_LABEL, StatusBadge } from './MeetingsPage';
+import { UploadMom } from './UploadMom';
 
 export function MeetingPage() {
   const { id } = useParams();
@@ -48,7 +49,7 @@ export function MeetingPage() {
             <ScheduledPanel m={m} />
           ) : (
             <div className="grid grid-cols-2 gap-5">
-              <Transcript lines={m.transcript ?? []} hl={hl} refs={refLines(mom)} />
+              {mom?.upload ? <UploadedFile mom={mom} /> : <Transcript lines={m.transcript ?? []} hl={hl} refs={refLines(mom)} />}
               {mom ? <MomPanel mom={mom} m={m} hl={hl} setHl={setHl} /> : <DraftCta m={m} />}
             </div>
           )}
@@ -184,6 +185,20 @@ function Transcript({ lines, hl, refs }: { lines: TranscriptLine[]; hl: number |
   );
 }
 
+function UploadedFile({ mom }: { mom: Mom }) {
+  const by = useStore((s) => s.people.find((p) => p.id === mom.upload!.byId)?.name);
+  return (
+    <section className="card flex max-h-[680px] min-w-0 flex-col">
+      <h2 className="flex items-center justify-between border-b border-line px-4 py-2.5 text-[14px] font-semibold">
+        <span className="flex items-center gap-2"><FileText size={15} className="text-accent" /> Uploaded MOM</span>
+        <span className="font-mono text-[11px] font-normal text-ink-2">{mom.upload!.fileName}</span>
+      </h2>
+      <p className="border-b border-line px-4 py-1.5 text-[11px] text-ink-2">Uploaded by {by} on {fmtShort(mom.upload!.at)}. The draft on the right was read from this file.</p>
+      <pre className="flex-1 overflow-auto whitespace-pre-wrap px-4 py-3 font-mono text-[11px] leading-[18px]">{mom.upload!.text}</pre>
+    </section>
+  );
+}
+
 // ---- MOM -------------------------------------------------------------------------------------------------------
 
 function DraftCta({ m }: { m: Meeting }) {
@@ -193,6 +208,9 @@ function DraftCta({ m }: { m: Meeting }) {
       <h2 className="text-[16px] font-semibold">Transcript received: {m.transcript?.length ?? 0} lines</h2>
       <p className="max-w-[360px] text-ink-2">Rule-based extraction: lines with "Decision" become decisions, "Action for …:" become actions with an owner and a due date.</p>
       <button type="button" className={cx(btnPrimary, 'h-10 px-4 text-[13px]')} onClick={() => draftMom(m.id)}><Sparkles size={14} /> Draft MOM</button>
+      <div className="my-2 flex w-full items-center gap-3 text-[11px] uppercase tracking-wide text-ink-2"><span className="h-px flex-1 bg-line" />or upload the minutes<span className="h-px flex-1 bg-line" /></div>
+      <p className="max-w-[360px] text-ink-2">Written your own MOM? Upload it: decisions and actions (owner, due date) become the draft below, ready to review and publish.</p>
+      <UploadMom m={m} />
     </section>
   );
 }
@@ -237,7 +255,7 @@ function MomPanel({ mom, m, hl, setHl }: { mom: Mom; m: Meeting; hl: number | nu
           {draft ? <span className="rounded bg-risk-soft px-1.5 py-px text-[11px] font-medium text-risk">Draft</span>
             : <span className="rounded bg-ok-soft px-1.5 py-px text-[11px] font-medium text-ok">Published {mom.publishedAt && fmtShort(mom.publishedAt)}</span>}
         </h2>
-        {draft && <p className="mt-1 flex items-center gap-1.5 text-[12px] text-risk"><Sparkles size={12} /> Draft MOM, generated from transcript: review before publishing</p>}
+        {draft && <p className="mt-1 flex items-center gap-1.5 text-[12px] text-risk"><Sparkles size={12} /> Draft MOM, {mom.upload ? 'read from the uploaded file' : 'generated from transcript'}: review before publishing</p>}
       </div>
 
       <div className="flex flex-col gap-4 p-4">
@@ -306,8 +324,8 @@ function MomPanel({ mom, m, hl, setHl }: { mom: Mom; m: Meeting; hl: number | nu
       <div className="mt-auto border-t border-line px-4 py-3">
         {draft ? (
           <div className="flex items-center justify-between gap-3">
-            <span className="text-[12px] text-ink-2">Publishing creates {mom.actions.length + followUps} tasks and emails {m.attendeeIds.length} attendees.</span>
-            <button type="button" className={btnPrimary} onClick={() => publishMom(mom.id)}><Send size={13} /> Publish MOM</button>
+            <span className="text-[12px] text-ink-2">{mom.actions.some((a) => !a.ownerId) && <b className="mr-1 text-late">{mom.actions.filter((a) => !a.ownerId).length} unassigned.</b>}Publishing creates {mom.actions.length + followUps} tasks and emails {m.attendeeIds.length} attendees.</span>
+            <button type="button" className={btnPrimary} disabled={mom.actions.some((a) => !a.ownerId)} title={mom.actions.some((a) => !a.ownerId) ? 'Assign an owner to every action first' : undefined} onClick={() => publishMom(mom.id)}><Send size={13} /> Publish MOM</button>
           </div>
         ) : (
           <div className="flex items-center justify-between gap-3 text-[12px]">
